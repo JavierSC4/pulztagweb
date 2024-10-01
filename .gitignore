@@ -1,0 +1,33 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+.env
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Directorios de construcción
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Archivos de configuración del editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de logs
+*.log
+
+# Base de datos SQLite
+*.sqlite3
+
+# Archivos de entorno
+.env
+.env.*
