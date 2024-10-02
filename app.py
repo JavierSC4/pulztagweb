@@ -78,7 +78,6 @@ def contact():
             flash(
                 'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
-    return render_template('contact.html')
 
 
 @app.route('/order', methods=['GET', 'POST'])
