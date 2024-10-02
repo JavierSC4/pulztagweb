@@ -67,8 +67,7 @@ def contact():
             msg = Message(
                 subject=f"Nuevo mensaje de {nombre}",
                 recipients=['contacto@pulztag.com'],
-                body=f"Nombre: {nombre}\nCorreo Electrónico: {
-                    email}\n\nMensaje:\n{mensaje}"
+                body=f"Nombre: {nombre}\nCorreo Electrónico: {email}\n\nMensaje:\n{mensaje}"
             )
             mail.send(msg)
             flash('¡Tu mensaje ha sido enviado exitosamente!', 'success')
