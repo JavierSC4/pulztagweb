@@ -53,6 +53,7 @@ def about():
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
+        # Procesar el formulario...
         nombre = request.form.get('nombre')
         email = request.form.get('email')
         mensaje = request.form.get('mensaje')
@@ -74,9 +75,11 @@ def contact():
             return redirect(url_for('contact'))
         except Exception as e:
             print(e)
-            flash(
-                'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
+            flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
+
+    # Asegurarse de que siempre devuelva una respuesta al final
+    return render_template('contact.html')
 
 
 @app.route('/order', methods=['GET', 'POST'])
