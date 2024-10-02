@@ -146,8 +146,7 @@ def order():
                 subject="Nuevo Pedido de PulztagWeb",
                 recipients=['contacto@pulztag.com']
             )
-            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {
-                email}\n\nMensaje:\n{mensaje}"
+            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {email}\n\nMensaje:\n{mensaje}"
 
             # Adjuntar el archivo Excel del pedido
             with app.open_resource(pedido_excel_path) as fp:
