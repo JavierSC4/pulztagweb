@@ -253,3 +253,51 @@ img.rounded.shadow:hover {
 .text-muted {
     color: #a7a7a7 !important; /* Asegúrate de que el color se aplique */
 }
+
+/* ------------------------------------- */
+/* Estilos para la sección de Soluciones Personalizadas */
+/* ------------------------------------- */
+
+.custom-solutions-section {
+    background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    color: #fff;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-solutions-section h4 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.solutions-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.solution-item {
+    flex: 1 1 250px;
+    margin: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.solution-item h5 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.solution-item p {
+    color: #e0f7fa;
+}
+
+.solution-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}

@@ -78,6 +78,9 @@ def contact():
     # Esta línea es necesaria para manejar el caso GET
     return render_template('contact.html')
 
+@app.route('/products')
+def products():
+    return render_template('products.html')
 
 @app.route('/order', methods=['GET', 'POST'])
 def order():

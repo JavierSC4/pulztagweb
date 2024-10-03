@@ -1,83 +1,96 @@
-< !--templates / base.html-- >
+// static/js/script.js
+document.addEventListener('DOMContentLoaded', function () {
+    const orderForm = document.getElementById('orderForm');
 
-< !DOCTYPE html >
-    <html lang="es">
+    // Logo Upload Elements
+    const logoUpload = document.getElementById('logoUpload');
+    const logoList = document.getElementById('logoList');
+    const logoError = document.getElementById('logoError');
+    let selectedLogos = [];
 
-        <head>
-            <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>{% block title %}Pulztag{% endblock %}</title>
+    // Excel Upload Elements
+    const excelUpload = document.getElementById('excelUpload');
+    const excelList = document.getElementById('excelList');
+    const excelError = document.getElementById('excelError');
+    let selectedExcel = null;
 
-                    <!-- Google Fonts -->
-                    <link
-                        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap"
-                        rel="stylesheet">
+    // Manejar la selección de logos
+    logoUpload.addEventListener('change', function (e) {
+        const files = Array.from(e.target.files);
+        for (let file of files) {
+            if (selectedLogos.length >= 10) {
+                logoError.style.display = 'block';
+                break;
+            }
+            if (['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)) {
+                selectedLogos.push(file);
+                displayLogo(file, selectedLogos.length - 1);
+            }
+        }
+        logoUpload.value = ''; // Resetear el input
+    });
 
-                        <!-- Bootstrap CSS -->
-                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    // Mostrar un logo en la lista
+    function displayLogo(file, index) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.textContent = file.name;
 
-                            <!-- Bootstrap Icons -->
-                            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-danger btn-sm';
+        removeBtn.textContent = 'Eliminar';
+        removeBtn.addEventListener('click', function () {
+            selectedLogos.splice(index, 1);
+            logoList.removeChild(li);
+            // Actualizar la lista
+            updateLogoList();
+            logoError.style.display = 'none';
+        });
 
-                                <!-- CSS Personalizado con Parámetro de Versión para Evitar Caché -->
-                                <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=1.0">
+        li.appendChild(removeBtn);
+        logoList.appendChild(li);
+    }
 
-                                    {% block head %}{% endblock %}
-                                </head>
+    // Actualizar la lista de logos después de eliminar uno
+    function updateLogoList() {
+        logoList.innerHTML = '';
+        selectedLogos.forEach((file, idx) => {
+            displayLogo(file, idx);
+        });
+    }
 
-                                <body>
-                                    <!-- Barra Superior -->
-                                    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-                                        <div class="container-fluid">
-                                            <!-- Marca de la Navbar -->
-                                            <a class="navbar-brand text-primary fw-bold" href="/">
-                                                <!-- Puedes agregar un logo aquí si lo deseas -->
-                                                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pulztag Logo" height="40">
-                                            </a>
-                                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                                                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                                <span class="navbar-toggler-icon"></span>
-                                            </button>
-                                            <!-- Enlaces de Navegación -->
-                                            <div class="collapse navbar-collapse" id="navbarNav">
-                                                <ul class="navbar-nav ms-auto">
-                                                    <li class="nav-item">
-                                                        <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
-                                                            de</a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link{% if request.path == '/contact' %} active{% endif %}"
-                                                            href="/contact">Contacto</a>
-                                                    </li>
-                                                    <li class="nav-item">
-                                                        <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
-                                                    </li>
-                                                    <!-- Agrega más enlaces según sea necesario -->
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </nav>
+    // Manejar la selección de Excel
+    excelUpload.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (selectedExcel) {
+            excelError.style.display = 'block';
+            excelUpload.value = ''; // Resetear el input
+            return;
+        }
+        if (file && ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(file.type)) {
+            selectedExcel = file;
+            displayExcel(file);
+        }
+    });
 
-                                    <!-- Contenido Principal -->
-                                    <div class="container mt-4">
-                                        {% block content %}{% endblock %}
-                                    </div>
+    // Mostrar el archivo Excel en la lista
+    function displayExcel(file) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.textContent = file.name;
 
-                                    <!-- Footer -->
-                                    <footer class="bg-light text-center py-4 mt-5">
-                                        &copy; 2024 Pulztag. Todos los derechos reservados.
-                                    </footer>
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-danger btn-sm';
+        removeBtn.textContent = 'Eliminar';
+        removeBtn.addEventListener('click', function () {
+            selectedExcel = null;
+            excelList.removeChild(li);
+            excelError.style.display = 'none';
+        });
 
-                                    <!-- Bootstrap JS y dependencias -->
-                                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-                                    <!-- JS Personalizado -->
-                                    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
-                                    {% block scripts %}{% endblock %}
-                                </body>
-
-                            </html>
+        li.appendChild(removeBtn);
+        excelList.appendChild(li);
+    }
+});
