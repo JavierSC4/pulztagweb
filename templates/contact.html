@@ -7,6 +7,21 @@
 <p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
     contacto contigo lo antes posible.</p>
 
+<!-- Información de Contacto Section -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="custom-solutions-section text-center p-5 rounded shadow">
+            <h4 class="text-white">Información de Contacto</h4>
+            <p class="text-white">Para más información, no dudes en ponerte en contacto con nosotros a través de los siguientes medios:</p>
+            <ul class="list-unstyled">
+                <li><strong>Correo Electrónico:</strong> <a href="mailto:contacto@pulztag.com" class="text-white">contacto@pulztag.com</a></li>
+                <li><strong>Teléfono:</strong> <a href="tel:+56962411963" class="text-white">+56962411963</a></li>
+                <li><strong>Instagram:</strong> <a href="https://www.instagram.com/pulztag" target="_blank" class="text-white">@pulztag</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
 <!-- Mensajes Flash -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
@@ -44,4 +59,5 @@
         </form>
     </div>
 </div>
+
 {% endblock %}
