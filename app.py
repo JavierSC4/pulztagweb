@@ -57,12 +57,10 @@ def contact():
         email = request.form.get('email')
         mensaje = request.form.get('mensaje')
 
-        # Validación básica
         if not nombre or not email or not mensaje:
             flash('Por favor, completa todos los campos.', 'danger')
             return redirect(url_for('contact'))
 
-        # Crear y enviar el correo electrónico
         try:
             msg = Message(
                 subject=f"Nuevo mensaje de {nombre}",
@@ -74,9 +72,11 @@ def contact():
             return redirect(url_for('contact'))
         except Exception as e:
             print(e)
-            flash(
-                'Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
+            flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
+
+    # Esta línea es necesaria para manejar el caso GET
+    return render_template('contact.html')
 
 
 @app.route('/order', methods=['GET', 'POST'])
