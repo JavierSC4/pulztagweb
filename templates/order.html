@@ -34,8 +34,7 @@
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com"
-                    required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
             </div>
             <div class="mb-3">
                 <label for="dispositivo" class="form-label">Selecciona un Dispositivo</label>
@@ -49,29 +48,26 @@
             </div>
             <div class="mb-3">
                 <label for="mensaje" class="form-label">¿Qué necesitas?</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="3"
-                    placeholder="Escribe tu mensaje aquí" required></textarea>
+                <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje aquí" required></textarea>
             </div>
 
             <!-- Sección para subir Logos -->
             <div class="mb-4">
-                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10</label>
-                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png, .jpeg, .jpg"
-                    multiple>
+                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10 <span style="color: #03c0ff;">(*)</span></label>
+                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png, .jpeg, .jpg" multiple>
                 <ul class="list-group mt-2" id="logoList"></ul>
-                <div id="logoError" class="text-danger mt-2" style="display: none;">Has alcanzado el máximo de 10 logos.
-                </div>
+                <div id="logoError" class="text-danger mt-2" style="display: none;">Has alcanzado el máximo de 10 logos.</div>
+                <p class="text-muted mt-2">(*) Sube aquí las imágenes que deseas imprimir en tus dispositivos personalizados. Nuestro equipo se encargará de ayudarte con la implementación y asegurará que tus diseños se vean espectaculares en cada producto.</p>
             </div>
 
             <!-- Sección para subir Archivo Excel -->
             <div class="mb-4">
-                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1</label>
+                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1 <span style="color: #03c0ff;">(*)</span></label>
                 <input type="file" class="form-control" id="excelUpload" name="excel" accept=".xlsx, .xls">
                 <ul class="list-group mt-2" id="excelList"></ul>
-                <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.
-                </div>
+                <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.</div>
+                <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única. Para pedidos de gran volumen, por favor proporciona los detalles en un archivo Excel. Así, podremos garantizar que cada dispositivo se ajuste a tus necesidades específicas.</p>
             </div>
-
             <button type="submit" class="btn btn-primary">Enviar solicitud</button>
         </form>
     </div>

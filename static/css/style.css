@@ -248,3 +248,8 @@ img.rounded.shadow:hover {
 .alert {
     margin-top: 20px;
 }
+
+/* Estilo para el texto de las secciones de subida de archivos */
+.text-muted {
+    color: #a7a7a7 !important; /* Asegúrate de que el color se aplique */
+}
