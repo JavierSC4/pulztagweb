@@ -41,6 +41,7 @@
                     <option value="NFC Token de PVC (30 mm)">NFC Token de PVC (30 mm)</option>
                     <option value="NFC Sticker (25 mm)">NFC Sticker (25 mm)</option>
                     <option value="NFC Cards">NFC Cards</option>
+                    <!-- Agrega más opciones según sea necesario -->
                 </select>
             </div>
             <div class="mb-3">
@@ -50,20 +51,20 @@
 
             <!-- Sección para subir Logos -->
             <div class="mb-4">
-                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10 <span style="color: #03c0ff;">(*)</span></label>
-                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png, .jpeg, .jpg" multiple>
+                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10 (*)</label>
+                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png,.jpeg,.jpg" multiple>
                 <ul class="list-group mt-2" id="logoList"></ul>
                 <div id="logoError" class="text-danger mt-2" style="display: none;">Has alcanzado el máximo de 10 logos.</div>
-                <p class="text-muted mt-2">(*) Sube aquí las imágenes que deseas imprimir en tus dispositivos personalizados.</p>
+                <p class="text-muted mt-2">(*) Sube aquí las imágenes que deseas imprimir en tus dispositivos personalizados. Nuestro equipo se encargará de ayudarte con la implementación y asegurará que tus diseños se vean espectaculares!</p>
             </div>
 
             <!-- Sección para subir Archivo Excel -->
             <div class="mb-4">
-                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1 <span style="color: #03c0ff;">(*)</span></label>
-                <input type="file" class="form-control" id="excelUpload" name="excel" accept=".xlsx, .xls">
+                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1 (*)</label>
+                <input type="file" class="form-control" id="excelUpload" name="excel" accept=".xlsx,.xls">
                 <ul class="list-group mt-2" id="excelList"></ul>
                 <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.</div>
-                <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única.</p>
+                <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única. Para pedidos de gran volumen, por favor proporciona los detalles en un archivo Excel.</p>
             </div>
             <button type="submit" class="btn btn-primary">Enviar solicitud</button>
         </form>
