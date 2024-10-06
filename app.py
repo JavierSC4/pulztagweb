@@ -1,24 +1,24 @@
+import os
+import uuid
+
 from flask import Flask, render_template, request, flash, redirect, url_for
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-import os
 import pandas as pd
 from werkzeug.utils import secure_filename
-import uuid
-import imghdr  # Para verificar el tipo real de imagen
 
-load_dotenv()  # Cargar las variables de entorno desde .env
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY')  # Usar la variable de entorno
+app.secret_key = os.getenv('SECRET_KEY')
 
-# Configuración de Flask-Mail usando variables de entorno
+# Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Tu dirección de correo Gmail
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # Contraseña de aplicación
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')  # Opcional: El remitente por defecto
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
 mail = Mail(app)
 
@@ -33,9 +33,8 @@ ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
 
 
 def allowed_file(filename, allowed_extensions):
-    filename = filename.strip()
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower().strip() in allowed_extensions
+           filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
 
 @app.route('/')
@@ -96,7 +95,6 @@ def order():
 
         # Manejar los logos
         logos = request.files.getlist('logos')
-        # Contar solo los logos con nombre de archivo
         valid_logos = [logo for logo in logos if logo.filename != '']
         if len(valid_logos) > 10:
             flash('Puedes subir un máximo de 10 logos.', 'danger')
@@ -105,25 +103,17 @@ def order():
         saved_logos = []
         for logo in valid_logos:
             filename = logo.filename.strip()
-            extension = filename.rsplit('.', 1)[1].lower().strip()
-            print(f"Procesando archivo: '{filename}', extensión: '{extension}'")
-
             if allowed_file(filename, ALLOWED_LOGO_EXTENSIONS):
-                # Verificar el tipo real de la imagen
-                logo_bytes = logo.read()
-                image_type = imghdr.what(None, h=logo_bytes)
-                logo.seek(0)  # Volver al inicio del archivo
-
-                if image_type in ALLOWED_LOGO_EXTENSIONS:
-                    # Procesar y guardar el logo
+                try:
                     secure_name = secure_filename(filename)
                     unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
                     logo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
                     logo.save(logo_path)
-                    saved_logos.append((secure_name, logo_path))
+                    saved_logos.append((filename, logo_path))
                     print(f"Logo guardado: {logo_path}")
-                else:
-                    flash(f"Formato de logo no permitido: {filename}", 'danger')
+                except Exception as e:
+                    print(f"Error al guardar el logo {filename}: {e}")
+                    flash(f"Hubo un error al guardar el logo {filename}.", 'danger')
                     return redirect(url_for('order'))
             else:
                 flash(f"Formato de logo no permitido: {filename}", 'danger')
@@ -134,10 +124,16 @@ def order():
         if excel and excel.filename != '':
             filename = excel.filename.strip()
             if allowed_file(filename, ALLOWED_EXCEL_EXTENSIONS):
-                secure_name = secure_filename(filename)
-                unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
-                excel_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                excel.save(excel_path)
+                try:
+                    secure_name = secure_filename(filename)
+                    unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
+                    excel_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                    excel.save(excel_path)
+                    print(f"Archivo Excel guardado: {excel_path}")
+                except Exception as e:
+                    print(f"Error al guardar el archivo Excel {filename}: {e}")
+                    flash(f"Hubo un error al guardar el archivo Excel {filename}.", 'danger')
+                    return redirect(url_for('order'))
             else:
                 flash('Formato de archivo Excel no permitido.', 'danger')
                 return redirect(url_for('order'))
@@ -156,6 +152,7 @@ def order():
         # Guardar el DataFrame en un archivo Excel
         pedido_excel_path = os.path.join(app.config['UPLOAD_FOLDER'], f"pedido_{uuid.uuid4().hex}.xlsx")
         df.to_excel(pedido_excel_path, index=False)
+        print(f"Pedido guardado en: {pedido_excel_path}")
 
         # Enviar el correo con los archivos adjuntos
         try:
@@ -163,10 +160,10 @@ def order():
                 subject="Nuevo Pedido de PulztagWeb",
                 recipients=['contacto@pulztag.com']
             )
-            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {email}\n\nMensaje:\n{mensaje}"
+            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {email}\nSelección de Dispositivo: {dispositivo}\n\nMensaje:\n{mensaje}"
 
             # Adjuntar el archivo Excel del pedido
-            with app.open_resource(pedido_excel_path) as fp:
+            with open(pedido_excel_path, 'rb') as fp:
                 msg.attach(
                     "pedido.xlsx",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -177,7 +174,7 @@ def order():
             for original_filename, logo_path in saved_logos:
                 try:
                     print(f"Adjuntando logo: {original_filename} desde {logo_path}")
-                    with app.open_resource(logo_path) as fp:
+                    with open(logo_path, 'rb') as fp:
                         # Determinar el MIME type correcto
                         ext = original_filename.rsplit('.', 1)[1].lower()
                         mime_type = f"image/{'jpeg' if ext in ['jpg', 'jpeg'] else ext}"
@@ -191,28 +188,30 @@ def order():
 
             # Adjuntar el archivo Excel si existe
             if excel_path:
-                with app.open_resource(excel_path) as fp:
+                with open(excel_path, 'rb') as fp:
                     msg.attach(
                         os.path.basename(excel_path),
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                         fp.read()
                     )
 
-            # Imprimir los adjuntos en el mensaje
-            print(f"Adjuntos en el mensaje: {msg.attachments}")
-
             mail.send(msg)
+            print("Correo enviado exitosamente.")
+
+            # Eliminar archivos temporales
+            os.remove(pedido_excel_path)
+            for _, logo_path in saved_logos:
+                os.remove(logo_path)
+            if excel_path:
+                os.remove(excel_path)
+            print("Archivos temporales eliminados.")
+
             flash('Su solicitud fue enviada exitosamente. ¡Pronto nos pondremos en contacto contigo!', 'success')
             return redirect(url_for('order'))
+
         except Exception as e:
             print(f"Error al enviar el correo: {e}")
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
     return render_template('order.html')
-
-
-# Configurar la aplicación para escuchar en el puerto asignado por Render
-if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)  # Cambia debug a True para depuración

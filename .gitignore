@@ -1,3 +1,4 @@
+# .gitignore
 # Entornos virtuales
 venv/
 env/
@@ -31,3 +32,4 @@ dist/
 # Archivos de entorno
 .env
 .env.*
+NOTES.md

@@ -1,0 +1,18 @@
+javiersc@MacBook-Air-de-Javier pulztagweb % source virtualenv/bin/activate
+(virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % 
+
+(virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % git add static/css/style.css templates/order.html
+(virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % git commit -m "Actualizar order.html y style.css con nuevos cambios"
+[main 47ee6c7] Actualizar order.html y style.css con nuevos cambios
+ 2 files changed, 14 insertions(+), 13 deletions(-)
+(virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % git push origin main
+Enumerating objects: 13, done.
+Counting objects: 100% (13/13), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (7/7), done.
+Writing objects: 100% (7/7), 1.13 KiB | 1.13 MiB/s, done.
+Total 7 (delta 5), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+To github.com:JavierSC4/pulztagweb.git
+   8276bce..47ee6c7  main -> main
+(virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb %  
