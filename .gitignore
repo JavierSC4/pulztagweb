@@ -33,3 +33,6 @@ dist/
 .env
 .env.*
 NOTES.md
+static/uploads/
+virtualenv/
+.DS_Store
