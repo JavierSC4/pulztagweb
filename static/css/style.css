@@ -261,14 +261,14 @@ img.rounded.shadow:hover {
 .custom-solutions-section {
     background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
     color: #fff;
-    padding: 50px;
+    padding: 40px; /* Reducido desde 50px para menos margen */
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .custom-solutions-section h4 {
-    font-size: 2rem;
-    margin-bottom: 30px;
+    font-size: 2.5rem; /* Aumentado el tamaño del texto */
+    margin-bottom: 20px; /* Reducido margen inferior */
 }
 
 .solutions-list {
@@ -278,26 +278,77 @@ img.rounded.shadow:hover {
 }
 
 .solution-item {
-    flex: 1 1 250px;
-    margin: 15px;
+    flex: 1 1 220px; /* Ajustado para mejor adaptabilidad */
+    margin: 10px; /* Reducido margen */
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 20px;
+    padding: 15px; /* Reducido padding */
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .solution-item h5 {
-    font-size: 1.25rem;
-    margin-bottom: 10px;
+    font-size: 1.5rem; /* Aumentado tamaño del texto */
+    margin-bottom: 8px; /* Reducido margen inferior */
     color: #fff;
 }
 
 .solution-item p {
     color: #e0f7fa;
+    font-size: 1rem; /* Asegurar legibilidad */
 }
 
 .solution-item:hover {
     transform: translateY(-10px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsividad para la sección de Soluciones Personalizadas */
+@media (max-width: 768px) {
+    .custom-solutions-section {
+        padding: 20px; /* Menor padding en móviles */
+    }
+
+    .custom-solutions-section h4 {
+        font-size: 2rem; /* Ajustar tamaño del título */
+        margin-bottom: 15px;
+    }
+
+    .solution-item {
+        flex: 1 1 100%; /* Apilar elementos en una sola columna */
+        margin: 5px 0;
+    }
+
+    .solution-item h5 {
+        font-size: 1.25rem;
+    }
+
+    .solution-item p {
+        font-size: 0.95rem;
+    }
+}
+
+/* ------------------------------------- */
+/* Mejora Adicional: Estilos para Precios */
+/* ------------------------------------- */
+
+.price {
+    color: #03c0ff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.price-value {
+    font-size: 1.75rem;
+    color: #03c0ff;
+}
+
+@media (max-width: 768px) {
+    .price {
+        font-size: 1.25rem;
+    }
+
+    .price-value {
+        font-size: 1.5rem;
+    }
 }
