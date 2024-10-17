@@ -40,4 +40,4 @@ Desktop.ini
 
 # Directorios de entornos de desarrollo
 .vscode/
-.idea/
+.idea/instance/site.db

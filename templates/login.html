@@ -10,6 +10,8 @@
     <div class="col-md-6">
         <form method="POST" action="{{ url_for('login') }}">
             {{ form.hidden_tag() }}
+            <!-- Campo oculto para el parámetro 'next' -->
+            <input type="hidden" name="next" value="{{ request.args.get('next') }}">
             <div class="mb-3">
                 {{ form.email.label(class="form-label") }}
                 {{ form.email(class="form-control", placeholder="Correo Electrónico") }}

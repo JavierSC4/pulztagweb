@@ -96,12 +96,15 @@ def login():
         flash('Ya estás logueado.', 'info')
         return redirect(url_for('home'))
     form = LoginForm()
+    next_page = request.args.get('next')
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
-            next_page = request.args.get('next')
+            # Obtener 'next' del formulario si no está en los argumentos
+            if not next_page:
+                next_page = request.form.get('next')
             # Verificación de seguridad para 'next'
             if not next_page or urlparse(next_page).netloc != '':
                 next_page = url_for('home')
