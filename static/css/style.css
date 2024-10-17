@@ -3,7 +3,7 @@
 /* Tipografía Global */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f8f9fa; /* Cambiado a un gris muy claro para mejor contraste */
+    background-color: #ffffff;
     color: #333333;
 }
 
@@ -40,8 +40,8 @@ h6 {
 
 /* Footer */
 footer {
-    background-color: #343a40; /* Cambiado a un gris oscuro para mejor contraste */
-    color: #ffffff;
+    background-color: #f1f1f1;
+    color: #555555;
 }
 
 footer a {
@@ -60,18 +60,8 @@ footer a:hover {
 }
 
 .btn-primary:hover {
-    background-color: #0288c3;
-    border-color: #0277b5;
-}
-
-.btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+    background-color: #02a8d1;
+    border-color: #0290b8;
 }
 
 /* Jumbotron / Hero Section */
@@ -93,163 +83,273 @@ footer a:hover {
 /* Cards */
 .card {
     border: none;
-    border-radius: 0.75rem; /* Incrementado el radio para una apariencia más suave */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Incrementado el shadow para mayor profundidad */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s, box-shadow 0.3s;
-    background-color: #ffffff; /* Asegurar que el fondo sea blanco */
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 .card-title {
     color: #03c0ff;
-    font-weight: 600; /* Incrementado el peso de la fuente */
 }
 
-.card-text strong {
-    color: #333333; /* Color más oscuro para mejor legibilidad */
-}
-
-.card-text a {
-    color: #03c0ff;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.card-text a:hover {
-    color: #0277b5;
-    text-decoration: underline;
-}
-
-/* Iconos */
-.card .fa-solid {
-    color: #03c0ff;
-    transition: color 0.3s;
-}
-
-.card .fa-solid:hover {
-    color: #0277b5;
-}
-
-/* Botones dentro de las Cards */
-.card .btn {
-    border-radius: 0.5rem;
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-    /* Ajustes para dispositivos móviles */
-
-    /* Navbar */
-    .navbar-brand {
-        font-size: 1.25rem;
-    }
-
-    /* Jumbotron */
-    .jumbotron {
-        padding: 2rem 1rem;
-    }
-
-    /* Cards */
-    .card {
-        margin-bottom: 1.5rem;
-    }
-}
-
-/* ------------------------- */
-/* Estilos Específicos de la Pulzcard */
-/* ------------------------- */
-
-/* Encabezado de la Card */
-.card-header {
-    border-top-left-radius: 0.75rem;
-    border-top-right-radius: 0.75rem;
-    background-color: #03c0ff;
-    color: #ffffff;
-    padding: 1.5rem;
-    text-align: center;
-}
-
-/* Cuerpo de la Card */
-.card-body {
-    padding: 2rem;
-}
-
-/* Icono o Imagen Opcional */
-.card-body .mb-4 {
-    margin-bottom: 1.5rem;
-}
-
-/* Botones de Acción */
-.card-body .btn-success {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-}
-
-/* Compartir URL */
-.card-body .btn-secondary {
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-}
-
-/* Instrucciones */
-.card-body .list-unstyled li {
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
-    color: #ffffff;
-}
-
-/* ------------------------- */
-/* Personalización Adicional */
-/* ------------------------- */
-
-/* Transiciones Suaves para Todos los Enlaces */
+/* Links */
 a {
     color: #03c0ff;
     transition: color 0.3s;
 }
 
 a:hover {
-    color: #0277b5;
+    color: #0290b8;
     text-decoration: none;
 }
 
 /* Formularios */
 .form-control {
-    border-radius: 0.4rem;
+    border-radius: 0.3rem;
     border: 1px solid #ced4da;
-    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .form-control:focus {
     border-color: #03c0ff;
-    box-shadow: 0 0 0 0.2rem rgba(3, 192, 255, 0.25);
+    box-shadow: none;
 }
 
-/* Alertas */
+/* Estilos para el formulario de contacto y pedido */
+form {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+form .form-control {
+    margin-bottom: 1.5rem;
+}
+
+form .form-check {
+    margin-bottom: 1rem;
+}
+
+form .btn {
+    padding: 0.5rem 1.5rem;
+}
+
+/* Estilos para las etapas del formulario de pedido */
+form h4 {
+    color: #03c0ff;
+    margin-bottom: 1rem;
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+}
+
+/* Estilos para el campo de cantidad */
+#cantidad {
+    max-width: 200px;
+}
+
+/* Transiciones suaves para imágenes */
+img.rounded.shadow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+img.rounded.shadow:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Botón de Envío personalizado */
+#submitBtn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+}
+
+/* Contenedor de pedido con formulario a la izquierda y la imagen a la derecha */
+.row.justify-content-center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Responsividad para dispositivos móviles */
+@media (max-width: 768px) {
+    .row.justify-content-center {
+        flex-direction: column;
+    }
+
+    /* Ajustar el tamaño máximo del campo de cantidad en dispositivos móviles */
+    #cantidad {
+        max-width: 100%;
+    }
+
+    /* Ajustar los títulos de las etapas en dispositivos móviles */
+    form h4 {
+        font-size: 1.25rem;
+    }
+
+    /* Ajustar el tamaño de las imágenes en dispositivos móviles */
+    img.rounded.shadow {
+        width: 100%;
+    }
+}
+
+/* ------------------------------------- */
+/* Nuevos estilos para carga de archivos  */
+/* ------------------------------------- */
+
+/* Estilos para las listas de archivos adjuntos */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-group-item button {
+    margin-left: 10px;
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.list-group-item button:hover {
+    color: #cc0000;
+}
+
+/* Estilos para mensajes de error específicos */
+.text-danger {
+    font-size: 0.9rem;
+}
+
+/* Estilos para las alertas de éxito */
 .alert-success {
     background-color: #d4edda;
     color: #155724;
     border-color: #c3e6cb;
 }
 
+/* Estilos para las alertas de error */
 .alert-danger {
     background-color: #f8d7da;
     color: #721c24;
     border-color: #f5c6cb;
 }
 
+/* Opcional: Añadir margen superior para las alertas */
 .alert {
     margin-top: 20px;
 }
 
-/* Cierre de Alertas */
-.btn-close {
-    background: none;
-    border: none;
+/* Estilo para el texto de las secciones de subida de archivos */
+.text-muted {
+    color: #a7a7a7 !important; /* Asegúrate de que el color se aplique */
+}
+
+/* ------------------------------------- */
+/* Estilos para la sección de Soluciones Personalizadas */
+/* ------------------------------------- */
+
+.custom-solutions-section {
+    background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    color: #fff;
+    padding: 40px; /* Reducido desde 50px para menos margen */
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-solutions-section h4 {
+    font-size: 2.5rem; /* Aumentado el tamaño del texto */
+    margin-bottom: 20px; /* Reducido margen inferior */
+}
+
+.solutions-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.solution-item {
+    flex: 1 1 220px; /* Ajustado para mejor adaptabilidad */
+    margin: 10px; /* Reducido margen */
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px; /* Reducido padding */
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.solution-item h5 {
+    font-size: 1.5rem; /* Aumentado tamaño del texto */
+    margin-bottom: 8px; /* Reducido margen inferior */
+    color: #fff;
+}
+
+.solution-item p {
+    color: #e0f7fa;
+    font-size: 1.2rem; /* Tamaño incrementado del texto */
+    line-height: 1.5;  /* Opcional: Mejora la legibilidad */
+}
+
+.solution-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsividad para la sección de Soluciones Personalizadas */
+@media (max-width: 768px) {
+    .custom-solutions-section {
+        padding: 20px; /* Menor padding en móviles */
+    }
+
+    .custom-solutions-section h4 {
+        font-size: 2rem; /* Ajustar tamaño del título */
+        margin-bottom: 15px;
+    }
+
+    .solution-item {
+        flex: 1 1 100%; /* Apilar elementos en una sola columna */
+        margin: 5px 0;
+    }
+
+    .solution-item h5 {
+        font-size: 1.25rem;
+    }
+
+    .solution-item p {
+        font-size: 0.95rem;
+    }
+}
+
+/* ------------------------------------- */
+/* Mejora Adicional: Estilos para Precios */
+/* ------------------------------------- */
+
+.price {
+    color: #03c0ff;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.price-value {
+    font-size: 1.75rem;
+    color: #03c0ff;
+}
+
+@media (max-width: 768px) {
+    .price {
+        font-size: 1.25rem;
+    }
+
+    .price-value {
+        font-size: 1.5rem;
+    }
 }
