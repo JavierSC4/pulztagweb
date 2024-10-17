@@ -29,7 +29,7 @@ if not os.path.exists(instance_dir):
     os.makedirs(instance_dir)
 
 db_path = os.path.join(instance_dir, 'site.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_dir, 'site.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site_new.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
