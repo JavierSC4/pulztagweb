@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, flash, redirect, url_for, sen
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, url_parse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
@@ -101,7 +101,10 @@ def login():
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            # Verificación de seguridad para 'next'
+            if not next_page or url_parse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -354,6 +357,7 @@ def order():
     return render_template('order.html')
 
 @app.route('/pulzcard', methods=['GET', 'POST'])
+@login_required
 def pulzcard():
     form = PulzcardForm()
     if form.validate_on_submit():
