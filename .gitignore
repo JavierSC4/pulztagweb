@@ -1,144 +1,43 @@
-# ============================================
-# .gitignore para el proyecto pulztagweb
-# ============================================
-
-# --------------------------------------------
-# 1. Entorno Virtual
-# --------------------------------------------
-# Ignora la carpeta del entorno virtual
+# Entorno virtual
 virtualenv/
 
-# Alternativas comunes para entornos virtuales
-# env/
-# venv/
-
-# --------------------------------------------
-# 2. Archivos de Python
-# --------------------------------------------
-# Ignora los directorios de cache de Python
+# Archivos de Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# --------------------------------------------
-# 3. Archivos de Bases de Datos
-# --------------------------------------------
-# Ignora archivos de bases de datos SQLite y otros
+# Archivos de bases de datos
 *.sqlite3
 *.db
 
-# --------------------------------------------
-# 4. Directorios de Migraciones
-# --------------------------------------------
-# Ignora directorios de migraciones de bases de datos
+# Directorios de migraciones
 migrations/
 
-# --------------------------------------------
-# 5. Directorios de Subida
-# --------------------------------------------
-# Ignora directorios donde se suben archivos
+# Directorios de subida
 uploads/
 vcards/
 
-# --------------------------------------------
-# 6. Archivos de Configuración Local
-# --------------------------------------------
-# Ignora configuraciones locales y variables de entorno
+# Archivos de configuración local
 instance/
 *.env
 
-# --------------------------------------------
-# 7. Archivos de Respaldo
-# --------------------------------------------
-# Ignora archivos de respaldo y bases de datos de respaldo
+# Archivos de respaldo
 respaldo.txt
 site_backup.db
 
-# --------------------------------------------
-# 8. Archivos de Logs
-# --------------------------------------------
-# Ignora archivos de registro
+# Archivos de logs
 *.log
 
-# --------------------------------------------
-# 9. Otros Archivos Sin Seguimiento
-# --------------------------------------------
-# Ignora archivos de texto generales
+# Otros archivos sin seguimiento
 *.txt
 
-# --------------------------------------------
-# 10. Archivos y Directorios del Sistema Operativo
-# --------------------------------------------
-# Archivos generados por macOS
+# Archivos generados por el sistema operativo
 .DS_Store
-
-# Archivos generados por Windows
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# --------------------------------------------
-# 11. Archivos y Directorios de Entornos de Desarrollo
-# --------------------------------------------
-# Visual Studio Code
+# Directorios de entornos de desarrollo
 .vscode/
-# PyCharm
 .idea/
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# --------------------------------------------
-# 12. Archivos de Pruebas y Cobertura
-# --------------------------------------------
-# Archivos generados por herramientas de pruebas
-.coverage
-.tox/
-.cache/
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-
-# --------------------------------------------
-# 13. Archivos de Compilación y Distribución
-# --------------------------------------------
-# Directorios de compilación
-build/
-dist/
-*.egg-info/
-
-# --------------------------------------------
-# 14. Archivos Temporales y de Backup
-# --------------------------------------------
-# Archivos temporales
-*.bak
-*.swp
-*.swo
-*.tmp
-*.temp
-
-# --------------------------------------------
-# 15. Otros Patrones Útiles
-# --------------------------------------------
-# Ignora archivos de configuraciones específicas
-*.ini
-*.cfg
-*.conf
-
-# Ignora archivos de documentación generados
-docs/_build/
-
-# Ignora archivos de Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Ignora archivos de logs de depuración
-debug.log
-
-# --------------------------------------------
-# 16. Personalizaciones Adicionales
-# --------------------------------------------
-# Añade aquí cualquier otro patrón específico que necesites ignorar
-# Por ejemplo:
-# *.csv  # Si no necesitas rastrear archivos CSV
