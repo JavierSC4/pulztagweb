@@ -8,6 +8,7 @@ from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
 from werkzeug.utils import secure_filename
+from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
@@ -22,8 +23,15 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 # Configuración de la Base de Datos
 basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'site.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
+# Crear el directorio 'instance' si no existe
+instance_dir = os.path.join(basedir, 'instance')
+if not os.path.exists(instance_dir):
+    os.makedirs(instance_dir)
+os.makedirs(instance_dir, exist_ok=True)
+
+db_path = os.path.join(instance_dir, 'site.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -96,13 +104,19 @@ def login():
         flash('Ya estás logueado.', 'info')
         return redirect(url_for('home'))
     form = LoginForm()
+    next_page = request.args.get('next')
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+            # Obtener 'next' del formulario si no está en los argumentos
+            if not next_page:
+                next_page = request.form.get('next')
+            # Verificación de seguridad para 'next'
+            if not next_page or urlparse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -355,6 +369,7 @@ def order():
     return render_template('order.html')
 
 @app.route('/pulzcard', methods=['GET', 'POST'])
+@login_required
 def pulzcard():
     form = PulzcardForm()
     if form.validate_on_submit():
@@ -421,7 +436,12 @@ def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
+    app.run(debug=True)
+else:
+    # Este bloque se ejecuta cuando la aplicación es iniciada por un servidor WSGI como Gunicorn
+    from flask_migrate import upgrade
+    with app.app_context():
+        upgrade()
 
 ----- Fin de app.py -----
 
@@ -643,6 +663,7 @@ Werkzeug==3.0.4
 WTForms==3.1.2
 XlsxWriter==3.2.0
 qrcode==7.4.2
+psycopg2-binary==2.9.7
 
 ----- Fin de requirements.txt -----
 
@@ -1292,6 +1313,8 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="col-md-6">
         <form method="POST" action="{{ url_for('login') }}">
             {{ form.hidden_tag() }}
+            <!-- Campo oculto para el parámetro 'next' -->
+            <input type="hidden" name="next" value="{{ request.args.get('next') }}">
             <div class="mb-3">
                 {{ form.email.label(class="form-label") }}
                 {{ form.email(class="form-control", placeholder="Correo Electrónico") }}

@@ -13,7 +13,7 @@ from extensions import db, migrate, bcrypt, login_manager
 from models import User
 from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
 
-from flask_login import login_required, current_user, login_user, logout_user  # Importar login_user y logout_user
+from flask_login import login_required, current_user, login_user, logout_user
 
 load_dotenv()
 
@@ -25,10 +25,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Crear el directorio 'instance' si no existe
 instance_dir = os.path.join(basedir, 'instance')
-os.makedirs(instance_dir, exist_ok=True)
+if not os.path.exists(instance_dir):
+    os.makedirs(instance_dir)
 
 db_path = os.path.join(instance_dir, 'site.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(instance_dir, 'site.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -36,8 +37,6 @@ db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager.init_app(app)
-
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 # Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -61,7 +60,7 @@ def load_user(user_id):
 s = URLSafeTimedSerializer(app.secret_key)
 
 # Directorio para guardar las subidas
-UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')  # Cambiado a 'uploads'
+UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -77,9 +76,7 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-
 # Rutas de Autenticación
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -183,16 +180,13 @@ def reset_token(token):
     return render_template('reset_token.html', title='Restablecer Contraseña', form=form)
 
 # Rutas Existentes
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -221,14 +215,12 @@ def contact():
 
     return render_template('contact.html')
 
-
 @app.route('/products')
 def products():
     return render_template('products.html')
 
-
 @app.route('/order', methods=['GET', 'POST'])
-@login_required  # Protegido para usuarios autenticados
+@login_required
 def order():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -362,7 +354,6 @@ def order():
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
-    # Manejar solicitudes GET y otros casos no cubiertos
     return render_template('order.html')
 
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -433,4 +424,6 @@ def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Asegura que la base de datos y las tablas se creen
     app.run(debug=True)

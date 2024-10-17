@@ -10,8 +10,8 @@ Flask-Admin==1.6.1
 Flask-Bcrypt==1.0.1
 Flask-Login==0.6.3
 Flask-Mail==0.10.0
-Flask-Migrate==4.0.4
-Flask-SQLAlchemy==3.0.3
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 gunicorn==23.0.0
 idna==3.10
@@ -24,9 +24,11 @@ openpyxl==3.1.5
 packaging==24.1
 pandas==2.2.3
 pillow==10.4.0
+pypng==0.20220715.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
+qrcode==7.4.2
 six==1.16.0
 SQLAlchemy==2.0.35
 typing_extensions==4.12.2
@@ -34,4 +36,3 @@ tzdata==2024.2
 Werkzeug==3.0.4
 WTForms==3.1.2
 XlsxWriter==3.2.0
-qrcode==7.4.2

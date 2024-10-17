@@ -1,5 +1,7 @@
 # minimal_app.py
 
+import os  # Se agregó esta línea
+
 from flask import Flask
 from extensions import db, migrate
 
@@ -18,4 +20,6 @@ class User(db.Model):
     password = db.Column(db.String(60), nullable=False)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Asegura que la base de datos y las tablas se creen
     app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')

@@ -16,7 +16,6 @@ uploads/
 vcards/
 
 # Archivos de configuración local
-instance/
 *.env
 
 # Archivos de respaldo
