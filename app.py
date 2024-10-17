@@ -6,7 +6,8 @@ from flask import Flask, render_template, request, flash, redirect, url_for, sen
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
-from werkzeug.utils import secure_filename, url_parse
+from werkzeug.utils import secure_filename
+from werkzeug.urls import url_parse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
