@@ -1,39 +1,144 @@
-# .gitignore
-# Entornos virtuales
-venv/
-env/
-.venv/
-.env
+# ============================================
+# .gitignore para el proyecto pulztagweb
+# ============================================
 
-# Archivos de Python
+# --------------------------------------------
+# 1. Entorno Virtual
+# --------------------------------------------
+# Ignora la carpeta del entorno virtual
+virtualenv/
+
+# Alternativas comunes para entornos virtuales
+# env/
+# venv/
+
+# --------------------------------------------
+# 2. Archivos de Python
+# --------------------------------------------
+# Ignora los directorios de cache de Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-concatenar_archivos.py  # Archivo de script para concatenar archivos
 
-# Directorios de construcción
-build/
-dist/
-*.egg-info/
-.eggs/
+# --------------------------------------------
+# 3. Archivos de Bases de Datos
+# --------------------------------------------
+# Ignora archivos de bases de datos SQLite y otros
+*.sqlite3
+*.db
 
-# Archivos de configuración del editor
+# --------------------------------------------
+# 4. Directorios de Migraciones
+# --------------------------------------------
+# Ignora directorios de migraciones de bases de datos
+migrations/
+
+# --------------------------------------------
+# 5. Directorios de Subida
+# --------------------------------------------
+# Ignora directorios donde se suben archivos
+uploads/
+vcards/
+
+# --------------------------------------------
+# 6. Archivos de Configuración Local
+# --------------------------------------------
+# Ignora configuraciones locales y variables de entorno
+instance/
+*.env
+
+# --------------------------------------------
+# 7. Archivos de Respaldo
+# --------------------------------------------
+# Ignora archivos de respaldo y bases de datos de respaldo
+respaldo.txt
+site_backup.db
+
+# --------------------------------------------
+# 8. Archivos de Logs
+# --------------------------------------------
+# Ignora archivos de registro
+*.log
+
+# --------------------------------------------
+# 9. Otros Archivos Sin Seguimiento
+# --------------------------------------------
+# Ignora archivos de texto generales
+*.txt
+
+# --------------------------------------------
+# 10. Archivos y Directorios del Sistema Operativo
+# --------------------------------------------
+# Archivos generados por macOS
+.DS_Store
+
+# Archivos generados por Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --------------------------------------------
+# 11. Archivos y Directorios de Entornos de Desarrollo
+# --------------------------------------------
+# Visual Studio Code
 .vscode/
+# PyCharm
 .idea/
+# Sublime Text
 *.sublime-project
 *.sublime-workspace
 
-# Archivos de logs
-*.log
+# --------------------------------------------
+# 12. Archivos de Pruebas y Cobertura
+# --------------------------------------------
+# Archivos generados por herramientas de pruebas
+.coverage
+.tox/
+.cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
 
-# Base de datos SQLite
-*.sqlite3
+# --------------------------------------------
+# 13. Archivos de Compilación y Distribución
+# --------------------------------------------
+# Directorios de compilación
+build/
+dist/
+*.egg-info/
 
-# Archivos de entorno
-.env
-.env.*
-NOTES.md
-static/uploads/
-virtualenv/
-.DS_Store
+# --------------------------------------------
+# 14. Archivos Temporales y de Backup
+# --------------------------------------------
+# Archivos temporales
+*.bak
+*.swp
+*.swo
+*.tmp
+*.temp
+
+# --------------------------------------------
+# 15. Otros Patrones Útiles
+# --------------------------------------------
+# Ignora archivos de configuraciones específicas
+*.ini
+*.cfg
+*.conf
+
+# Ignora archivos de documentación generados
+docs/_build/
+
+# Ignora archivos de Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignora archivos de logs de depuración
+debug.log
+
+# --------------------------------------------
+# 16. Personalizaciones Adicionales
+# --------------------------------------------
+# Añade aquí cualquier otro patrón específico que necesites ignorar
+# Por ejemplo:
+# *.csv  # Si no necesitas rastrear archivos CSV
