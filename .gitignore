@@ -11,9 +11,6 @@ __pycache__/
 *.sqlite3
 *.db
 
-# Directorios de migraciones
-migrations/
-
 # Directorios de subida
 uploads/
 vcards/
