@@ -21,6 +21,8 @@ archivos = [
     'templates/reset_request.html',
     'templates/reset_token.html',
     'templates/register.html'
+    'templates/pulzcard/card.html'
+    'templates/pulzcard/index.html'
 ]
 
 # Nombre del archivo de salida

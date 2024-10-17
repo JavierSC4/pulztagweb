@@ -3,7 +3,7 @@
 
 import os
 import uuid
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
-from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm
+from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
 
 from flask_login import login_required, current_user, login_user, logout_user  # Importar login_user y logout_user
 
@@ -60,10 +60,13 @@ UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')  # Cambiado a 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Directorio para guardar las vCards
+VCARD_FOLDER = os.path.join(app.root_path, 'vcards')
+os.makedirs(VCARD_FOLDER, exist_ok=True)
+
 # Extensiones permitidas
 ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
 ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
-
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
@@ -351,6 +354,72 @@ def order():
     # Manejar solicitudes GET y otros casos no cubiertos
     return render_template('order.html')
 
+@app.route('/pulzcard', methods=['GET', 'POST'])
+def pulzcard():
+    form = PulzcardForm()
+    if form.validate_on_submit():
+        print("Formulario validado exitosamente.")
+        # Generar un ID único para la tarjeta
+        card_id = str(uuid.uuid4())
+
+        # Crear una vCard
+        vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{form.first_name.data} {form.last_name.data}
+ORG:{form.organization.data}
+TITLE:{form.position.data}
+TEL;TYPE=WORK,VOICE:{form.phone.data}
+EMAIL:{form.email.data}
+URL:{form.website.data}
+ADR;TYPE=WORK:;;{form.address.data}
+END:VCARD"""
+
+        # Guardar la vCard en un archivo
+        vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
+        with open(vcard_path, 'w') as f:
+            f.write(vcard)
+
+        # Redirigir a la página de la tarjeta
+        return redirect(url_for('pulzcard_card', card_id=card_id))
+    else:
+        print("Formulario no validado. Errores:", form.errors)
+    return render_template('pulzcard/index.html', form=form)
+
+@app.route('/pulzcard/card/<card_id>')
+def pulzcard_card(card_id):
+    # Leer la vCard
+    vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
+    if not os.path.exists(vcard_path):
+        flash('Tarjeta no encontrada.', 'danger')
+        return redirect(url_for('pulzcard'))
+
+    with open(vcard_path, 'r') as f:
+        vcard = f.read()
+
+    # Extraer información para la página personalizada
+    contact_info = {}
+    for line in vcard.split('\n'):
+        if line.startswith('FN:'):
+            contact_info['full_name'] = line.replace('FN:', '')
+        elif line.startswith('ORG:'):
+            contact_info['organization'] = line.replace('ORG:', '')
+        elif line.startswith('TITLE:'):
+            contact_info['position'] = line.replace('TITLE:', '')
+        elif line.startswith('TEL'):
+            contact_info['phone'] = line.split(':')[1]
+        elif line.startswith('EMAIL:'):
+            contact_info['email'] = line.replace('EMAIL:', '')
+        elif line.startswith('URL:'):
+            contact_info['website'] = line.replace('URL:', '')
+        elif line.startswith('ADR'):
+            contact_info['address'] = line.split(':')[1]
+
+    return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
+
+@app.route('/pulzcard/vcards/<filename>')
+def pulzcard_download_vcard(filename):
+    return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+
 if __name__ == '__main__':
     app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
 
@@ -386,14 +455,18 @@ if __name__ == '__main__':
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError
 from models import User  # Importar desde models.py
 from flask_login import current_user
 
+
 class RegistrationForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    username = StringField('Nombre de Usuario', validators=[
+                           DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[
+                             DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirmar Contraseña',
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Crear Cuenta')
@@ -401,22 +474,29 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
+            raise ValidationError(
+                'Este nombre de usuario ya está en uso. Por favor, elige otro.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+            raise ValidationError(
+                'Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+
 
 class LoginForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
     remember = BooleanField('Recordarme')
     submit = SubmitField('Iniciar Sesión')
 
+
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    username = StringField('Nombre de Usuario', validators=[
+                           DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
     password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
     confirm_password = PasswordField('Confirmar Nueva Contraseña',
                                      validators=[EqualTo('password')])
@@ -426,28 +506,51 @@ class UpdateAccountForm(FlaskForm):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
-                raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
+                raise ValidationError(
+                    'Este nombre de usuario ya está en uso. Por favor, elige otro.')
 
     def validate_email(self, email):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError('Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+                raise ValidationError(
+                    'Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+
 
 class RequestResetForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
     submit = SubmitField('Solicitar Restablecimiento de Contraseña')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError('No hay una cuenta asociada a este correo electrónico.')
+            raise ValidationError(
+                'No hay una cuenta asociada a este correo electrónico.')
+
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Contraseña', validators=[
+                             DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirmar Contraseña',
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Restablecer Contraseña')
+
+
+class PulzcardForm(FlaskForm):
+    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
+    first_name = StringField('Nombre', validators=[DataRequired()])
+    last_name = StringField('Apellido', validators=[DataRequired()])
+    organization = StringField(
+        'Nombre Organización', validators=[DataRequired()])
+    position = StringField('Cargo', validators=[DataRequired()])
+    phone = StringField('Número Telefónico', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    website = StringField('Página Web', validators=[DataRequired(), URL()])
+    address = StringField('Dirección', validators=[DataRequired()])
+    submit = SubmitField('Crear Tarjeta')
+
 
 ----- Fin de forms.py -----
 
@@ -503,94 +606,42 @@ except Exception as e:
 ----- Fin de test_db.py -----
 
 ----- Inicio de requirements.txt -----
-annotated-types==0.6.0
-anyio==3.7.1
-appscript==1.2.5
-beautifulsoup4==4.12.2
-blinker==1.7.0
-cachetools==5.3.2
-certifi==2023.7.22
-charset-normalizer==3.3.2
+alembic==1.13.3
+bcrypt==4.2.0
+blinker==1.8.2
 click==8.1.7
-contourpy==1.1.1
-cx-Freeze==6.15.11
-cycler==0.12.1
-DateTime==5.2
-distro==1.8.0
-dnspython==2.5.0
-docx2pdf==0.1.8
+dnspython==2.7.0
+email_validator==2.2.0
 et-xmlfile==1.1.0
-Flask==3.0.0
-fonttools==4.43.1
-google-api-core==2.14.0
-google-auth==2.23.4
-google-cloud-language==2.11.1
-googleapis-common-protos==1.61.0
-grpcio==1.59.3
-grpcio-status==1.59.3
-h11==0.14.0
-httpcore==1.0.2
-httpx==0.25.1
-idna==3.4
-itsdangerous==2.1.2
-Jinja2==3.1.2
-joblib==1.3.2
-kiwisolver==1.4.5
-lxml==4.9.3
-MarkupSafe==2.1.3
-matplotlib==3.8.1
-mpmath==1.3.0
-mysql-connector-python==8.2.0
-nltk==3.8.1
-numpy==1.26.1
-openai==1.7.2
-opencv-python==4.8.1.78
-openpyxl==3.1.2
-packaging==23.2
-pandas==2.1.2
-Pillow==10.1.0
-proto-plus==1.22.3
-protobuf==4.21.12
-pyasn1==0.5.1
-pyasn1-modules==0.3.0
-pydantic==2.5.1
-pydantic_core==2.14.3
-pygame==2.5.2
-pymongo==4.6.1
-PyMuPDF==1.23.8
-PyMuPDFb==1.23.7
-pyparsing==3.1.1
-PyPDF2==3.0.1
-PyQt5==5.15.10
-PyQt5-Qt5==5.15.11
-PyQt5-sip==12.13.0
-PyQt6==6.6.0
-PyQt6-Qt6==6.6.0
-PyQt6-sip==13.6.0
-PyQt6-WebEngine==6.6.0
-PyQt6-WebEngine-Qt6==6.6.1
-PyQtWebEngine==5.15.6
-PyQtWebEngine-Qt5==5.15.11
-pytesseract==0.3.10
-python-dateutil==2.8.2
-python-docx==1.1.0
-pytz==2023.3.post1
-regex==2023.10.3
-requests==2.31.0
-rsa==4.9
-seaborn==0.13.0
-setuptools==68.2.2
-sip==6.8.0
+Flask==3.0.3
+Flask-Admin==1.6.1
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.3
+Flask-Mail==0.10.0
+Flask-Migrate==4.0.4
+Flask-SQLAlchemy==3.0.3
+Flask-WTF==1.2.1
+gunicorn==23.0.0
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.4
+Mako==1.3.5
+MarkupSafe==2.1.5
+numpy==2.1.1
+openpyxl==3.1.5
+packaging==24.1
+pandas==2.2.3
+pillow==10.4.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+pytz==2024.2
 six==1.16.0
-sniffio==1.3.0
-soupsieve==2.5
-tqdm==4.66.1
-typing_extensions==4.8.0
-tzdata==2023.3
-urllib3==2.1.0
-Werkzeug==3.0.1
-wheel==0.42.0
-zope.interface==6.1
+SQLAlchemy==2.0.35
+typing_extensions==4.12.2
+tzdata==2024.2
+Werkzeug==3.0.4
+WTForms==3.1.2
+XlsxWriter==3.2.0
 
 
 ----- Fin de requirements.txt -----
@@ -1281,7 +1332,7 @@ document.addEventListener('DOMContentLoaded', function () {
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28';f.parentNode.insertBefore(j,f);
+        'https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-NC88XS28');
     </script>
     <!-- End Google Tag Manager -->
@@ -1314,6 +1365,7 @@ document.addEventListener('DOMContentLoaded', function () {
         height="0" width="0" style="display:none;visibility:hidden"></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
+    
     <!-- Barra Superior -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
@@ -1344,6 +1396,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
+                    </li>
+                    <!-- Nuevo Enlace para Crear Pulzcard -->
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
                     </li>
                 </ul>
                 <!-- Botón desplegable alineado a la derecha -->
@@ -1879,53 +1935,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ----- Fin de templates/reset_token.html -----
 
------ Inicio de templates/register.html -----
-<!-- templates/register.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Registrar - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Crear una Nueva Cuenta</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('register') }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
-                {% for error in form.username.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Contraseña") }}
-                {% for error in form.password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.confirm_password.label(class="form-label") }}
-                {{ form.confirm_password(class="form-control", placeholder="Confirmar Contraseña") }}
-                {% for error in form.confirm_password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-        <p class="mt-3">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/register.html -----
+----- templates/register.htmltemplates/pulzcard/card.htmltemplates/pulzcard/index.html no encontrado -----
 
