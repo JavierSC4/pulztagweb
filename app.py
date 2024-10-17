@@ -7,7 +7,7 @@ from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
 from werkzeug.utils import secure_filename
-from werkzeug.urls import url_parse
+from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
@@ -103,7 +103,7 @@ def login():
             flash('Has iniciado sesión correctamente.', 'success')
             next_page = request.args.get('next')
             # Verificación de seguridad para 'next'
-            if not next_page or url_parse(next_page).netloc != '':
+            if not next_page or urlparse(next_page).netloc != '':
                 next_page = url_for('home')
             return redirect(next_page)
         else:
