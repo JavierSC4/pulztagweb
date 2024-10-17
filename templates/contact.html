@@ -9,22 +9,6 @@
 <p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
     contacto contigo lo antes posible.</p>
 
-<!-- Mensajes Flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-{% endwith %}
-
 <div class="row justify-content-center">
     <div class="col-md-8">
         <form method="POST" action="{{ url_for('contact') }}">

@@ -1,0 +1,92 @@
+<!-- templates/pulzcard/index.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Crear Tu Tarjeta de Contacto NFC</h2>
+
+<!-- Notificación de Error para URL Inválida -->
+{% if form.website.errors %}
+    <div class="notification error">
+        Formato de URL de página web es incorrecto.
+    </div>
+{% endif %}
+
+<form method="POST" id="pulzcardForm">
+    {{ form.hidden_tag() }}
+
+    <!-- Mostrar errores globales del formulario, excluyendo 'website' -->
+    {% if form.errors and not form.website.errors %}
+        <div class="form-errors">
+            <ul>
+                {% for field, errors in form.errors.items() %}
+                    {% if field != 'website' %}
+                        {% for error in errors %}
+                            <li><strong>{{ field.replace('_', ' ').capitalize() }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="form-group mb-3">
+        {{ form.card_name.label(class="form-label") }}
+        {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control", placeholder="Nombre") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control", placeholder="Apellido") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.organization.label(class="form-label") }}
+        {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.position.label(class="form-label") }}
+        {{ form.position(class="form-control", placeholder="Cargo") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.phone.label(class="form-label") }}
+        {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.website.label(class="form-label") }}
+        {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+        <span id="website-error" class="error-message"></span>
+    </div>
+    <div class="form-group mb-3">
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control", placeholder="Dirección") }}
+    </div>
+    <div class="form-group text-center">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+<!-- Validación en tiempo real para URL -->
+<script>
+    document.getElementById('website').addEventListener('input', function() {
+        const websiteInput = this;
+        const errorSpan = document.getElementById('website-error');
+        const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
+
+        if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
+            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.style.color = "#721c24";
+        } else {
+            errorSpan.textContent = "";
+        }
+    });
+</script>
+{% endblock %}

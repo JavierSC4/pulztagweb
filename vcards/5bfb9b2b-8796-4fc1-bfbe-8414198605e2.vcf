@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Javier Salinas
+ORG:Pulztag
+TITLE:Manager
+TEL;TYPE=WORK,VOICE:+56962411963
+EMAIL:contacto@pulztag.com
+URL:https://www.pulztag.com
+ADR;TYPE=WORK:;;Providencia
+END:VCARD

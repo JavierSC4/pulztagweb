@@ -1,0 +1,47 @@
+<!-- templates/account.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Perfil de Usuario</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('account') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
+                {% for error in form.username.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <hr>
+            <h5>Cambiar Contraseña</h5>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control", placeholder="Confirmar Nueva Contraseña") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

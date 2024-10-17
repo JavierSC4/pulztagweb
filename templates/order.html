@@ -16,22 +16,6 @@
 <h2 class="text-center mb-4">Realiza tu Pedido</h2>
 <p class="text-center mb-5">Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.</p>
 
-<!-- Mensajes Flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-{% endwith %}
-
 <div class="row justify-content-center">
     <div class="col-md-8 mb-4">
         <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">

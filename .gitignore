@@ -10,6 +10,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+concatenar_archivos.py  # Archivo de script para concatenar archivos
 
 # Directorios de construcción
 build/

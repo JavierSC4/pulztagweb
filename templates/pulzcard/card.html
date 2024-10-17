@@ -1,0 +1,33 @@
+<!-- templates/pulzcard/card.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<div class="card-page text-center">
+    <h2>{{ contact.full_name }}</h2>
+    <p><strong>Organización:</strong> {{ contact.organization }}</p>
+    <p><strong>Cargo:</strong> {{ contact.position }}</p>
+    <p><strong>Teléfono:</strong> <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a></p>
+    <p><strong>Email:</strong> <a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+    <p><strong>Página Web:</strong> <a href="{{ contact.website }}" target="_blank">{{ contact.website }}</a></p>
+    <p><strong>Dirección:</strong> {{ contact.address }}</p>
+    
+    <!-- Botón para descargar la vCard -->
+    <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-success mt-3">Agregar Contacto</a>
+    
+    <!-- Opcional: Botón para compartir la URL -->
+    <p class="mt-3">
+        <strong>Compartir esta tarjeta:</strong><br>
+        <a href="{{ request.url }}" class="btn btn-secondary">Compartir URL</a>
+    </p>
+    
+    <!-- Instrucciones para Agregar Contacto -->
+    <p class="mt-3"><strong>Instrucciones para Agregar el Contacto:</strong></p>
+    <ul class="list-unstyled">
+        <li><strong>Android:</strong> Descarga el archivo vCard y ábrelo con la aplicación de contactos para agregarlo automáticamente.</li>
+        <li><strong>iOS:</strong> Descarga el archivo vCard y selecciona "Agregar todos los contactos" para importarlo a tu lista de contactos.</li>
+    </ul>
+</div>
+{% endblock %}
