@@ -28,6 +28,9 @@ site_backup.db
 # Otros archivos sin seguimiento
 *.txt
 
+# Archivos específicos a ignorar
+concatenar_archivos.py
+
 # Archivos generados por el sistema operativo
 .DS_Store
 Thumbs.db
@@ -36,4 +39,7 @@ Desktop.ini
 
 # Directorios de entornos de desarrollo
 .vscode/
-.idea/instance/site.db
+.idea/
+
+# Archivos de base de datos específicos
+instance/site.db
