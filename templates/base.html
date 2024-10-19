@@ -71,15 +71,15 @@
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
                     </li>
+                    <!-- Nuevo Enlace para Crear Pulzcard -->
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
-                    </li>
-                    <!-- Nuevo Enlace para Crear Pulzcard -->
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
                     </li>
                 </ul>
                 <!-- Botón desplegable alineado a la derecha -->
