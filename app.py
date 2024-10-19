@@ -18,18 +18,15 @@ from flask_login import login_required, current_user, login_user, logout_user
 load_dotenv()
 
 app = Flask(__name__, instance_relative_config=True)
-app.secret_key = os.getenv('SECRET_KEY')
-
-# Configuración de la Base de Datos
-basedir = os.path.abspath(os.path.dirname(__file__))
+app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Crear el directorio 'instance' si no existe
-instance_dir = os.path.join(basedir, 'instance')
-if not os.path.exists(instance_dir):
-    os.makedirs(instance_dir)
+instance_dir = os.path.join(app.instance_path)
+os.makedirs(instance_dir, exist_ok=True)
 
+# Configuración de la Base de Datos
 db_path = os.path.join(instance_dir, 'site.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site_new.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -423,7 +420,9 @@ def pulzcard_card(card_id):
 def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
+# Mover la inicialización de la base de datos fuera del bloque if __name__ == '__main__'
+with app.app_context():
+    db.create_all()  # Asegura que la base de datos y las tablas se creen
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Asegura que la base de datos y las tablas se creen
     app.run(debug=True)

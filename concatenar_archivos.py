@@ -20,9 +20,11 @@ archivos = [
     'templates/products.html',
     'templates/reset_request.html',
     'templates/reset_token.html',
-    'templates/register.html'
-    'templates/pulzcard/card.html'
-    'templates/pulzcard/index.html'
+    'templates/register.html',
+    'templates/pulzcard/card.html',
+    'templates/pulzcard/index.html',
+    'instance/site_new.db'
+    'migrations/__pycache__/__init__.cpython-311.pyc',
 ]
 
 # Nombre del archivo de salida

@@ -1,14 +1,17 @@
-# minimal_app.py
-
-import os  # Se agregó esta línea
+import os
 
 from flask import Flask
 from extensions import db, migrate
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site.db'
+
+# Crear el directorio 'instance' si no existe
+instance_dir = os.path.join(app.instance_path)
+os.makedirs(instance_dir, exist_ok=True)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'test_secret_key'
+app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 db.init_app(app)
 migrate.init_app(app, db)

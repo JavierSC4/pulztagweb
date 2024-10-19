@@ -14,7 +14,7 @@ from extensions import db, migrate, bcrypt, login_manager
 from models import User
 from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
 
-from flask_login import login_required, current_user, login_user, logout_user  # Importar login_user y logout_user
+from flask_login import login_required, current_user, login_user, logout_user
 
 load_dotenv()
 
@@ -28,10 +28,9 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 instance_dir = os.path.join(basedir, 'instance')
 if not os.path.exists(instance_dir):
     os.makedirs(instance_dir)
-os.makedirs(instance_dir, exist_ok=True)
 
 db_path = os.path.join(instance_dir, 'site.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{db_path}')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -39,8 +38,6 @@ db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager.init_app(app)
-
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 # Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -64,7 +61,7 @@ def load_user(user_id):
 s = URLSafeTimedSerializer(app.secret_key)
 
 # Directorio para guardar las subidas
-UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')  # Cambiado a 'uploads'
+UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -80,9 +77,7 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-
 # Rutas de Autenticación
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -186,16 +181,13 @@ def reset_token(token):
     return render_template('reset_token.html', title='Restablecer Contraseña', form=form)
 
 # Rutas Existentes
-
 @app.route('/')
 def home():
     return render_template('index.html')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -224,14 +216,12 @@ def contact():
 
     return render_template('contact.html')
 
-
 @app.route('/products')
 def products():
     return render_template('products.html')
 
-
 @app.route('/order', methods=['GET', 'POST'])
-@login_required  # Protegido para usuarios autenticados
+@login_required
 def order():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -365,7 +355,6 @@ def order():
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
-    # Manejar solicitudes GET y otros casos no cubiertos
     return render_template('order.html')
 
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -436,25 +425,27 @@ def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True)
-else:
-    # Este bloque se ejecuta cuando la aplicación es iniciada por un servidor WSGI como Gunicorn
-    from flask_migrate import upgrade
     with app.app_context():
-        upgrade()
+        db.create_all()  # Asegura que la base de datos y las tablas se creen
+    app.run(debug=True)
 
 ----- Fin de app.py -----
 
 ----- Inicio de minimal_app.py -----
-# minimal_app.py
+import os
 
 from flask import Flask
 from extensions import db, migrate
 
 app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site.db'
+
+# Crear el directorio 'instance' si no existe
+instance_dir = os.path.join(app.instance_path)
+os.makedirs(instance_dir, exist_ok=True)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'test_secret_key'
+app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 db.init_app(app)
 migrate.init_app(app, db)
@@ -466,6 +457,8 @@ class User(db.Model):
     password = db.Column(db.String(60), nullable=False)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Asegura que la base de datos y las tablas se creen
     app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
 
 ----- Fin de minimal_app.py -----
@@ -638,8 +631,8 @@ Flask-Admin==1.6.1
 Flask-Bcrypt==1.0.1
 Flask-Login==0.6.3
 Flask-Mail==0.10.0
-Flask-Migrate==4.0.4
-Flask-SQLAlchemy==3.0.3
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 gunicorn==23.0.0
 idna==3.10
@@ -652,9 +645,11 @@ openpyxl==3.1.5
 packaging==24.1
 pandas==2.2.3
 pillow==10.4.0
+pypng==0.20220715.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
+qrcode==7.4.2
 six==1.16.0
 SQLAlchemy==2.0.35
 typing_extensions==4.12.2
@@ -662,8 +657,7 @@ tzdata==2024.2
 Werkzeug==3.0.4
 WTForms==3.1.2
 XlsxWriter==3.2.0
-qrcode==7.4.2
-psycopg2-binary==2.9.7
+
 
 ----- Fin de requirements.txt -----
 
@@ -1961,5 +1955,263 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ----- Fin de templates/reset_token.html -----
 
------ templates/register.htmltemplates/pulzcard/card.htmltemplates/pulzcard/index.html no encontrado -----
+----- Inicio de templates/register.html -----
+<!-- templates/register.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Registrar - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Crear una Nueva Cuenta</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('register') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
+                {% for error in form.username.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Contraseña") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control", placeholder="Confirmar Contraseña") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+        <p class="mt-3">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/register.html -----
+
+----- Inicio de templates/pulzcard/card.html -----
+<!-- templates/pulzcard/card.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Tu Pulzcard</h3>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Icono o Imagen Opcional -->
+                    <div class="mb-4">
+                        <i class="fa-solid fa-id-card fa-4x"></i>
+                        <!-- Si deseas usar una imagen, reemplaza la línea anterior con:
+                        <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Image" class="rounded-circle" width="150" height="150">
+                        -->
+                    </div>
+                    
+                    <h2 class="card-title">{{ contact.full_name }}</h2>
+                    <p class="card-text"><strong>Organización:</strong> {{ contact.organization }}</p>
+                    <p class="card-text"><strong>Cargo:</strong> {{ contact.position }}</p>
+                    <p class="card-text">
+                        <strong>Teléfono:</strong>
+                        <a href="tel:{{ contact.phone }}" class="text-decoration-none">
+                            <i class="fa-solid fa-phone"></i> {{ contact.phone }}
+                        </a>
+                    </p>
+                    <p class="card-text">
+                        <strong>Email:</strong>
+                        <a href="mailto:{{ contact.email }}" class="text-decoration-none">
+                            <i class="fa-solid fa-envelope"></i> {{ contact.email }}
+                        </a>
+                    </p>
+                    <p class="card-text">
+                        <strong>Página Web:</strong>
+                        <a href="{{ contact.website }}" target="_blank" class="text-decoration-none">
+                            <i class="fa-solid fa-globe"></i> {{ contact.website }}
+                        </a>
+                    </p>
+                    <p class="card-text"><strong>Dirección:</strong> {{ contact.address }}</p>
+                    
+                    <!-- Botón para descargar la vCard -->
+                    <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-success mt-3">
+                        <i class="fa-solid fa-download"></i> Agregar Contacto
+                    </a>
+                    
+                    <!-- Botón para compartir la URL -->
+                    <div class="mt-3">
+                        <strong>Compartir esta tarjeta:</strong><br>
+                        <button class="btn btn-secondary" onclick="copyURL()">
+                            <i class="fa-solid fa-share-nodes"></i> Compartir URL
+                        </button>
+                        <input type="hidden" id="cardURL" value="{{ request.url }}">
+                    </div>
+                    
+                    <!-- Instrucciones para Agregar Contacto -->
+                    <div class="mt-4">
+                        <strong>Instrucciones para Agregar el Contacto:</strong>
+                        <ul class="list-unstyled">
+                            <li><strong>Android:</strong> Descarga el archivo vCard y ábrelo con la aplicación de contactos para agregarlo automáticamente.</li>
+                            <li><strong>iOS:</strong> Descarga el archivo vCard y selecciona "Agregar todos los contactos" para importarlo a tu lista de contactos.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para copiar la URL al portapapeles -->
+<script>
+    function copyURL() {
+        const url = document.getElementById('cardURL').value;
+        navigator.clipboard.writeText(url).then(() => {
+            // Usar una alerta más elegante con Bootstrap
+            const alertPlaceholder = document.createElement('div');
+            alertPlaceholder.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    URL copiada al portapapeles!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            `;
+            document.body.appendChild(alertPlaceholder);
+            setTimeout(() => {
+                alertPlaceholder.remove();
+            }, 3000);
+        }).catch(err => {
+            // Usar una alerta más elegante con Bootstrap
+            const alertPlaceholder = document.createElement('div');
+            alertPlaceholder.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Error al copiar la URL: ${err}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            `;
+            document.body.appendChild(alertPlaceholder);
+            setTimeout(() => {
+                alertPlaceholder.remove();
+            }, 3000);
+        });
+    }
+</script>
+{% endblock %}
+
+----- Fin de templates/pulzcard/card.html -----
+
+----- Inicio de templates/pulzcard/index.html -----
+<!-- templates/pulzcard/index.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Crear Tu Tarjeta de Contacto NFC</h2>
+
+<!-- Notificación de Error para URL Inválida -->
+{% if form.website.errors %}
+    <div class="notification error">
+        Formato de URL de página web es incorrecto.
+    </div>
+{% endif %}
+
+<form method="POST" id="pulzcardForm">
+    {{ form.hidden_tag() }}
+
+    <!-- Mostrar errores globales del formulario, excluyendo 'website' -->
+    {% if form.errors and not form.website.errors %}
+        <div class="form-errors">
+            <ul>
+                {% for field, errors in form.errors.items() %}
+                    {% if field != 'website' %}
+                        {% for error in errors %}
+                            <li><strong>{{ field.replace('_', ' ').capitalize() }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="form-group mb-3">
+        {{ form.card_name.label(class="form-label") }}
+        {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control", placeholder="Nombre") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control", placeholder="Apellido") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.organization.label(class="form-label") }}
+        {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.position.label(class="form-label") }}
+        {{ form.position(class="form-control", placeholder="Cargo") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.phone.label(class="form-label") }}
+        {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+    </div>
+    <div class="form-group mb-3">
+        {{ form.website.label(class="form-label") }}
+        {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+        <span id="website-error" class="error-message"></span>
+    </div>
+    <div class="form-group mb-3">
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control", placeholder="Dirección") }}
+    </div>
+    <div class="form-group text-center">
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+<!-- Validación en tiempo real para URL -->
+<script>
+    document.getElementById('website').addEventListener('input', function() {
+        const websiteInput = this;
+        const errorSpan = document.getElementById('website-error');
+        const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
+
+        if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
+            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.style.color = "#721c24";
+        } else {
+            errorSpan.textContent = "";
+        }
+    });
+</script>
+{% endblock %}
+
+----- Fin de templates/pulzcard/index.html -----
+
+----- instance/site_new.dbmigrations/__pycache__/__init__.cpython-311.pyc no encontrado -----
 
