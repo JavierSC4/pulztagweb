@@ -7,8 +7,8 @@ from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
 from werkzeug.utils import secure_filename
-from urllib.parse import urlparse, urljoin
-from itsdangerous import URLSafeTimedSerializer
+from urllib.parse import urlparse
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User
 from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
@@ -20,8 +20,13 @@ load_dotenv()
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
+# Crear el directorio 'instance' si no existe
+instance_dir = os.path.join(app.instance_path)
+os.makedirs(instance_dir, exist_ok=True)
+
 # Configuración de la Base de Datos
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{os.path.join(app.instance_path, "site.db")}')
+db_path = os.path.join(instance_dir, 'site.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
@@ -68,12 +73,6 @@ def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return (test_url.scheme in ('http', 'https') and
-            ref_url.netloc == test_url.netloc)
-
 # Rutas de Autenticación
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -96,16 +95,19 @@ def login():
         flash('Ya estás logueado.', 'info')
         return redirect(url_for('home'))
     form = LoginForm()
+    next_page = request.args.get('next')
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
-            next_page = request.args.get('next')
-            if next_page and is_safe_url(next_page):
-                return redirect(next_page)
-            else:
-                return redirect(url_for('home'))
+            # Obtener 'next' del formulario si no está en los argumentos
+            if not next_page:
+                next_page = request.form.get('next')
+            # Verificación de seguridad para 'next'
+            if not next_page or urlparse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -417,6 +419,10 @@ def pulzcard_card(card_id):
 @app.route('/pulzcard/vcards/<filename>')
 def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+
+# Mover la inicialización de la base de datos fuera del bloque if __name__ == '__main__'
+with app.app_context():
+    db.create_all()  # Asegura que la base de datos y las tablas se creen
 
 if __name__ == '__main__':
     app.run(debug=True)
