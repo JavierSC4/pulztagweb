@@ -2,7 +2,7 @@
 
 import os
 import uuid
-from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import pandas as pd
@@ -10,10 +10,12 @@ from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
-from models import User
-from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
+from models import User, Pulzcard
+from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm, EditPulzcardForm
 
 from flask_login import login_required, current_user, login_user, logout_user
+
+from datetime import datetime
 
 load_dotenv()
 
@@ -419,6 +421,75 @@ def pulzcard_card(card_id):
 @app.route('/pulzcard/vcards/<filename>')
 def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+
+# Nueva Ruta: Perfil de Usuario
+@app.route('/profile')
+@login_required
+def profile():
+    # Obtener todas las Pulzcards del usuario
+    pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
+    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards)
+
+# Nueva Ruta: Editar Pulzcard
+@app.route('/pulzcard/edit/<int:card_id>', methods=['GET', 'POST'])
+@login_required
+def edit_pulzcard(card_id):
+    pulzcard = Pulzcard.query.get_or_404(card_id)
+    if pulzcard.owner != current_user:
+        abort(403)  # Acceso prohibido
+
+    form = EditPulzcardForm()
+
+    if form.validate_on_submit():
+        pulzcard.card_name = form.card_name.data
+        pulzcard.first_name = form.first_name.data
+        pulzcard.last_name = form.last_name.data
+        pulzcard.organization = form.organization.data
+        pulzcard.position = form.position.data
+        pulzcard.phone = form.phone.data
+        pulzcard.email = form.email.data
+        pulzcard.website = form.website.data
+        pulzcard.address = form.address.data
+        pulzcard.created_at = datetime.utcnow()  # Actualizar la fecha de modificación si es necesario
+        db.session.commit()
+        flash('Pulzcard actualizada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.card_name.data = pulzcard.card_name
+        form.first_name.data = pulzcard.first_name
+        form.last_name.data = pulzcard.last_name
+        form.organization.data = pulzcard.organization
+        form.position.data = pulzcard.position
+        form.phone.data = pulzcard.phone
+        form.email.data = pulzcard.email
+        form.website.data = pulzcard.website
+        form.address.data = pulzcard.address
+
+    return render_template('edit_pulzcard.html', title='Editar Pulzcard', form=form, pulzcard=pulzcard)
+
+# Nueva Ruta: Eliminar Pulzcard
+@app.route('/pulzcard/delete/<int:card_id>', methods=['POST'])
+@login_required
+def delete_pulzcard(card_id):
+    pulzcard = Pulzcard.query.get_or_404(card_id)
+    if pulzcard.owner != current_user:
+        abort(403)  # Acceso prohibido
+
+    try:
+        # Eliminar la vCard del sistema de archivos
+        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+        if os.path.exists(vcard_path):
+            os.remove(vcard_path)
+
+        # Eliminar la Pulzcard de la base de datos
+        db.session.delete(pulzcard)
+        db.session.commit()
+        flash('Pulzcard eliminada exitosamente.', 'success')
+    except Exception as e:
+        print(f"Error al eliminar Pulzcard: {e}")
+        flash('Hubo un error al eliminar la Pulzcard. Por favor, intenta de nuevo.', 'danger')
+
+    return redirect(url_for('profile'))
 
 # Mover la inicialización de la base de datos fuera del bloque if __name__ == '__main__'
 with app.app_context():

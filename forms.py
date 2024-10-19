@@ -1,9 +1,9 @@
 # forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError
-from models import User  # Importar desde models.py
+from models import User, Pulzcard  # Importar desde models.py
 from flask_login import current_user
 
 
@@ -97,3 +97,15 @@ class PulzcardForm(FlaskForm):
     website = StringField('Página Web', validators=[DataRequired(), URL()])
     address = StringField('Dirección', validators=[DataRequired()])
     submit = SubmitField('Crear Tarjeta')
+
+class EditPulzcardForm(FlaskForm):
+    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired(), Length(max=100)])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=50)])
+    organization = StringField('Nombre Organización', validators=[DataRequired(), Length(max=100)])
+    position = StringField('Cargo', validators=[DataRequired(), Length(max=100)])
+    phone = StringField('Número Telefónico', validators=[DataRequired(), Length(max=20)])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
+    website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
+    address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
+    submit = SubmitField('Actualizar Pulzcard')

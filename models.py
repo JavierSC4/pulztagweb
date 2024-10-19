@@ -4,13 +4,16 @@ from extensions import db
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import current_app
+from datetime import datetime  # Importar datetime
+import uuid  # Importar uuid
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    # Puedes agregar más campos como nombre, apellido, etc.
+    # Relación con Pulzcards
+    pulzcards = db.relationship('Pulzcard', backref='owner', lazy=True)
 
     def get_reset_token(self, expires_sec=3600):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -24,3 +27,21 @@ class User(db.Model, UserMixin):
         except SignatureExpired:
             return None
         return User.query.filter_by(email=email).first()
+
+class Pulzcard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    card_name = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    organization = db.Column(db.String(100), nullable=False)
+    position = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    website = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Pulzcard('{self.card_name}', '{self.email}')"

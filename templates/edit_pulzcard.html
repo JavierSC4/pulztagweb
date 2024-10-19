@@ -1,0 +1,101 @@
+<!-- templates/edit_pulzcard.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Editar Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Editar Pulzcard</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.id) }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.card_name.label(class="form-label") }}
+                {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
+                {% for error in form.card_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.first_name.label(class="form-label") }}
+                {{ form.first_name(class="form-control", placeholder="Nombre") }}
+                {% for error in form.first_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.last_name.label(class="form-label") }}
+                {{ form.last_name(class="form-control", placeholder="Apellido") }}
+                {% for error in form.last_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.organization.label(class="form-label") }}
+                {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+                {% for error in form.organization.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.position.label(class="form-label") }}
+                {{ form.position(class="form-control", placeholder="Cargo") }}
+                {% for error in form.position.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.phone.label(class="form-label") }}
+                {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+                {% for error in form.phone.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.website.label(class="form-label") }}
+                {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+                <span id="website-error" class="error-message"></span>
+                {% for error in form.website.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.address.label(class="form-label") }}
+                {{ form.address(class="form-control", placeholder="Dirección") }}
+                {% for error in form.address.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="text-center">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Validación en tiempo real para URL -->
+<script>
+    document.getElementById('website').addEventListener('input', function() {
+        const websiteInput = this;
+        const errorSpan = document.getElementById('website-error');
+        const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
+
+        if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
+            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.style.color = "#721c24";
+        } else {
+            errorSpan.textContent = "";
+        }
+    });
+</script>
+{% endblock %}

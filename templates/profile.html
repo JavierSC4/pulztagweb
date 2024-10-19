@@ -1,0 +1,64 @@
+<!-- templates/profile.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Mi Perfil</h2>
+
+<!-- Información del Usuario -->
+<div class="row mb-5">
+    <div class="col-md-6">
+        <h4>Información Personal</h4>
+        <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
+        <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
+        <!-- Puedes agregar más información si lo deseas -->
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
+    </div>
+</div>
+
+<!-- Lista de Pulzcards -->
+<div class="row">
+    <div class="col-md-12">
+        <h4>Tus Pulzcards</h4>
+        {% if pulzcards %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre de Tarjeta</th>
+                        <th>Nombre Completo</th>
+                        <th>Organización</th>
+                        <th>Email</th>
+                        <th>Fecha de Creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in pulzcards %}
+                    <tr>
+                        <td>{{ card.card_name }}</td>
+                        <td>{{ card.first_name }} {{ card.last_name }}</td>
+                        <td>{{ card.organization }}</td>
+                        <td>{{ card.email }}</td>
+                        <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('pulzcard_card', card_id=card.id) }}" class="btn btn-info btn-sm" target="_blank">Ver</a>
+                            <a href="{{ url_for('edit_pulzcard', card_id=card.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <form action="{{ url_for('delete_pulzcard', card_id=card.id) }}" method="POST" style="display:inline;">
+                                {{ csrf_token() }}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
