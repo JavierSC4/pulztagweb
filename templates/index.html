@@ -22,12 +22,15 @@
     <a class="btn btn-primary btn-lg" href="#servicios" role="button">Nuestros Servicios</a>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Servicios Destacados -->
 <section id="servicios" class="mt-5">
     <h2 class="text-center mb-4">Nuestros Servicios</h2>
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: servicios_personalizados.jpg (Imagen de dispositivos NFC personalizados) -->
                 <img src="{{ url_for('static', filename='images/servicios_personalizados.jpeg') }}" class="card-img-top"
                     alt="Dispositivos NFC Personalizados">
@@ -40,7 +43,7 @@
             </div>
         </div>
         <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: desarrollo_servicios.jpg (Imagen de desarrollo de software o servicios) -->
                 <img src="{{ url_for('static', filename='images/desarrollo_servicios.jpeg') }}" class="card-img-top"
                     alt="Desarrollo de Servicios Personalizados">
@@ -53,7 +56,7 @@
             </div>
         </div>
         <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: fidelizacion_clientes.jpg (Imagen representativa de fidelización de clientes) -->
                 <img src="{{ url_for('static', filename='images/fidelizacion_clientes.jpeg') }}" class="card-img-top"
                     alt="Fidelización de Clientes">
@@ -68,12 +71,18 @@
     </div>
 </section>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Invitación a Ver Productos -->
 <section class="text-center mt-5">
     <h2>Explora Nuestros Productos</h2>
     <p>Descubre nuestra gama de dispositivos NFC personalizados diseñados para impulsar tu negocio.</p>
     <a class="btn btn-primary btn-lg" href="/products" role="button">Ver Productos</a>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Aplicaciones de Nuestras Soluciones NFC -->
 <section class="mt-5">
@@ -131,6 +140,9 @@
         </div>
     </div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Clientes y Alianzas
 <!--<section class="mt-5">

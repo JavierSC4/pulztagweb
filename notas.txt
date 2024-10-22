@@ -1,3 +1,9 @@
+git add <ruta/al/archivo> "Dirección relativa del archivo a añadir"
+git add . (para añadir todos los archivos modificados)
+git commit -m "Mensaje descriptivo de los cambios"
+git push origin main
+
+
 javiersc@MacBook-Air-de-Javier pulztagweb % source virtualenv/bin/activate
 (virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % 
 

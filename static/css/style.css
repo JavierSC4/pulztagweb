@@ -80,6 +80,19 @@ footer a:hover {
     color: #555555;
 }
 
+/* Clase para el fondo de las secciones de servicios */
+.service-background {
+    background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s ease;
+}
+
+.service-background:hover {
+    background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
+}
+
 /* Cards */
 .card {
     border: none;

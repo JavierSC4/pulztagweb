@@ -2,19 +2,23 @@
 
 import os
 import uuid
+from urllib.parse import urlparse
 from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
 from flask_mail import Mail, Message
+from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import pandas as pd
 from werkzeug.utils import secure_filename
-from urllib.parse import urlparse
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
 from models import User, Pulzcard
-from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm, EditPulzcardForm
-
+from forms import (
+    RegistrationForm, LoginForm, UpdateAccountForm,
+    RequestResetForm, ResetPasswordForm,
+    PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
+    ContactForm, OrderForm  # Importa el nuevo formulario de contacto
+)
 from flask_login import login_required, current_user, login_user, logout_user
-
 from datetime import datetime
 
 load_dotenv()
@@ -22,15 +26,10 @@ load_dotenv()
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
-# Crear el directorio 'instance' si no existe
-instance_dir = os.path.join(app.instance_path)
-os.makedirs(instance_dir, exist_ok=True)
-
 # Configuración de la Base de Datos
-db_path = os.path.join(instance_dir, 'site.db')
+db_path = os.path.join(app.instance_path, 'site_new.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
 db.init_app(app)
 migrate.init_app(app, db)
@@ -47,6 +46,9 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
 mail = Mail(app)
 
+# Inicializar CSRFProtect
+csrf = CSRFProtect(app)
+
 # Configuración de Flask-Login
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'warning'
@@ -55,25 +57,25 @@ login_manager.login_message_category = 'warning'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Configuración para Tokens
-s = URLSafeTimedSerializer(app.secret_key)
+# Directorio para guardar las vCards
+VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
+os.makedirs(VCARD_FOLDER, exist_ok=True)
 
 # Directorio para guardar las subidas
-UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Directorio para guardar las vCards
-VCARD_FOLDER = os.path.join(app.root_path, 'vcards')
-os.makedirs(VCARD_FOLDER, exist_ok=True)
-
-# Extensiones permitidas
+# Extensiones permitidas (si las usas)
 ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
 ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+# Configurar el serializador
+s = URLSafeTimedSerializer(app.secret_key)
 
 # Rutas de Autenticación
 @app.route('/register', methods=['GET', 'POST'])
@@ -97,19 +99,12 @@ def login():
         flash('Ya estás logueado.', 'info')
         return redirect(url_for('home'))
     form = LoginForm()
-    next_page = request.args.get('next')
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
-            # Obtener 'next' del formulario si no está en los argumentos
-            if not next_page:
-                next_page = request.form.get('next')
-            # Verificación de seguridad para 'next'
-            if not next_page or urlparse(next_page).netloc != '':
-                next_page = url_for('home')
-            return redirect(next_page)
+            return redirect(url_for('home'))  # Redirige siempre a 'home'
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -189,14 +184,11 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        mensaje = request.form.get('mensaje')
-
-        if not nombre or not email or not mensaje:
-            flash('Por favor, completa todos los campos.', 'danger')
-            return redirect(url_for('contact'))
+    form = ContactForm()  # Crear una instancia del formulario
+    if form.validate_on_submit():  # Usar validate_on_submit para verificar el envío
+        nombre = form.nombre.data
+        email = form.email.data
+        mensaje = form.mensaje.data
 
         try:
             msg = Message(
@@ -212,7 +204,7 @@ def contact():
             flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
 
-    return render_template('contact.html')
+    return render_template('contact.html', form=form)  # Pasar el formulario al template
 
 @app.route('/products')
 def products():
@@ -221,11 +213,13 @@ def products():
 @app.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        dispositivo = request.form.get('dispositivo')
-        mensaje = request.form.get('mensaje')
+    form = OrderForm()  # Crear una instancia del formulario
+    if form.validate_on_submit():
+        # Procesa el pedido
+        nombre = form.nombre.data
+        email = form.email.data
+        dispositivo = form.dispositivo.data
+        mensaje = form.mensaje.data
 
         # Validaciones básicas
         if not nombre or not email or not dispositivo or not mensaje:
@@ -353,47 +347,94 @@ def order():
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
-    return render_template('order.html')
+    return render_template('order.html', form=form)  # Pasar el formulario al template
 
+# Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
 @login_required
 def pulzcard():
     form = PulzcardForm()
     if form.validate_on_submit():
-        print("Formulario validado exitosamente.")
-        # Generar un ID único para la tarjeta
-        card_id = str(uuid.uuid4())
+        # Crear Pulzcard y agregar a la base de datos
+        pulzcard = Pulzcard(
+            card_name=form.card_name.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            organization=form.organization.data,
+            position=form.position.data,
+            phone=form.phone.data,
+            email=form.email.data,
+            website=form.website.data,
+            address=form.address.data,
+            owner=current_user
+        )
 
-        # Crear una vCard
+        # Añadir a la sesión y hacer flush para obtener card_id
+        db.session.add(pulzcard)
+        try:
+            db.session.flush()  # Asigna card_id sin commit
+            print(f"Pulzcard creada con card_id: {pulzcard.card_id}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al hacer flush de Pulzcard: {e}")
+            flash('Hubo un error al crear tu Pulzcard. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('pulzcard'))
+
+        # Crear y guardar la vCard
         vcard = f"""BEGIN:VCARD
 VERSION:3.0
-FN:{form.first_name.data} {form.last_name.data}
-ORG:{form.organization.data}
-TITLE:{form.position.data}
-TEL;TYPE=WORK,VOICE:{form.phone.data}
-EMAIL:{form.email.data}
-URL:{form.website.data}
-ADR;TYPE=WORK:;;{form.address.data}
+FN:{pulzcard.first_name} {pulzcard.last_name}
+ORG:{pulzcard.organization}
+TITLE:{pulzcard.position}
+TEL;TYPE=WORK,VOICE:{pulzcard.phone}
+EMAIL:{pulzcard.email}
+URL:{pulzcard.website}
+ADR;TYPE=WORK:;;{pulzcard.address}
 END:VCARD"""
+        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+        print(f"Intentando guardar vCard en: {vcard_path}")
 
-        # Guardar la vCard en un archivo
-        vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
-        with open(vcard_path, 'w') as f:
-            f.write(vcard)
+        try:
+            with open(vcard_path, 'w') as f:
+                f.write(vcard)
+            print(f"vCard guardada exitosamente en: {vcard_path}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al guardar la vCard: {e}")
+            flash('Hubo un error al guardar la Pulzcard.', 'danger')
+            return redirect(url_for('pulzcard'))
 
-        # Redirigir a la página de la tarjeta
-        return redirect(url_for('pulzcard_card', card_id=card_id))
+        try:
+            db.session.commit()
+            print("Pulzcard añadida a la base de datos correctamente.")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al crear Pulzcard en la base de datos: {e}")
+            flash('Hubo un error al crear tu Pulzcard. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('pulzcard'))
+
+        # Redirigir usando card_id en lugar de id
+        return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
     else:
         print("Formulario no validado. Errores:", form.errors)
     return render_template('pulzcard/index.html', form=form)
 
 @app.route('/pulzcard/card/<card_id>')
+@login_required
 def pulzcard_card(card_id):
+    # Consultar la Pulzcard en la base de datos usando card_id y asegurarse de que pertenezca al usuario actual
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first()
+    if not pulzcard:
+        flash('Tarjeta no encontrada o no tienes permiso para acceder a ella.', 'danger')
+        return redirect(url_for('profile'))
+
     # Leer la vCard
     vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
+    print(f"Intentando leer vCard en: {vcard_path}")
     if not os.path.exists(vcard_path):
+        print(f"vCard no encontrada en: {vcard_path}")
         flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('pulzcard'))
+        return redirect(url_for('profile'))
 
     with open(vcard_path, 'r') as f:
         vcard = f.read()
@@ -416,9 +457,11 @@ def pulzcard_card(card_id):
         elif line.startswith('ADR'):
             contact_info['address'] = line.split(':')[1]
 
+    print(f"Información de contacto extraída: {contact_info}")
     return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
 
 @app.route('/pulzcard/vcards/<filename>')
+@login_required
 def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
@@ -426,18 +469,16 @@ def pulzcard_download_vcard(filename):
 @app.route('/profile')
 @login_required
 def profile():
-    # Obtener todas las Pulzcards del usuario
     pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
-    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards)
+    # Crear una instancia de DeletePulzcardForm para cada Pulzcard con un prefijo único
+    delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
+    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards, delete_forms=delete_forms)
 
 # Nueva Ruta: Editar Pulzcard
-@app.route('/pulzcard/edit/<int:card_id>', methods=['GET', 'POST'])
+@app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
 @login_required
 def edit_pulzcard(card_id):
-    pulzcard = Pulzcard.query.get_or_404(card_id)
-    if pulzcard.owner != current_user:
-        abort(403)  # Acceso prohibido
-
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
     form = EditPulzcardForm()
 
     if form.validate_on_submit():
@@ -452,6 +493,22 @@ def edit_pulzcard(card_id):
         pulzcard.address = form.address.data
         pulzcard.created_at = datetime.utcnow()  # Actualizar la fecha de modificación si es necesario
         db.session.commit()
+
+        # Actualizar la vCard en el sistema de archivos
+        vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{pulzcard.first_name} {pulzcard.last_name}
+ORG:{pulzcard.organization}
+TITLE:{pulzcard.position}
+TEL;TYPE=WORK,VOICE:{pulzcard.phone}
+EMAIL:{pulzcard.email}
+URL:{pulzcard.website}
+ADR;TYPE=WORK:;;{pulzcard.address}
+END:VCARD"""
+        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+        with open(vcard_path, 'w') as f:
+            f.write(vcard)
+
         flash('Pulzcard actualizada exitosamente.', 'success')
         return redirect(url_for('profile'))
     elif request.method == 'GET':
@@ -468,30 +525,54 @@ def edit_pulzcard(card_id):
     return render_template('edit_pulzcard.html', title='Editar Pulzcard', form=form, pulzcard=pulzcard)
 
 # Nueva Ruta: Eliminar Pulzcard
-@app.route('/pulzcard/delete/<int:card_id>', methods=['POST'])
+@app.route('/pulzcard/delete/<card_id>', methods=['POST'])
 @login_required
 def delete_pulzcard(card_id):
-    pulzcard = Pulzcard.query.get_or_404(card_id)
-    if pulzcard.owner != current_user:
-        abort(403)  # Acceso prohibido
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
 
-    try:
-        # Eliminar la vCard del sistema de archivos
-        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
-        if os.path.exists(vcard_path):
-            os.remove(vcard_path)
+    form = DeletePulzcardForm()
+    if form.validate_on_submit():
+        try:
+            # Eliminar la vCard del sistema de archivos
+            vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+            if os.path.exists(vcard_path):
+                os.remove(vcard_path)
 
-        # Eliminar la Pulzcard de la base de datos
-        db.session.delete(pulzcard)
-        db.session.commit()
-        flash('Pulzcard eliminada exitosamente.', 'success')
-    except Exception as e:
-        print(f"Error al eliminar Pulzcard: {e}")
-        flash('Hubo un error al eliminar la Pulzcard. Por favor, intenta de nuevo.', 'danger')
+            # Eliminar la Pulzcard de la base de datos
+            db.session.delete(pulzcard)
+            db.session.commit()
+            flash('Pulzcard eliminada exitosamente.', 'success')
+        except Exception as e:
+            print(f"Error al eliminar Pulzcard: {e}")
+            flash('Hubo un error al eliminar la Pulzcard. Por favor, intenta de nuevo.', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
 
     return redirect(url_for('profile'))
 
-# Mover la inicialización de la base de datos fuera del bloque if __name__ == '__main__'
+# Ruta de Prueba para Crear una vCard Manualmente
+@app.route('/test_vcard')
+def test_vcard():
+    test_vcard_content = """BEGIN:VCARD
+VERSION:3.0
+FN:Prueba Nombre
+ORG:Prueba Organización
+TITLE:Prueba Cargo
+TEL;TYPE=WORK,VOICE:123456789
+EMAIL:prueba@example.com
+URL:https://www.prueba.com
+ADR;TYPE=WORK:;;Calle Falsa 123
+END:VCARD"""
+
+    test_vcard_path = os.path.join(VCARD_FOLDER, 'test.vcf')
+    try:
+        with open(test_vcard_path, 'w') as f:
+            f.write(test_vcard_content)
+        return "Archivo de prueba vCard creado exitosamente."
+    except Exception as e:
+        return f"Error al crear el archivo de prueba vCard: {e}"
+
+# Crear las tablas de la base de datos
 with app.app_context():
     db.create_all()  # Asegura que la base de datos y las tablas se creen
 

@@ -4,8 +4,8 @@ from extensions import db
 from flask_login import UserMixin
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import current_app
-from datetime import datetime  # Importar datetime
-import uuid  # Importar uuid
+from datetime import datetime
+import uuid
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +25,8 @@ class User(db.Model, UserMixin):
         try:
             email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
         except SignatureExpired:
+            return None
+        except:
             return None
         return User.query.filter_by(email=email).first()
 

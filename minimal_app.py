@@ -1,3 +1,5 @@
+# minimal_app.py
+
 import os
 
 from flask import Flask
@@ -9,7 +11,7 @@ app = Flask(__name__, instance_relative_config=True)
 instance_dir = os.path.join(app.instance_path)
 os.makedirs(instance_dir, exist_ok=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site_new.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 

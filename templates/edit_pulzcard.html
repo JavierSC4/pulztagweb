@@ -9,7 +9,7 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.id) }}">
+        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}">
             {{ form.hidden_tag() }}
             <div class="mb-3">
                 {{ form.card_name.label(class="form-label") }}

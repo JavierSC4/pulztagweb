@@ -1,659 +1,201 @@
------ Inicio de app.py -----
-# app.py
+----- Inicio de migrations/alembic.ini -----
+# A generic, single database configuration.
 
-import os
-import uuid
-from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory
-from flask_mail import Mail, Message
-from dotenv import load_dotenv
-import pandas as pd
-from werkzeug.utils import secure_filename
-from urllib.parse import urlparse, urljoin
-from itsdangerous import URLSafeTimedSerializer
-from extensions import db, migrate, bcrypt, login_manager
-from models import User
-from forms import RegistrationForm, LoginForm, UpdateAccountForm, RequestResetForm, ResetPasswordForm, PulzcardForm
+[alembic]
+# template used to generate migration files
+# file_template = %%(rev)s_%%(slug)s
 
-from flask_login import login_required, current_user, login_user, logout_user
+# set to 'true' to run the environment during
+# the 'revision' command, regardless of autogenerate
+# revision_environment = false
 
-load_dotenv()
 
-app = Flask(__name__, instance_relative_config=True)
-app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
+# Logging configuration
+[loggers]
+keys = root,sqlalchemy,alembic,flask_migrate
 
-# Configuración de la Base de Datos
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', f'sqlite:///{os.path.join(app.instance_path, "site.db")}')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
+[handlers]
+keys = console
 
-db.init_app(app)
-migrate.init_app(app, db)
-bcrypt.init_app(app)
-login_manager.init_app(app)
+[formatters]
+keys = generic
 
-# Configuración de Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+[logger_root]
+level = WARN
+handlers = console
+qualname =
 
-mail = Mail(app)
+[logger_sqlalchemy]
+level = WARN
+handlers =
+qualname = sqlalchemy.engine
 
-# Configuración de Flask-Login
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'warning'
+[logger_alembic]
+level = INFO
+handlers =
+qualname = alembic
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+[logger_flask_migrate]
+level = INFO
+handlers =
+qualname = flask_migrate
 
-# Configuración para Tokens
-s = URLSafeTimedSerializer(app.secret_key)
+[handler_console]
+class = StreamHandler
+args = (sys.stderr,)
+level = NOTSET
+formatter = generic
 
-# Directorio para guardar las subidas
-UPLOAD_FOLDER = os.path.join(app.root_path, 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+[formatter_generic]
+format = %(levelname)-5.5s [%(name)s] %(message)s
+datefmt = %H:%M:%S
 
-# Directorio para guardar las vCards
-VCARD_FOLDER = os.path.join(app.root_path, 'vcards')
-os.makedirs(VCARD_FOLDER, exist_ok=True)
 
-# Extensiones permitidas
-ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
-ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
+----- Fin de migrations/alembic.ini -----
 
-def allowed_file(filename, allowed_extensions):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in allowed_extensions
+----- Inicio de migrations/env.py -----
+import logging
+from logging.config import fileConfig
 
-def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return (test_url.scheme in ('http', 'https') and
-            ref_url.netloc == test_url.netloc)
-
-# Rutas de Autenticación
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        flash('Tu cuenta ha sido creada! Ahora puedes iniciar sesión.', 'success')
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Registrar', form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            flash('Has iniciado sesión correctamente.', 'success')
-            next_page = request.args.get('next')
-            if next_page and is_safe_url(next_page):
-                return redirect(next_page)
-            else:
-                return redirect(url_for('home'))
-        else:
-            flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
-    return render_template('login.html', title='Iniciar Sesión', form=form)
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    flash('Has cerrado sesión.', 'info')
-    return redirect(url_for('home'))
-
-@app.route('/account', methods=['GET', 'POST'])
-@login_required
-def account():
-    form = UpdateAccountForm()
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.email = form.email.data
-        if form.password.data:
-            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            current_user.password = hashed_password
-        db.session.commit()
-        flash('Tu cuenta ha sido actualizada.', 'success')
-        return redirect(url_for('account'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-    return render_template('account.html', title='Perfil de Usuario', form=form)
-
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_request():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    form = RequestResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            token = user.get_reset_token()
-            msg = Message('Recupera tu Contraseña', recipients=[user.email])
-            reset_url = url_for('reset_token', token=token, _external=True)
-            msg.body = f'''Para restablecer tu contraseña, visita el siguiente enlace:
-{reset_url}
-
-Si no solicitaste un restablecimiento de contraseña, por favor ignora este mensaje.
-'''
-            mail.send(msg)
-            flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
-            return redirect(url_for('login'))
-    return render_template('reset_request.html', title='Recuperar Contraseña', form=form)
-
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_token(token):
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    user = User.verify_reset_token(token)
-    if not user:
-        flash('El token es inválido o ha expirado.', 'warning')
-        return redirect(url_for('reset_request'))
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user.password = hashed_password
-        db.session.commit()
-        flash('Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión.', 'success')
-        return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Restablecer Contraseña', form=form)
-
-# Rutas Existentes
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        mensaje = request.form.get('mensaje')
-
-        if not nombre or not email or not mensaje:
-            flash('Por favor, completa todos los campos.', 'danger')
-            return redirect(url_for('contact'))
-
-        try:
-            msg = Message(
-                subject=f"Nuevo mensaje de {nombre}",
-                recipients=['contacto@pulztag.com'],
-                body=f"Nombre: {nombre}\nCorreo Electrónico: {email}\n\nMensaje:\n{mensaje}"
-            )
-            mail.send(msg)
-            flash('¡Tu mensaje ha sido enviado exitosamente!', 'success')
-            return redirect(url_for('contact'))
-        except Exception as e:
-            print(e)
-            flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
-            return redirect(url_for('contact'))
-
-    return render_template('contact.html')
-
-@app.route('/products')
-def products():
-    return render_template('products.html')
-
-@app.route('/order', methods=['GET', 'POST'])
-@login_required
-def order():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        dispositivo = request.form.get('dispositivo')
-        mensaje = request.form.get('mensaje')
-
-        # Validaciones básicas
-        if not nombre or not email or not dispositivo or not mensaje:
-            flash('Por favor, completa todos los campos.', 'danger')
-            return redirect(url_for('order'))
-
-        # Manejar los logos
-        logos = request.files.getlist('logos')
-        valid_logos = [logo for logo in logos if logo.filename != '']
-        if len(valid_logos) > 10:
-            flash('Puedes subir un máximo de 10 logos.', 'danger')
-            return redirect(url_for('order'))
-
-        saved_logos = []
-        for logo in valid_logos:
-            filename = logo.filename.strip()
-            if allowed_file(filename, ALLOWED_LOGO_EXTENSIONS):
-                try:
-                    secure_name = secure_filename(filename)
-                    unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
-                    logo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                    logo.save(logo_path)
-                    saved_logos.append((filename, logo_path))
-                    print(f"Logo guardado: {logo_path}")
-                except Exception as e:
-                    print(f"Error al guardar el logo {filename}: {e}")
-                    flash(f"Hubo un error al guardar el logo {filename}.", 'danger')
-                    return redirect(url_for('order'))
-            else:
-                flash(f"Formato de logo no permitido: {filename}", 'danger')
-                return redirect(url_for('order'))
-
-        # Manejar el archivo Excel
-        excel = request.files.get('excel')
-        if excel and excel.filename != '':
-            filename = excel.filename.strip()
-            if allowed_file(filename, ALLOWED_EXCEL_EXTENSIONS):
-                try:
-                    secure_name = secure_filename(filename)
-                    unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
-                    excel_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                    excel.save(excel_path)
-                    print(f"Archivo Excel guardado: {excel_path}")
-                except Exception as e:
-                    print(f"Error al guardar el archivo Excel {filename}: {e}")
-                    flash(f"Hubo un error al guardar el archivo Excel {filename}.", 'danger')
-                    return redirect(url_for('order'))
-            else:
-                flash('Formato de archivo Excel no permitido.', 'danger')
-                return redirect(url_for('order'))
-        else:
-            excel_path = None
-
-        # Crear un DataFrame con los datos del pedido
-        data = {
-            'Nombre': [nombre],
-            'Correo Electrónico': [email],
-            'Selección de Dispositivo': [dispositivo],
-            'Mensaje': [mensaje]
-        }
-        df = pd.DataFrame(data)
-
-        # Guardar el DataFrame en un archivo Excel
-        pedido_excel_path = os.path.join(app.config['UPLOAD_FOLDER'], f"pedido_{uuid.uuid4().hex}.xlsx")
-        df.to_excel(pedido_excel_path, index=False)
-        print(f"Pedido guardado en: {pedido_excel_path}")
-
-        # Enviar el correo con los archivos adjuntos
-        try:
-            msg = Message(
-                subject="Nuevo Pedido de PulztagWeb",
-                recipients=['contacto@pulztag.com']
-            )
-            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {email}\nSelección de Dispositivo: {dispositivo}\n\nMensaje:\n{mensaje}"
-
-            # Adjuntar el archivo Excel del pedido
-            with open(pedido_excel_path, 'rb') as fp:
-                msg.attach(
-                    "pedido.xlsx",
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    fp.read()
-                )
-
-            # Adjuntar los logos
-            for original_filename, logo_path in saved_logos:
-                try:
-                    print(f"Adjuntando logo: {original_filename} desde {logo_path}")
-                    with open(logo_path, 'rb') as fp:
-                        # Determinar el MIME type correcto
-                        ext = original_filename.rsplit('.', 1)[1].lower()
-                        mime_type = f"image/{'jpeg' if ext in ['jpg', 'jpeg'] else ext}"
-                        msg.attach(
-                            original_filename,
-                            mime_type,
-                            fp.read()
-                        )
-                except Exception as e:
-                    print(f"Error adjuntando el logo {original_filename}: {e}")
-
-            # Adjuntar el archivo Excel si existe
-            if excel_path:
-                with open(excel_path, 'rb') as fp:
-                    msg.attach(
-                        os.path.basename(excel_path),
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        fp.read()
-                    )
-
-            mail.send(msg)
-            print("Correo enviado exitosamente.")
-
-            # Eliminar archivos temporales
-            os.remove(pedido_excel_path)
-            for _, logo_path in saved_logos:
-                os.remove(logo_path)
-            if excel_path:
-                os.remove(excel_path)
-            print("Archivos temporales eliminados.")
-
-            flash('Su solicitud fue enviada exitosamente. ¡Pronto nos pondremos en contacto contigo!', 'success')
-            return redirect(url_for('order'))
-
-        except Exception as e:
-            print(f"Error al enviar el correo: {e}")
-            flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
-            return redirect(url_for('order'))
-
-    return render_template('order.html')
-
-@app.route('/pulzcard', methods=['GET', 'POST'])
-@login_required
-def pulzcard():
-    form = PulzcardForm()
-    if form.validate_on_submit():
-        print("Formulario validado exitosamente.")
-        # Generar un ID único para la tarjeta
-        card_id = str(uuid.uuid4())
-
-        # Crear una vCard
-        vcard = f"""BEGIN:VCARD
-VERSION:3.0
-FN:{form.first_name.data} {form.last_name.data}
-ORG:{form.organization.data}
-TITLE:{form.position.data}
-TEL;TYPE=WORK,VOICE:{form.phone.data}
-EMAIL:{form.email.data}
-URL:{form.website.data}
-ADR;TYPE=WORK:;;{form.address.data}
-END:VCARD"""
-
-        # Guardar la vCard en un archivo
-        vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
-        with open(vcard_path, 'w') as f:
-            f.write(vcard)
-
-        # Redirigir a la página de la tarjeta
-        return redirect(url_for('pulzcard_card', card_id=card_id))
-    else:
-        print("Formulario no validado. Errores:", form.errors)
-    return render_template('pulzcard/index.html', form=form)
-
-@app.route('/pulzcard/card/<card_id>')
-def pulzcard_card(card_id):
-    # Leer la vCard
-    vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
-    if not os.path.exists(vcard_path):
-        flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('pulzcard'))
-
-    with open(vcard_path, 'r') as f:
-        vcard = f.read()
-
-    # Extraer información para la página personalizada
-    contact_info = {}
-    for line in vcard.split('\n'):
-        if line.startswith('FN:'):
-            contact_info['full_name'] = line.replace('FN:', '')
-        elif line.startswith('ORG:'):
-            contact_info['organization'] = line.replace('ORG:', '')
-        elif line.startswith('TITLE:'):
-            contact_info['position'] = line.replace('TITLE:', '')
-        elif line.startswith('TEL'):
-            contact_info['phone'] = line.split(':')[1]
-        elif line.startswith('EMAIL:'):
-            contact_info['email'] = line.replace('EMAIL:', '')
-        elif line.startswith('URL:'):
-            contact_info['website'] = line.replace('URL:', '')
-        elif line.startswith('ADR'):
-            contact_info['address'] = line.split(':')[1]
-
-    return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
-
-@app.route('/pulzcard/vcards/<filename>')
-def pulzcard_download_vcard(filename):
-    return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
------ Fin de app.py -----
-
------ Inicio de minimal_app.py -----
-import os
-
-from flask import Flask
-from extensions import db, migrate
-
-app = Flask(__name__, instance_relative_config=True)
-
-# Crear el directorio 'instance' si no existe
-instance_dir = os.path.join(app.instance_path)
-os.makedirs(instance_dir, exist_ok=True)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
-
-db.init_app(app)
-migrate.init_app(app, db)
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()  # Asegura que la base de datos y las tablas se creen
-    app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
-
------ Fin de minimal_app.py -----
-
------ Inicio de forms.py -----
-# forms.py
-
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError
-from models import User  # Importar desde models.py
-from flask_login import current_user
-
-
-class RegistrationForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[
-                           DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[
-                             DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirmar Contraseña',
-                                     validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Crear Cuenta')
-
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError(
-                'Este nombre de usuario ya está en uso. Por favor, elige otro.')
-
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user:
-            raise ValidationError(
-                'Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
-
-
-class LoginForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[DataRequired()])
-    remember = BooleanField('Recordarme')
-    submit = SubmitField('Iniciar Sesión')
-
-
-class UpdateAccountForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[
-                           DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
-    confirm_password = PasswordField('Confirmar Nueva Contraseña',
-                                     validators=[EqualTo('password')])
-    submit = SubmitField('Actualizar Perfil')
-
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
-            if user:
-                raise ValidationError(
-                    'Este nombre de usuario ya está en uso. Por favor, elige otro.')
-
-    def validate_email(self, email):
-        if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
-            if user:
-                raise ValidationError(
-                    'Este correo electrónico ya está registrado. Por favor, usa otro correo.')
-
-
-class RequestResetForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    submit = SubmitField('Solicitar Restablecimiento de Contraseña')
-
-    def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
-        if user is None:
-            raise ValidationError(
-                'No hay una cuenta asociada a este correo electrónico.')
-
-
-class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Contraseña', validators=[
-                             DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirmar Contraseña',
-                                     validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Restablecer Contraseña')
-
-
-class PulzcardForm(FlaskForm):
-    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
-    first_name = StringField('Nombre', validators=[DataRequired()])
-    last_name = StringField('Apellido', validators=[DataRequired()])
-    organization = StringField(
-        'Nombre Organización', validators=[DataRequired()])
-    position = StringField('Cargo', validators=[DataRequired()])
-    phone = StringField('Número Telefónico', validators=[DataRequired()])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    website = StringField('Página Web', validators=[DataRequired(), URL()])
-    address = StringField('Dirección', validators=[DataRequired()])
-    submit = SubmitField('Crear Tarjeta')
-
-
------ Fin de forms.py -----
-
------ Inicio de models.py -----
-# models.py
-
-from extensions import db
-from flask_login import UserMixin
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from flask import current_app
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    # Puedes agregar más campos como nombre, apellido, etc.
+from alembic import context
 
-    def get_reset_token(self, expires_sec=3600):
-        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-        return s.dumps(self.email, salt='password-reset-salt')
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
 
-    @staticmethod
-    def verify_reset_token(token, expires_sec=3600):
-        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
-        try:
-            email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
-        except SignatureExpired:
-            return None
-        return User.query.filter_by(email=email).first()
-
------ Fin de models.py -----
-
------ Inicio de test_db.py -----
-# test_db.py
-
-from sqlalchemy import create_engine
-import os
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'site.db')
-db_uri = f'sqlite:///{db_path}'
-
-engine = create_engine(db_uri)
-
-try:
-    connection = engine.connect()
-    print("Conexión exitosa a la base de datos.")
-    connection.close()
-except Exception as e:
-    print(f"Error al conectar a la base de datos: {e}")
-
------ Fin de test_db.py -----
-
------ Inicio de requirements.txt -----
-alembic==1.13.3
-bcrypt==4.2.0
-blinker==1.8.2
-click==8.1.7
-dnspython==2.7.0
-email_validator==2.2.0
-et-xmlfile==1.1.0
-Flask==3.0.3
-Flask-Admin==1.6.1
-Flask-Bcrypt==1.0.1
-Flask-Login==0.6.3
-Flask-Mail==0.10.0
-Flask-Migrate==4.0.7
-Flask-SQLAlchemy==3.1.1
-Flask-WTF==1.2.1
-gunicorn==23.0.0
-idna==3.10
-itsdangerous==2.2.0
-Jinja2==3.1.4
-Mako==1.3.5
-MarkupSafe==2.1.5
-numpy==1.26.1
-openpyxl==3.1.5
-packaging==24.1
-pandas==2.2.3
-pillow==10.4.0
-pypng==0.20220715.0
-python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
-pytz==2024.2
-qrcode==7.4.2
-six==1.16.0
-SQLAlchemy==2.0.35
-typing_extensions==4.12.2
-tzdata==2024.2
-Werkzeug==3.0.4
-WTForms==3.1.2
-XlsxWriter==3.2.0
-psycopg2-binary==2.9.7
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
+fileConfig(config.config_file_name)
+logger = logging.getLogger('alembic.env')
 
 
------ Fin de requirements.txt -----
+def get_engine():
+    try:
+        # this works with Flask-SQLAlchemy<3 and Alchemical
+        return current_app.extensions['migrate'].db.get_engine()
+    except TypeError:
+        # this works with Flask-SQLAlchemy>=3
+        return current_app.extensions['migrate'].db.engine
+
+
+def get_engine_url():
+    try:
+        return get_engine().url.render_as_string(hide_password=False).replace(
+            '%', '%%')
+    except AttributeError:
+        return str(get_engine().url).replace('%', '%%')
+
+
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
+config.set_main_option('sqlalchemy.url', get_engine_url())
+target_db = current_app.extensions['migrate'].db
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+
+
+def get_metadata():
+    if hasattr(target_db, 'metadatas'):
+        return target_db.metadatas[None]
+    return target_db.metadata
+
+
+def run_migrations_offline():
+    """Run migrations in 'offline' mode.
+
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
+    """
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url, target_metadata=get_metadata(), literal_binds=True
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def run_migrations_online():
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine
+    and associate a connection with the context.
+
+    """
+
+    # this callback is used to prevent an auto-migration from being generated
+    # when there are no changes to the schema
+    # reference: http://alembic.zzzcomputing.com/en/latest/cookbook.html
+    def process_revision_directives(context, revision, directives):
+        if getattr(config.cmd_opts, 'autogenerate', False):
+            script = directives[0]
+            if script.upgrade_ops.is_empty():
+                directives[:] = []
+                logger.info('No changes in schema detected.')
+
+    connectable = get_engine()
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=get_metadata(),
+            process_revision_directives=process_revision_directives,
+            **current_app.extensions['migrate'].configure_args
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+
+----- Fin de migrations/env.py -----
+
+----- Inicio de migrations/script.py.mako -----
+"""${message}
+
+Revision ID: ${up_revision}
+Revises: ${down_revision | comma,n}
+Create Date: ${create_date}
+
+"""
+from alembic import op
+import sqlalchemy as sa
+${imports if imports else ""}
+
+# revision identifiers, used by Alembic.
+revision = ${repr(up_revision)}
+down_revision = ${repr(down_revision)}
+branch_labels = ${repr(branch_labels)}
+depends_on = ${repr(depends_on)}
+
+
+def upgrade():
+    ${upgrades if upgrades else "pass"}
+
+
+def downgrade():
+    ${downgrades if downgrades else "pass"}
+
+
+----- Fin de migrations/script.py.mako -----
 
 ----- Inicio de static/css/style.css -----
 /* static/css/style.css */
@@ -1117,888 +659,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ----- Fin de static/js/script.js -----
 
------ Inicio de templates/about.html -----
-<!-- templates/about.html -->
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
-{% extends 'base.html' %}
-
-{% block title %}Acerca de - Pulztag{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Acerca de Pulztag</h2>
-<div class="row align-items-center mb-5">
-    <!-- Texto Descriptivo -->
-    <div class="col-md-6">
-        <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes a través de soluciones
-            NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
-            innovación y el compromiso con la excelencia nos posicionan como socios estratégicos en la era digital.</p>
-        <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio,
-            facilitando conexiones más profundas y significativas con los clientes. Además, desarrollamos servicios
-            integrales que abarcan desde la implementación tecnológica hasta estrategias de marketing innovadoras,
-            asegurando que cada solución no solo cumpla, sino que supere las expectativas.</p>
-        <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
-    </div>
-    <!-- Imagen Representativa -->  
-    <div class="col-md-6">
-        <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
-            alt="Pulztag Innovación NFC">
-    </div>
-</div>
-
-<!-- Nuestra Misión y Visión -->
-<section class="mt-5">
-    <div class="row">
-        <!-- Misión -->
-        <div class="col-md-6">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la misión -->
-                <!-- <img src="{{ url_for('static', filename='images/mision.jpg') }}" class="card-img-top" alt="Misión"> -->
-                <div class="card-body">
-                    <i class="bi bi-flag" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Misión</h5>
-                    <p class="card-text">Nuestra misión es transformar la manera en que las empresas interactúan con sus
-                        clientes mediante soluciones NFC innovadoras y personalizadas que mejoran la eficiencia
-                        operativa y fomentan la lealtad del cliente.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Visión -->
-        <div class="col-md-6 mt-4 mt-md-0">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la visión -->
-                <!-- <img src="{{ url_for('static', filename='images/vision.jpg') }}" class="card-img-top" alt="Visión"> -->
-                <div class="card-body">
-                    <i class="bi bi-eye" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Visión</h5>
-                    <p class="card-text">Nos visualizamos como líderes en el mercado de tecnología NFC, expandiendo
-                        nuestras alianzas estratégicas y ofreciendo servicios de vanguardia que impulsen el crecimiento
-                        y la competitividad de nuestros clientes a nivel global.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Nuestros Valores -->
-<section class="mt-5">
-    <h3 class="text-center mb-4">Nuestros Valores</h3>
-    <div class="row">
-        <!-- Valor 1: Innovación -->
-        <div class="col-md-4">
-            <div class="card text-center">
-                <!-- Imagen: valor_innovacion.jpg (Imagen que represente innovación) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_innovacion.jpg') }}" class="card-img-top" alt="Innovación"> -->
-                <div class="card-body">
-                    <i class="bi bi-lightbulb" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Innovación</h5>
-                    <p class="card-text">Nos mantenemos a la vanguardia de la tecnología NFC para ofrecer soluciones
-                        únicas y efectivas.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Valor 2: Calidad -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_calidad.jpg (Imagen que represente calidad) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_calidad.jpg') }}" class="card-img-top" alt="Calidad"> -->
-                <div class="card-body">
-                    <i class="bi bi-award" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Calidad</h5>
-                    <p class="card-text">Cada proyecto es ejecutado con altos estándares para garantizar la satisfacción
-                        total de nuestros clientes.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Valor 3: Colaboración -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_colaboracion.jpg (Imagen que represente colaboración) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_colaboracion.jpg') }}" class="card-img-top" alt="Colaboración"> -->
-                <div class="card-body">
-                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Colaboración</h5>
-                    <p class="card-text">Trabajamos en estrecha colaboración con nuestros clientes para entender y
-                        superar sus expectativas.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock %}
-
------ Fin de templates/about.html -----
-
------ Inicio de templates/account.html -----
-<!-- templates/account.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Perfil de Usuario</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('account') }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
-                {% for error in form.username.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <hr>
-            <h5>Cambiar Contraseña</h5>
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
-                {% for error in form.password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.confirm_password.label(class="form-label") }}
-                {{ form.confirm_password(class="form-control", placeholder="Confirmar Nueva Contraseña") }}
-                {% for error in form.confirm_password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-    </div>
-</div>
-{% endblock %}
-
-
------ Fin de templates/account.html -----
-
------ Inicio de templates/login.html -----
-<!-- templates/login.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Iniciar Sesión - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Iniciar Sesión</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('login') }}">
-            {{ form.hidden_tag() }}
-            <!-- Campo oculto para el parámetro 'next' -->
-            <input type="hidden" name="next" value="{{ request.args.get('next') }}">
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Contraseña") }}
-                {% for error in form.password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="form-check mb-3">
-                {{ form.remember(class="form-check-input") }}
-                {{ form.remember.label(class="form-check-label") }}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-        <p class="mt-3"><a href="{{ url_for('reset_request') }}">¿Olvidaste tu contraseña?</a></p>
-        <p>¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate</a></p>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/login.html -----
-
------ Inicio de templates/base.html -----
-<!-- templates/base.html -->
-
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <!-- Google Tag Manager -->
-    <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-NC88XS28');
-    </script>
-    <!-- End Google Tag Manager -->
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Pulztag{% endblock %}</title>
-
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap"
-        rel="stylesheet">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-yHLOuw7MZ9Epjg6bQF+H9TQpvbIhFGHtf4mKje5G1Vj8V0G9/D8UpDqXlwCp4+jbg0y+6dV+lO84Sw9G2KzF0A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <!-- CSS Personalizado con Parámetro de Versión para Evitar Caché -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.0">
-
-    {% block head %}{% endblock %}
-</head>
-
-<body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC88XS28"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    
-    <!-- Barra Superior -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-        <div class="container-fluid">
-            <!-- Marca de la Navbar -->
-            <a class="navbar-brand text-primary fw-bold" href="/">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pulztag Logo" height="40">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Enlaces de Navegación -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Enlaces alineados a la izquierda -->
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
-                            de</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
-                    </li>
-                    <!-- Nuevo Enlace para Crear Pulzcard -->
-                    <li class="nav-item">
-                        <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
-                    </li>
-                </ul>
-                <!-- Botón desplegable alineado a la derecha -->
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        {% if current_user.is_authenticated %}
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            {{ current_user.username }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('account') }}">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-                        </ul>
-                        {% else %}
-                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Mi Cuenta
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('register') }}">Crear Cuenta</a></li>
-                        </ul>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Contenido Principal -->
-    <div class="container mt-4">
-        <!-- Mensajes Flash -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-        {% endwith %}
-
-        {% block content %}{% endblock %}
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-light text-center py-4 mt-5">
-        &copy; 2024 Pulztag. Todos los derechos reservados.
-    </footer>
-
-    <!-- Bootstrap JS y dependencias -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- JS Personalizado -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
-    {% block scripts %}{% endblock %}
-</body>
-
-</html>
-
------ Fin de templates/base.html -----
-
------ Inicio de templates/index.html -----
-<!-- templates/index.html -->
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
-{% extends 'base.html' %}
-
-{% block title %}Inicio - PulztagWeb{% endblock %}
-
-{% block content %}
-<!-- Hero Section -->
-<div class="jumbotron text-center">
-    <h1 class="display-4">Transforma tu Negocio con Tecnología NFC</h1>
-    <p class="lead">Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.</p>
-    <!-- Imagen: hero_image.jpg (Una imagen representativa de dispositivos NFC en uso) -->
-    <hr class="my-4">
-    <a class="btn btn-primary btn-lg" href="#servicios" role="button">Nuestros Servicios</a>
-</div>
-
-<!-- Servicios Destacados -->
-<section id="servicios" class="mt-5">
-    <h2 class="text-center mb-4">Nuestros Servicios</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-center">
-                <!-- Imagen: servicios_personalizados.jpg (Imagen de dispositivos NFC personalizados) -->
-                <img src="{{ url_for('static', filename='images/servicios_personalizados.jpeg') }}" class="card-img-top"
-                    alt="Dispositivos NFC Personalizados">
-                <div class="card-body">
-                    <i class="bi bi-tools" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Dispositivos NFC Personalizados</h5>
-                    <p class="card-text">Diseñamos y configuramos dispositivos NFC adaptados a las necesidades
-                        específicas de tu negocio.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: desarrollo_servicios.jpg (Imagen de desarrollo de software o servicios) -->
-                <img src="{{ url_for('static', filename='images/desarrollo_servicios.jpeg') }}" class="card-img-top"
-                    alt="Desarrollo de Servicios Personalizados">
-                <div class="card-body">
-                    <i class="bi bi-code-slash" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Desarrollo de Servicios Personalizados</h5>
-                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de
-                        georeferenciación y campañas de marketing NFC.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: fidelizacion_clientes.jpg (Imagen representativa de fidelización de clientes) -->
-                <img src="{{ url_for('static', filename='images/fidelizacion_clientes.jpeg') }}" class="card-img-top"
-                    alt="Fidelización de Clientes">
-                <div class="card-body">
-                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Fidelización de Clientes</h5>
-                    <p class="card-text">Implementamos programas de fidelización utilizando tecnología NFC para
-                        fortalecer la relación con tus clientes.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Aplicaciones de Nuestras Soluciones NFC -->
-<section class="mt-5">
-    <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: aplicacion_georeferenciacion.jpg (Imagen de georeferenciación NFC en acción) -->
-                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}"
-                    class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
-                <div class="card-body">
-                    <h4>Georeferenciación de Etiquetas NFC</h4>
-                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el
-                        seguimiento y la gestión eficiente de activos.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: campañas_marketing_nfc.jpg (Imagen de campaña de marketing utilizando NFC) -->
-                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top"
-                    alt="Campañas de Marketing NFC">
-                <div class="card-body">
-                    <h4>Campañas Publicitarias y Marketing</h4>
-                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de
-                        manera directa con tu audiencia. Reduce costos de producción gráfica</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: fidelizacion_programas.jpg (Imagen de programas de fidelización de clientes) -->
-                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top"
-                    alt="Programas de Fidelización de Clientes">
-                <div class="card-body">
-                    <h4>Programas de Fidelización de Clientes</h4>
-                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes
-                        y fomenten su lealtad.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: integracion_sistemas.jpg (Imagen de integración de sistemas NFC) -->
-                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top"
-                    alt="Integración de Sistemas NFC">
-                <div class="card-body">
-                    <h4>Integración de Sistemas</h4>
-                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar
-                        la eficiencia operativa.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Clientes y Alianzas
-<!--<section class="mt-5">
-    <h2 class="text-center mb-4">Nuestros Clientes y Alianzas</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-4 text-center">
-            <!-- Imagen: cliente1_logo.jpg (Logo del cliente 1)
-            <img src="{{ url_for('static', filename='images/cliente1_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 1 Logo">
-        </div>
-        <div class="col-md-4 text-center mt-4 mt-md-0">
-            <!-- Imagen: cliente2_logo.jpg (Logo del cliente 2)
-            <img src="{{ url_for('static', filename='images/cliente2_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 2 Logo">
-        </div>
-        <div class="col-md-4 text-center mt-4 mt-md-0">
-            <!-- Imagen: cliente3_logo.jpg (Logo del cliente 3)
-            <img src="{{ url_for('static', filename='images/cliente3_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 3 Logo">
-        </div>
-    </div>
-    <!-- Puedes agregar más logos o testimonios según sea necesario
-</section>
-
-<!-- Call to Action Section -->
-<section class="text-center mt-5">
-    <h2>¿Listo para Transformar tu Negocio?</h2>
-    <p>Contáctanos hoy mismo y descubre cómo nuestras soluciones NFC pueden impulsar tu empresa.</p>
-    <a class="btn btn-primary btn-lg" href="/contact" role="button">Contactar</a>
-</section>
-{% endblock %}
-
------ Fin de templates/index.html -----
-
------ Inicio de templates/contact.html -----
-<!-- templates/contact.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Contacto - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Contáctanos</h2>
-<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
-    contacto contigo lo antes posible.</p>
-
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <form method="POST" action="{{ url_for('contact') }}">
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com"
-                    required>
-            </div>
-            <div class="mb-3">
-                <label for="mensaje" class="form-label">Mensaje</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="5" placeholder="Tu mensaje"
-                    required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>
-    </div>
-</div>
-
-<!-- Información de Contacto Section -->
-<div class="row justify-content-center mt-5">
-    <div class="col-md-8">
-        <div class="custom-solutions-section text-center p-5 rounded shadow">
-            <h4 class="text-white">Información de Contacto</h4>
-            <p class="text-white">Para más información, no dudes en ponerte en contacto con nosotros a través de los siguientes medios:</p>
-            <ul class="list-unstyled">
-                <li><strong>Correo Electrónico:</strong> <a href="mailto:contacto@pulztag.com" class="text-white">contacto@pulztag.com</a></li>
-                <li><strong>Teléfono:</strong> <a href="tel:+56962411963" class="text-white">+56962411963</a></li>
-                <li><strong>Instagram:</strong> <a href="https://www.instagram.com/pulztag" target="_blank" class="text-white">@pulztag</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
------ Fin de templates/contact.html -----
-
------ Inicio de templates/order.html -----
-<!-- templates/order.html -->
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
-{% extends 'base.html' %}
-
-{% block title %}Pedido - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Realiza tu Pedido</h2>
-<p class="text-center mb-5">Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.</p>
-
-<div class="row justify-content-center">
-    <div class="col-md-8 mb-4">
-        <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">
-            <!-- Campos del formulario -->
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
-            </div>
-            <div class="mb-3">
-                <label for="dispositivo" class="form-label">Selecciona un Dispositivo</label>
-                <select class="form-select" id="dispositivo" name="dispositivo" required>
-                    <option value="" disabled selected>Elige una opción</option>
-                    <option value="NFC Token de PVC (30 mm)">NFC Token de PVC (30 mm)</option>
-                    <option value="NFC Sticker (25 mm)">NFC Sticker (25 mm)</option>
-                    <option value="NFC Cards">NFC Cards</option>
-                    <!-- Agrega más opciones según sea necesario -->
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="mensaje" class="form-label">¿Qué necesitas?</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje aquí" required></textarea>
-            </div>
-
-            <!-- Sección para subir Logos -->
-            <div class="mb-4">
-                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10 (*)</label>
-                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png,.jpeg,.jpg" multiple>
-                <ul class="list-group mt-2" id="logoList"></ul>
-                <div id="logoError" class="text-danger mt-2" style="display: none;">Has alcanzado el máximo de 10 logos.</div>
-                <p class="text-muted mt-2">(*) Sube aquí las imágenes que deseas imprimir en tus dispositivos personalizados. Nuestro equipo se encargará de ayudarte con la implementación y asegurará que tus diseños se vean espectaculares!</p>
-            </div>
-
-            <!-- Sección para subir Archivo Excel -->
-            <div class="mb-4">
-                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1 (*)</label>
-                <input type="file" class="form-control" id="excelUpload" name="excel" accept=".xlsx,.xls">
-                <ul class="list-group mt-2" id="excelList"></ul>
-                <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.</div>
-                <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única. Para pedidos de gran volumen, por favor proporciona los detalles en un archivo Excel.</p>
-            </div>
-            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
-        </form>
-    </div>
-</div>
-
-<!-- Información Bancaria Section -->
-<div class="row justify-content-center mt-5">
-    <div class="col-md-8">
-        <div class="custom-solutions-section text-center p-5 rounded shadow">
-            <h4 class="text-white">Datos para Transferencia</h4>
-            <ul class="list-unstyled">
-                <li><strong>Banco:</strong> Banco de Chile</li>
-                <li><strong>Tipo de Cuenta:</strong> Cuenta Corriente</li>
-                <li><strong>Nombre:</strong> Pulztag SpA</li>
-                <li><strong>Número de Cuenta:</strong> 00-888-08888-08</li>
-                <li><strong>RUT:</strong> 88.888.888-8</li>
-                <li><strong>Correo:</strong> <a href="mailto:contacto@pulztag.com" class="text-white">contacto@pulztag.com</a></li>
-                <li><strong>Teléfono:</strong> <a href="tel:+56962411963" class="text-white">+56962411963</a></li>
-            </ul>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
-
------ Fin de templates/order.html -----
-
------ Inicio de templates/products.html -----
-<!-- templates/order.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Nuestros Productos - PulztagWeb{% endblock %}
-
-{% block content %}
-<div class="container">
-    <h2 class="text-center mb-4">Nuestros Productos</h2>
-    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
-
-    <!-- Soluciones Personalizadas Section Mejorada -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="custom-solutions-section text-center p-5 rounded shadow">
-                <h4 class="text-white">Soluciones Personalizadas para Industrias</h4>
-                <div class="solutions-list">
-                    <div class="solution-item">
-                        <h5>Marketing y Publicidad</h5>
-                        <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5>Eventos</h5>
-                        <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5>Educación</h5>
-                        <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5>Logística</h5>
-                        <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Etiquetas NFC</h4>
-            <p>Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
-            <ul>
-                <li>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
-                <li>Materiales: PVC y metálico</li>
-                <li>Resistentes al agua</li>
-                <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
-                <li>Aplicaciones: Promociones, eventos, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
-        </div>
-        <div class="col-md-6">
-            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow">
-        </div>
-    </div>
-
-    <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
-    <div class="row mb-5">
-        <div class="col-md-6 order-md-2">
-            <h4>Tarjetas NFC Personalizadas</h4>
-            <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
-            <ul>
-                <li>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
-                <li>Colores: Blanco y Negro</li>
-                <li>Material: PVC</li>
-                <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
-            </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$4.990</span> (IVA inc.)</p>
-        </div>
-        <div class="col-md-6 order-md-1">
-            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow">
-        </div>
-    </div>
-
-    <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Stickers NFC</h4>
-            <p>Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
-            <ul>
-                <li>Impresión: Una o dos caras</li>
-                <li>Material: PVC o adhesivo fuerte</li>
-                <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
-        </div>
-        <div class="col-md-6">
-            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow">
-        </div>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/products.html -----
-
------ Inicio de templates/reset_request.html -----
-<!-- templates/reset_request.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Recuperar Contraseña - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Recuperar Contraseña</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('reset_request') }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-        <p class="mt-3">¿Recuerdas tu contraseña? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/reset_request.html -----
-
------ Inicio de templates/reset_token.html -----
-<!-- templates/reset_token.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Restablecer Contraseña - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Restablecer Contraseña</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('reset_token', token=token) }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
-                {% for error in form.password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.confirm_password.label(class="form-label") }}
-                {{ form.confirm_password(class="form-control", placeholder="Confirmar Nueva Contraseña") }}
-                {% for error in form.confirm_password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/reset_token.html -----
-
------ Inicio de templates/register.html -----
-<!-- templates/register.html -->
-
-{% extends 'base.html' %}
-
-{% block title %}Registrar - PulztagWeb{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Crear una Nueva Cuenta</h2>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form method="POST" action="{{ url_for('register') }}">
-            {{ form.hidden_tag() }}
-            <div class="mb-3">
-                {{ form.username.label(class="form-label") }}
-                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
-                {% for error in form.username.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.password.label(class="form-label") }}
-                {{ form.password(class="form-control", placeholder="Contraseña") }}
-                {% for error in form.password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.confirm_password.label(class="form-label") }}
-                {{ form.confirm_password(class="form-control", placeholder="Confirmar Contraseña") }}
-                {% for error in form.confirm_password.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
-        </form>
-        <p class="mt-3">¿Ya tienes una cuenta? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
-    </div>
-</div>
-{% endblock %}
-
------ Fin de templates/register.html -----
-
 ----- Inicio de templates/pulzcard/card.html -----
 <!-- templates/pulzcard/card.html -->
 
@@ -2207,5 +867,1994 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ----- Fin de templates/pulzcard/index.html -----
 
------ instance/site_new.dbmigrations/__pycache__/__init__.cpython-311.pyc no encontrado -----
+----- Inicio de templates/about.html -----
+<!-- templates/about.html -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
+    <!-- End Google Tag Manager -->
+
+{% extends 'base.html' %}
+
+{% block title %}Acerca de - Pulztag{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Acerca de Pulztag</h2>
+<div class="row align-items-center mb-5">
+    <!-- Texto Descriptivo -->
+    <div class="col-md-6">
+        <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes a través de soluciones
+            NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
+            innovación y el compromiso con la excelencia nos posicionan como socios estratégicos en la era digital.</p>
+        <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio,
+            facilitando conexiones más profundas y significativas con los clientes. Además, desarrollamos servicios
+            integrales que abarcan desde la implementación tecnológica hasta estrategias de marketing innovadoras,
+            asegurando que cada solución no solo cumpla, sino que supere las expectativas.</p>
+        <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
+    </div>
+    <!-- Imagen Representativa -->  
+    <div class="col-md-6">
+        <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
+            alt="Pulztag Innovación NFC">
+    </div>
+</div>
+
+<!-- Nuestra Misión y Visión -->
+<section class="mt-5">
+    <div class="row">
+        <!-- Misión -->
+        <div class="col-md-6">
+            <div class="card text-center h-100">
+                <!-- Opcional: Imagen relacionada con la misión -->
+                <!-- <img src="{{ url_for('static', filename='images/mision.jpg') }}" class="card-img-top" alt="Misión"> -->
+                <div class="card-body">
+                    <i class="bi bi-flag" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Misión</h5>
+                    <p class="card-text">Nuestra misión es transformar la manera en que las empresas interactúan con sus
+                        clientes mediante soluciones NFC innovadoras y personalizadas que mejoran la eficiencia
+                        operativa y fomentan la lealtad del cliente.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Visión -->
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card text-center h-100">
+                <!-- Opcional: Imagen relacionada con la visión -->
+                <!-- <img src="{{ url_for('static', filename='images/vision.jpg') }}" class="card-img-top" alt="Visión"> -->
+                <div class="card-body">
+                    <i class="bi bi-eye" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Visión</h5>
+                    <p class="card-text">Nos visualizamos como líderes en el mercado de tecnología NFC, expandiendo
+                        nuestras alianzas estratégicas y ofreciendo servicios de vanguardia que impulsen el crecimiento
+                        y la competitividad de nuestros clientes a nivel global.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nuestros Valores -->
+<section class="mt-5">
+    <h3 class="text-center mb-4">Nuestros Valores</h3>
+    <div class="row">
+        <!-- Valor 1: Innovación -->
+        <div class="col-md-4">
+            <div class="card text-center">
+                <!-- Imagen: valor_innovacion.jpg (Imagen que represente innovación) -->
+                <!-- <img src="{{ url_for('static', filename='images/valor_innovacion.jpg') }}" class="card-img-top" alt="Innovación"> -->
+                <div class="card-body">
+                    <i class="bi bi-lightbulb" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Innovación</h5>
+                    <p class="card-text">Nos mantenemos a la vanguardia de la tecnología NFC para ofrecer soluciones
+                        únicas y efectivas.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Valor 2: Calidad -->
+        <div class="col-md-4 mt-4 mt-md-0">
+            <div class="card text-center">
+                <!-- Imagen: valor_calidad.jpg (Imagen que represente calidad) -->
+                <!-- <img src="{{ url_for('static', filename='images/valor_calidad.jpg') }}" class="card-img-top" alt="Calidad"> -->
+                <div class="card-body">
+                    <i class="bi bi-award" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Calidad</h5>
+                    <p class="card-text">Cada proyecto es ejecutado con altos estándares para garantizar la satisfacción
+                        total de nuestros clientes.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Valor 3: Colaboración -->
+        <div class="col-md-4 mt-4 mt-md-0">
+            <div class="card text-center">
+                <!-- Imagen: valor_colaboracion.jpg (Imagen que represente colaboración) -->
+                <!-- <img src="{{ url_for('static', filename='images/valor_colaboracion.jpg') }}" class="card-img-top" alt="Colaboración"> -->
+                <div class="card-body">
+                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Colaboración</h5>
+                    <p class="card-text">Trabajamos en estrecha colaboración con nuestros clientes para entender y
+                        superar sus expectativas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+----- Fin de templates/about.html -----
+
+----- Inicio de templates/account.html -----
+<!-- templates/account.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Perfil de Usuario</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('account') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control", placeholder="Nombre de Usuario") }}
+                {% for error in form.username.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <hr>
+            <h5>Cambiar Contraseña</h5>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control", placeholder="Confirmar Nueva Contraseña") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+----- Fin de templates/account.html -----
+
+----- Inicio de templates/base.html -----
+<!-- templates/base.html -->
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-NC88XS28');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pulztag{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-yHLOuw7MZ9Epjg6bQF+H9TQpvbIhFGHtf4mKje5G1Vj8V0G9/D8UpDqXlwCp4+jbg0y+6dV+lO84Sw9G2KzF0A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- CSS Personalizado con Parámetro de Versión para Evitar Caché -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.0">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC88XS28"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <!-- Barra Superior -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <!-- Marca de la Navbar -->
+            <a class="navbar-brand text-primary fw-bold" href="/">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pulztag Logo" height="40">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Enlaces de Navegación -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Enlaces alineados a la izquierda -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
+                            de</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
+                    </li>
+                    <!-- Nuevo Enlace para Crear Pulzcard -->
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
+                    </li>
+                </ul>
+                <!-- Botón desplegable alineado a la derecha -->
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        {% if current_user.is_authenticated %}
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            {{ current_user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Perfil</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                        </ul>
+                        {% else %}
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Mi Cuenta
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('register') }}">Crear Cuenta</a></li>
+                        </ul>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="container mt-4">
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-4 mt-5">
+        &copy; 2024 Pulztag. Todos los derechos reservados.
+    </footer>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS Personalizado -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
+
+----- Fin de templates/base.html -----
+
+----- Inicio de templates/contact.html -----
+<!-- templates/contact.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Contacto - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Contáctanos</h2>
+<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
+    contacto contigo lo antes posible.</p>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="POST" action="{{ url_for('contact') }}">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com"
+                    required>
+            </div>
+            <div class="mb-3">
+                <label for="mensaje" class="form-label">Mensaje</label>
+                <textarea class="form-control" id="mensaje" name="mensaje" rows="5" placeholder="Tu mensaje"
+                    required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Información de Contacto Section -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="custom-solutions-section text-center p-5 rounded shadow">
+            <h4 class="text-white">Información de Contacto</h4>
+            <p class="text-white">Para más información, no dudes en ponerte en contacto con nosotros a través de los siguientes medios:</p>
+            <ul class="list-unstyled">
+                <li><strong>Correo Electrónico:</strong> <a href="mailto:contacto@pulztag.com" class="text-white">contacto@pulztag.com</a></li>
+                <li><strong>Teléfono:</strong> <a href="tel:+56962411963" class="text-white">+56962411963</a></li>
+                <li><strong>Instagram:</strong> <a href="https://www.instagram.com/pulztag" target="_blank" class="text-white">@pulztag</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+----- Fin de templates/contact.html -----
+
+----- Inicio de templates/edit_pulzcard.html -----
+<!-- templates/edit_pulzcard.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Editar Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Editar Pulzcard</h2>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.card_name.label(class="form-label") }}
+                {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
+                {% for error in form.card_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.first_name.label(class="form-label") }}
+                {{ form.first_name(class="form-control", placeholder="Nombre") }}
+                {% for error in form.first_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.last_name.label(class="form-label") }}
+                {{ form.last_name(class="form-control", placeholder="Apellido") }}
+                {% for error in form.last_name.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.organization.label(class="form-label") }}
+                {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+                {% for error in form.organization.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.position.label(class="form-label") }}
+                {{ form.position(class="form-control", placeholder="Cargo") }}
+                {% for error in form.position.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.phone.label(class="form-label") }}
+                {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+                {% for error in form.phone.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.website.label(class="form-label") }}
+                {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+                <span id="website-error" class="error-message"></span>
+                {% for error in form.website.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.address.label(class="form-label") }}
+                {{ form.address(class="form-control", placeholder="Dirección") }}
+                {% for error in form.address.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="text-center">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Validación en tiempo real para URL -->
+<script>
+    document.getElementById('website').addEventListener('input', function() {
+        const websiteInput = this;
+        const errorSpan = document.getElementById('website-error');
+        const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
+
+        if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
+            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.style.color = "#721c24";
+        } else {
+            errorSpan.textContent = "";
+        }
+    });
+</script>
+{% endblock %}
+
+----- Fin de templates/edit_pulzcard.html -----
+
+----- Inicio de templates/index.html -----
+<!-- templates/index.html -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
+    <!-- End Google Tag Manager -->
+
+{% extends 'base.html' %}
+
+{% block title %}Inicio - PulztagWeb{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron text-center">
+    <h1 class="display-4">Transforma tu Negocio con Tecnología NFC</h1>
+    <p class="lead">Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.</p>
+    <!-- Imagen: hero_image.jpg (Una imagen representativa de dispositivos NFC en uso) -->
+    <hr class="my-4">
+    <a class="btn btn-primary btn-lg" href="#servicios" role="button">Nuestros Servicios</a>
+</div>
+
+<!-- Servicios Destacados -->
+<section id="servicios" class="mt-5">
+    <h2 class="text-center mb-4">Nuestros Servicios</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <!-- Imagen: servicios_personalizados.jpg (Imagen de dispositivos NFC personalizados) -->
+                <img src="{{ url_for('static', filename='images/servicios_personalizados.jpeg') }}" class="card-img-top"
+                    alt="Dispositivos NFC Personalizados">
+                <div class="card-body">
+                    <i class="bi bi-tools" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Dispositivos NFC Personalizados</h5>
+                    <p class="card-text">Diseñamos y configuramos dispositivos NFC adaptados a las necesidades
+                        específicas de tu negocio.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mt-4 mt-md-0">
+            <div class="card text-center">
+                <!-- Imagen: desarrollo_servicios.jpg (Imagen de desarrollo de software o servicios) -->
+                <img src="{{ url_for('static', filename='images/desarrollo_servicios.jpeg') }}" class="card-img-top"
+                    alt="Desarrollo de Servicios Personalizados">
+                <div class="card-body">
+                    <i class="bi bi-code-slash" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Desarrollo de Servicios Personalizados</h5>
+                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de
+                        georeferenciación y campañas de marketing NFC.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mt-4 mt-md-0">
+            <div class="card text-center">
+                <!-- Imagen: fidelizacion_clientes.jpg (Imagen representativa de fidelización de clientes) -->
+                <img src="{{ url_for('static', filename='images/fidelizacion_clientes.jpeg') }}" class="card-img-top"
+                    alt="Fidelización de Clientes">
+                <div class="card-body">
+                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
+                    <h5 class="card-title mt-3">Fidelización de Clientes</h5>
+                    <p class="card-text">Implementamos programas de fidelización utilizando tecnología NFC para
+                        fortalecer la relación con tus clientes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Invitación a Ver Productos -->
+<section class="text-center mt-5">
+    <h2>Explora Nuestros Productos</h2>
+    <p>Descubre nuestra gama de dispositivos NFC personalizados diseñados para impulsar tu negocio.</p>
+    <a class="btn btn-primary btn-lg" href="/products" role="button">Ver Productos</a>
+</section>
+
+<!-- Aplicaciones de Nuestras Soluciones NFC -->
+<section class="mt-5">
+    <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <!-- Imagen: aplicacion_georeferenciacion.jpg (Imagen de georeferenciación NFC en acción) -->
+                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}"
+                    class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
+                <div class="card-body">
+                    <h4>Georeferenciación de Etiquetas NFC</h4>
+                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el
+                        seguimiento y la gestión eficiente de activos.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <!-- Imagen: campañas_marketing_nfc.jpg (Imagen de campaña de marketing utilizando NFC) -->
+                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top"
+                    alt="Campañas de Marketing NFC">
+                <div class="card-body">
+                    <h4>Campañas Publicitarias y Marketing</h4>
+                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de
+                        manera directa con tu audiencia. Reduce costos de producción gráfica</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <!-- Imagen: fidelizacion_programas.jpg (Imagen de programas de fidelización de clientes) -->
+                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top"
+                    alt="Programas de Fidelización de Clientes">
+                <div class="card-body">
+                    <h4>Programas de Fidelización de Clientes</h4>
+                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes
+                        y fomenten su lealtad.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <!-- Imagen: integracion_sistemas.jpg (Imagen de integración de sistemas NFC) -->
+                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top"
+                    alt="Integración de Sistemas NFC">
+                <div class="card-body">
+                    <h4>Integración de Sistemas</h4>
+                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar
+                        la eficiencia operativa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Clientes y Alianzas
+<!--<section class="mt-5">
+    <h2 class="text-center mb-4">Nuestros Clientes y Alianzas</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-4 text-center">
+            <!-- Imagen: cliente1_logo.jpg (Logo del cliente 1)
+            <img src="{{ url_for('static', filename='images/cliente1_logo.jpeg') }}" class="img-fluid mb-3"
+                alt="Cliente 1 Logo">
+        </div>
+        <div class="col-md-4 text-center mt-4 mt-md-0">
+            <!-- Imagen: cliente2_logo.jpg (Logo del cliente 2)
+            <img src="{{ url_for('static', filename='images/cliente2_logo.jpeg') }}" class="img-fluid mb-3"
+                alt="Cliente 2 Logo">
+        </div>
+        <div class="col-md-4 text-center mt-4 mt-md-0">
+            <!-- Imagen: cliente3_logo.jpg (Logo del cliente 3)
+            <img src="{{ url_for('static', filename='images/cliente3_logo.jpeg') }}" class="img-fluid mb-3"
+                alt="Cliente 3 Logo">
+        </div>
+    </div>
+    <!-- Puedes agregar más logos o testimonios según sea necesario
+</section>
+
+<!-- Call to Action Section -->
+<section class="text-center mt-5">
+    <h2>¿Listo para Transformar tu Negocio?</h2>
+    <p>Contáctanos hoy mismo y descubre cómo nuestras soluciones NFC pueden impulsar tu empresa.</p>
+    <a class="btn btn-primary btn-lg" href="/contact" role="button">Contactar</a>
+</section>
+{% endblock %}
+
+----- Fin de templates/index.html -----
+
+----- Inicio de templates/login.html -----
+<!-- templates/login.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Iniciar Sesión - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Iniciar Sesión</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('login') }}">
+            {{ form.hidden_tag() }}
+            <!-- Campo oculto para el parámetro 'next' -->
+            <input type="hidden" name="next" value="{{ request.args.get('next') }}">
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Contraseña") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-check mb-3">
+                {{ form.remember(class="form-check-input") }}
+                {{ form.remember.label(class="form-check-label") }}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+        <p class="mt-3"><a href="{{ url_for('reset_request') }}">¿Olvidaste tu contraseña?</a></p>
+        <p>¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate</a></p>
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/login.html -----
+
+----- Inicio de templates/order.html -----
+<!-- templates/order.html -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
+    <!-- End Google Tag Manager -->
+
+{% extends 'base.html' %}
+
+{% block title %}Pedido - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Realiza tu Pedido</h2>
+<p class="text-center mb-5">Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.</p>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 mb-4">
+        <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">
+            <!-- Campos del formulario -->
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
+            </div>
+            <div class="mb-3">
+                <label for="dispositivo" class="form-label">Selecciona un Dispositivo</label>
+                <select class="form-select" id="dispositivo" name="dispositivo" required>
+                    <option value="" disabled selected>Elige una opción</option>
+                    <option value="NFC Token de PVC (30 mm)">NFC Token de PVC (30 mm)</option>
+                    <option value="NFC Sticker (25 mm)">NFC Sticker (25 mm)</option>
+                    <option value="NFC Cards">NFC Cards</option>
+                    <!-- Agrega más opciones según sea necesario -->
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="mensaje" class="form-label">¿Qué necesitas?</label>
+                <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje aquí" required></textarea>
+            </div>
+
+            <!-- Sección para subir Logos -->
+            <div class="mb-4">
+                <label class="form-label">Subir Logos (png, jpeg, jpg) - Máximo 10 (*)</label>
+                <input type="file" class="form-control" id="logoUpload" name="logos" accept=".png,.jpeg,.jpg" multiple>
+                <ul class="list-group mt-2" id="logoList"></ul>
+                <div id="logoError" class="text-danger mt-2" style="display: none;">Has alcanzado el máximo de 10 logos.</div>
+                <p class="text-muted mt-2">(*) Sube aquí las imágenes que deseas imprimir en tus dispositivos personalizados. Nuestro equipo se encargará de ayudarte con la implementación y asegurará que tus diseños se vean espectaculares!</p>
+            </div>
+
+            <!-- Sección para subir Archivo Excel -->
+            <div class="mb-4">
+                <label class="form-label">Subir Archivo Excel (xlsx, xls) - Máximo 1 (*)</label>
+                <input type="file" class="form-control" id="excelUpload" name="excel" accept=".xlsx,.xls">
+                <ul class="list-group mt-2" id="excelList"></ul>
+                <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.</div>
+                <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única. Para pedidos de gran volumen, por favor proporciona los detalles en un archivo Excel.</p>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+        </form>
+    </div>
+</div>
+
+<!-- Información Bancaria Section -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="custom-solutions-section text-center p-5 rounded shadow">
+            <h4 class="text-white">Datos para Transferencia</h4>
+            <ul class="list-unstyled">
+                <li><strong>Banco:</strong> Banco de Chile</li>
+                <li><strong>Tipo de Cuenta:</strong> Cuenta Corriente</li>
+                <li><strong>Nombre:</strong> Pulztag SpA</li>
+                <li><strong>Número de Cuenta:</strong> 00-888-08888-08</li>
+                <li><strong>RUT:</strong> 88.888.888-8</li>
+                <li><strong>Correo:</strong> <a href="mailto:contacto@pulztag.com" class="text-white">contacto@pulztag.com</a></li>
+                <li><strong>Teléfono:</strong> <a href="tel:+56962411963" class="text-white">+56962411963</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+----- Fin de templates/order.html -----
+
+----- Inicio de templates/products.html -----
+<!-- templates/order.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Nuestros Productos - PulztagWeb{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">Nuestros Productos</h2>
+    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
+
+    <!-- Soluciones Personalizadas Section Mejorada -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="custom-solutions-section text-center p-5 rounded shadow">
+                <h4 class="text-white">Soluciones Personalizadas para Industrias</h4>
+                <div class="solutions-list">
+                    <div class="solution-item">
+                        <h5>Marketing y Publicidad</h5>
+                        <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5>Eventos</h5>
+                        <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5>Educación</h5>
+                        <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5>Logística</h5>
+                        <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4>Etiquetas NFC</h4>
+            <p>Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
+            <ul>
+                <li>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
+                <li>Materiales: PVC y metálico</li>
+                <li>Resistentes al agua</li>
+                <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
+                <li>Aplicaciones: Promociones, eventos, logística.</li>
+            </ul>
+            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
+    <div class="row mb-5">
+        <div class="col-md-6 order-md-2">
+            <h4>Tarjetas NFC Personalizadas</h4>
+            <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
+            <ul>
+                <li>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
+                <li>Colores: Blanco y Negro</li>
+                <li>Material: PVC</li>
+                <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
+            </ul>
+            <p class="price text-center mt-3">Desde <span class="price-value">$4.990</span> (IVA inc.)</p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4>Stickers NFC</h4>
+            <p>Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
+            <ul>
+                <li>Impresión: Una o dos caras</li>
+                <li>Material: PVC o adhesivo fuerte</li>
+                <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
+            </ul>
+            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow">
+        </div>
+    </div>
+    <!-- Invitación a Crear tu Pulzcard -->
+    <section class="mt-5 text-center">
+        <h2>Crea tu Pulzcard</h2>
+        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
+        <a class="btn btn-success btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+    </section>
+</div>
+{% endblock %}
+
+----- Fin de templates/products.html -----
+
+----- Inicio de templates/profile.html -----
+<!-- templates/profile.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Mi Perfil</h2>
+
+<!-- Información del Usuario -->
+<div class="row mb-5">
+    <div class="col-md-6">
+        <h4>Información Personal</h4>
+        <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
+        <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
+        <!-- Puedes agregar más información si lo deseas -->
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
+    </div>
+</div>
+
+<!-- Lista de Pulzcards -->
+<div class="row">
+    <div class="col-md-12">
+        <h4>Tus Pulzcards</h4>
+        {% if pulzcards %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre de Tarjeta</th>
+                        <th>Nombre Completo</th>
+                        <th>Organización</th>
+                        <th>Email</th>
+                        <th>Fecha de Creación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in pulzcards %}
+                    <tr>
+                        <td>{{ card.card_name }}</td>
+                        <td>{{ card.first_name }} {{ card.last_name }}</td>
+                        <td>{{ card.organization }}</td>
+                        <td>{{ card.email }}</td>
+                        <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <!-- Usar card.card_id en lugar de card.id -->
+                            <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" class="btn btn-info btn-sm" target="_blank">Ver</a>
+                            <a href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
+                                {{ delete_forms[card.id].hidden_tag() }}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/profile.html -----
+
+----- Inicio de templates/register.html -----
+<!-- templates/register.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Registrar - PulztagWeb{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="text-center">Crear Cuenta</h2>
+        <form method="POST" action="{{ url_for('register') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.username.label(class="form-label") }}
+                {{ form.username(class="form-control") }}
+                {% for error in form.username.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/register.html -----
+
+----- Inicio de templates/reset_request.html -----
+<!-- templates/reset_request.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Recuperar Contraseña - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Recuperar Contraseña</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('reset_request') }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+        <p class="mt-3">¿Recuerdas tu contraseña? <a href="{{ url_for('login') }}">Inicia Sesión</a></p>
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/reset_request.html -----
+
+----- Inicio de templates/reset_token.html -----
+<!-- templates/reset_token.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Restablecer Contraseña - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Restablecer Contraseña</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form method="POST" action="{{ url_for('reset_token', token=token) }}">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
+                {% for error in form.password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.confirm_password.label(class="form-label") }}
+                {{ form.confirm_password(class="form-control", placeholder="Confirmar Nueva Contraseña") }}
+                {% for error in form.confirm_password.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+----- Fin de templates/reset_token.html -----
+
+----- Inicio de .gitignore -----
+# Entorno virtual
+virtualenv/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de bases de datos
+*.sqlite3
+*.db
+
+# Directorios de subida
+uploads/
+vcards/
+
+# Archivos de configuración local
+*.env
+
+# Archivos de respaldo
+respaldo.txt
+site_backup.db
+
+# Archivos de logs
+*.log
+
+# Otros archivos sin seguimiento
+*.txt
+
+# Archivos específicos a ignorar
+concatenar_archivos.py
+
+# Archivos generados por el sistema operativo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Directorios de entornos de desarrollo
+.vscode/
+.idea/
+
+# Archivos de base de datos específicos
+instance/site.db
+
+----- Fin de .gitignore -----
+
+----- Inicio de app.py -----
+# app.py
+
+import os
+import uuid
+from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
+from flask_mail import Mail, Message
+from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
+from urllib.parse import urlparse
+from werkzeug.utils import secure_filename
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from extensions import db, migrate, bcrypt, login_manager
+from models import User, Pulzcard
+from forms import (
+    RegistrationForm, LoginForm, UpdateAccountForm,
+    RequestResetForm, ResetPasswordForm,
+    PulzcardForm, EditPulzcardForm, DeletePulzcardForm
+)
+from flask_login import login_required, current_user, login_user, logout_user
+from datetime import datetime
+
+load_dotenv()
+
+app = Flask(__name__, instance_relative_config=True)
+app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
+
+# Configuración de la Base de Datos
+db_path = os.path.join(app.instance_path, 'site.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+migrate.init_app(app, db)
+bcrypt.init_app(app)
+login_manager.init_app(app)
+
+# Configuración de Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail = Mail(app)
+
+# Inicializar CSRFProtect
+csrf = CSRFProtect(app)
+
+# Configuración de Flask-Login
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'warning'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Directorio para guardar las vCards
+VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
+os.makedirs(VCARD_FOLDER, exist_ok=True)
+
+# Extensiones permitidas (si las usas)
+ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
+ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
+
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+# Configurar el serializador
+s = URLSafeTimedSerializer(app.secret_key)
+
+# Rutas de Autenticación
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        flash('Ya estás logueado.', 'info')
+        return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Tu cuenta ha sido creada! Ahora puedes iniciar sesión.', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Registrar', form=form)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        flash('Ya estás logueado.', 'info')
+        return redirect(url_for('home'))
+    form = LoginForm()
+    next_page = request.args.get('next')
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            flash('Has iniciado sesión correctamente.', 'success')
+            # Obtener 'next' del formulario si no está en los argumentos
+            if not next_page:
+                next_page = request.form.get('next')
+            # Verificación de seguridad para 'next'
+            if not next_page or urlparse(next_page).netloc != '':
+                next_page = url_for('home')
+            return redirect(next_page)
+        else:
+            flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
+    return render_template('login.html', title='Iniciar Sesión', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('Has cerrado sesión.', 'info')
+    return redirect(url_for('home'))
+
+@app.route('/account', methods=['GET', 'POST'])
+@login_required
+def account():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        if form.password.data:
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            current_user.password = hashed_password
+        db.session.commit()
+        flash('Tu cuenta ha sido actualizada.', 'success')
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('account.html', title='Perfil de Usuario', form=form)
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        flash('Ya estás logueado.', 'info')
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.get_reset_token()
+            msg = Message('Recupera tu Contraseña', recipients=[user.email])
+            reset_url = url_for('reset_token', token=token, _external=True)
+            msg.body = f'''Para restablecer tu contraseña, visita el siguiente enlace:
+{reset_url}
+
+Si no solicitaste un restablecimiento de contraseña, por favor ignora este mensaje.
+'''
+            mail.send(msg)
+            flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
+            return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Recuperar Contraseña', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        flash('Ya estás logueado.', 'info')
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if not user:
+        flash('El token es inválido o ha expirado.', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión.', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Restablecer Contraseña', form=form)
+
+# Rutas Existentes
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        mensaje = request.form.get('mensaje')
+
+        if not nombre or not email or not mensaje:
+            flash('Por favor, completa todos los campos.', 'danger')
+            return redirect(url_for('contact'))
+
+        try:
+            msg = Message(
+                subject=f"Nuevo mensaje de {nombre}",
+                recipients=['contacto@pulztag.com'],
+                body=f"Nombre: {nombre}\nCorreo Electrónico: {email}\n\nMensaje:\n{mensaje}"
+            )
+            mail.send(msg)
+            flash('¡Tu mensaje ha sido enviado exitosamente!', 'success')
+            return redirect(url_for('contact'))
+        except Exception as e:
+            print(e)
+            flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
+            return redirect(url_for('contact'))
+
+    return render_template('contact.html')
+
+@app.route('/products')
+def products():
+    return render_template('products.html')
+
+@app.route('/order', methods=['GET', 'POST'])
+@login_required
+def order():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        dispositivo = request.form.get('dispositivo')
+        mensaje = request.form.get('mensaje')
+
+        # Validaciones básicas
+        if not nombre or not email or not dispositivo or not mensaje:
+            flash('Por favor, completa todos los campos.', 'danger')
+            return redirect(url_for('order'))
+
+        # Manejar los logos
+        logos = request.files.getlist('logos')
+        valid_logos = [logo for logo in logos if logo.filename != '']
+        if len(valid_logos) > 10:
+            flash('Puedes subir un máximo de 10 logos.', 'danger')
+            return redirect(url_for('order'))
+
+        saved_logos = []
+        for logo in valid_logos:
+            filename = logo.filename.strip()
+            if allowed_file(filename, ALLOWED_LOGO_EXTENSIONS):
+                try:
+                    secure_name = secure_filename(filename)
+                    unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
+                    logo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                    logo.save(logo_path)
+                    saved_logos.append((filename, logo_path))
+                    print(f"Logo guardado: {logo_path}")
+                except Exception as e:
+                    print(f"Error al guardar el logo {filename}: {e}")
+                    flash(f"Hubo un error al guardar el logo {filename}.", 'danger')
+                    return redirect(url_for('order'))
+            else:
+                flash(f"Formato de logo no permitido: {filename}", 'danger')
+                return redirect(url_for('order'))
+
+        # Manejar el archivo Excel
+        excel = request.files.get('excel')
+        if excel and excel.filename != '':
+            filename = excel.filename.strip()
+            if allowed_file(filename, ALLOWED_EXCEL_EXTENSIONS):
+                try:
+                    secure_name = secure_filename(filename)
+                    unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
+                    excel_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                    excel.save(excel_path)
+                    print(f"Archivo Excel guardado: {excel_path}")
+                except Exception as e:
+                    print(f"Error al guardar el archivo Excel {filename}: {e}")
+                    flash(f"Hubo un error al guardar el archivo Excel {filename}.", 'danger')
+                    return redirect(url_for('order'))
+            else:
+                flash('Formato de archivo Excel no permitido.', 'danger')
+                return redirect(url_for('order'))
+        else:
+            excel_path = None
+
+        # Crear un DataFrame con los datos del pedido
+        data = {
+            'Nombre': [nombre],
+            'Correo Electrónico': [email],
+            'Selección de Dispositivo': [dispositivo],
+            'Mensaje': [mensaje]
+        }
+        df = pd.DataFrame(data)
+
+        # Guardar el DataFrame en un archivo Excel
+        pedido_excel_path = os.path.join(app.config['UPLOAD_FOLDER'], f"pedido_{uuid.uuid4().hex}.xlsx")
+        df.to_excel(pedido_excel_path, index=False)
+        print(f"Pedido guardado en: {pedido_excel_path}")
+
+        # Enviar el correo con los archivos adjuntos
+        try:
+            msg = Message(
+                subject="Nuevo Pedido de PulztagWeb",
+                recipients=['contacto@pulztag.com']
+            )
+            msg.body = f"Nombre: {nombre}\nCorreo Electrónico: {email}\nSelección de Dispositivo: {dispositivo}\n\nMensaje:\n{mensaje}"
+
+            # Adjuntar el archivo Excel del pedido
+            with open(pedido_excel_path, 'rb') as fp:
+                msg.attach(
+                    "pedido.xlsx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    fp.read()
+                )
+
+            # Adjuntar los logos
+            for original_filename, logo_path in saved_logos:
+                try:
+                    print(f"Adjuntando logo: {original_filename} desde {logo_path}")
+                    with open(logo_path, 'rb') as fp:
+                        # Determinar el MIME type correcto
+                        ext = original_filename.rsplit('.', 1)[1].lower()
+                        mime_type = f"image/{'jpeg' if ext in ['jpg', 'jpeg'] else ext}"
+                        msg.attach(
+                            original_filename,
+                            mime_type,
+                            fp.read()
+                        )
+                except Exception as e:
+                    print(f"Error adjuntando el logo {original_filename}: {e}")
+
+            # Adjuntar el archivo Excel si existe
+            if excel_path:
+                with open(excel_path, 'rb') as fp:
+                    msg.attach(
+                        os.path.basename(excel_path),
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        fp.read()
+                    )
+
+            mail.send(msg)
+            print("Correo enviado exitosamente.")
+
+            # Eliminar archivos temporales
+            os.remove(pedido_excel_path)
+            for _, logo_path in saved_logos:
+                os.remove(logo_path)
+            if excel_path:
+                os.remove(excel_path)
+            print("Archivos temporales eliminados.")
+
+            flash('Su solicitud fue enviada exitosamente. ¡Pronto nos pondremos en contacto contigo!', 'success')
+            return redirect(url_for('order'))
+
+        except Exception as e:
+            print(f"Error al enviar el correo: {e}")
+            flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
+            return redirect(url_for('order'))
+
+    return render_template('order.html')
+
+# Rutas de Pulzcard
+@app.route('/pulzcard', methods=['GET', 'POST'])
+@login_required
+def pulzcard():
+    form = PulzcardForm()
+    if form.validate_on_submit():
+        # Crear Pulzcard y agregar a la base de datos
+        pulzcard = Pulzcard(
+            card_name=form.card_name.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            organization=form.organization.data,
+            position=form.position.data,
+            phone=form.phone.data,
+            email=form.email.data,
+            website=form.website.data,
+            address=form.address.data,
+            owner=current_user
+        )
+
+        # Añadir a la sesión y hacer flush para obtener card_id
+        db.session.add(pulzcard)
+        try:
+            db.session.flush()  # Asigna card_id sin commit
+            print(f"Pulzcard creada con card_id: {pulzcard.card_id}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al hacer flush de Pulzcard: {e}")
+            flash('Hubo un error al crear tu Pulzcard. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('pulzcard'))
+
+        # Crear y guardar la vCard
+        vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{pulzcard.first_name} {pulzcard.last_name}
+ORG:{pulzcard.organization}
+TITLE:{pulzcard.position}
+TEL;TYPE=WORK,VOICE:{pulzcard.phone}
+EMAIL:{pulzcard.email}
+URL:{pulzcard.website}
+ADR;TYPE=WORK:;;{pulzcard.address}
+END:VCARD"""
+        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+        print(f"Intentando guardar vCard en: {vcard_path}")
+
+        try:
+            with open(vcard_path, 'w') as f:
+                f.write(vcard)
+            print(f"vCard guardada exitosamente en: {vcard_path}")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al guardar la vCard: {e}")
+            flash('Hubo un error al guardar la Pulzcard.', 'danger')
+            return redirect(url_for('pulzcard'))
+
+        try:
+            db.session.commit()
+            print("Pulzcard añadida a la base de datos correctamente.")
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al crear Pulzcard en la base de datos: {e}")
+            flash('Hubo un error al crear tu Pulzcard. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('pulzcard'))
+
+        # Redirigir usando card_id en lugar de id
+        return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
+    else:
+        print("Formulario no validado. Errores:", form.errors)
+    return render_template('pulzcard/index.html', form=form)
+
+@app.route('/pulzcard/card/<card_id>')
+@login_required
+def pulzcard_card(card_id):
+    # Consultar la Pulzcard en la base de datos usando card_id y asegurarse de que pertenezca al usuario actual
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first()
+    if not pulzcard:
+        flash('Tarjeta no encontrada o no tienes permiso para acceder a ella.', 'danger')
+        return redirect(url_for('profile'))
+
+    # Leer la vCard
+    vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
+    print(f"Intentando leer vCard en: {vcard_path}")
+    if not os.path.exists(vcard_path):
+        print(f"vCard no encontrada en: {vcard_path}")
+        flash('Tarjeta no encontrada.', 'danger')
+        return redirect(url_for('profile'))
+
+    with open(vcard_path, 'r') as f:
+        vcard = f.read()
+
+    # Extraer información para la página personalizada
+    contact_info = {}
+    for line in vcard.split('\n'):
+        if line.startswith('FN:'):
+            contact_info['full_name'] = line.replace('FN:', '')
+        elif line.startswith('ORG:'):
+            contact_info['organization'] = line.replace('ORG:', '')
+        elif line.startswith('TITLE:'):
+            contact_info['position'] = line.replace('TITLE:', '')
+        elif line.startswith('TEL'):
+            contact_info['phone'] = line.split(':')[1]
+        elif line.startswith('EMAIL:'):
+            contact_info['email'] = line.replace('EMAIL:', '')
+        elif line.startswith('URL:'):
+            contact_info['website'] = line.replace('URL:', '')
+        elif line.startswith('ADR'):
+            contact_info['address'] = line.split(':')[1]
+
+    print(f"Información de contacto extraída: {contact_info}")
+    return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
+
+@app.route('/pulzcard/vcards/<filename>')
+@login_required
+def pulzcard_download_vcard(filename):
+    return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+
+# Nueva Ruta: Perfil de Usuario
+@app.route('/profile')
+@login_required
+def profile():
+    pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
+    # Crear una instancia de DeletePulzcardForm para cada Pulzcard con un prefijo único
+    delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
+    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards, delete_forms=delete_forms)
+
+# Nueva Ruta: Editar Pulzcard
+@app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
+@login_required
+def edit_pulzcard(card_id):
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
+    form = EditPulzcardForm()
+
+    if form.validate_on_submit():
+        pulzcard.card_name = form.card_name.data
+        pulzcard.first_name = form.first_name.data
+        pulzcard.last_name = form.last_name.data
+        pulzcard.organization = form.organization.data
+        pulzcard.position = form.position.data
+        pulzcard.phone = form.phone.data
+        pulzcard.email = form.email.data
+        pulzcard.website = form.website.data
+        pulzcard.address = form.address.data
+        pulzcard.created_at = datetime.utcnow()  # Actualizar la fecha de modificación si es necesario
+        db.session.commit()
+
+        # Actualizar la vCard en el sistema de archivos
+        vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{pulzcard.first_name} {pulzcard.last_name}
+ORG:{pulzcard.organization}
+TITLE:{pulzcard.position}
+TEL;TYPE=WORK,VOICE:{pulzcard.phone}
+EMAIL:{pulzcard.email}
+URL:{pulzcard.website}
+ADR;TYPE=WORK:;;{pulzcard.address}
+END:VCARD"""
+        vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+        with open(vcard_path, 'w') as f:
+            f.write(vcard)
+
+        flash('Pulzcard actualizada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.card_name.data = pulzcard.card_name
+        form.first_name.data = pulzcard.first_name
+        form.last_name.data = pulzcard.last_name
+        form.organization.data = pulzcard.organization
+        form.position.data = pulzcard.position
+        form.phone.data = pulzcard.phone
+        form.email.data = pulzcard.email
+        form.website.data = pulzcard.website
+        form.address.data = pulzcard.address
+
+    return render_template('edit_pulzcard.html', title='Editar Pulzcard', form=form, pulzcard=pulzcard)
+
+# Nueva Ruta: Eliminar Pulzcard
+@app.route('/pulzcard/delete/<card_id>', methods=['POST'])
+@login_required
+def delete_pulzcard(card_id):
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
+
+    form = DeletePulzcardForm()
+    if form.validate_on_submit():
+        try:
+            # Eliminar la vCard del sistema de archivos
+            vcard_path = os.path.join(VCARD_FOLDER, f'{pulzcard.card_id}.vcf')
+            if os.path.exists(vcard_path):
+                os.remove(vcard_path)
+
+            # Eliminar la Pulzcard de la base de datos
+            db.session.delete(pulzcard)
+            db.session.commit()
+            flash('Pulzcard eliminada exitosamente.', 'success')
+        except Exception as e:
+            print(f"Error al eliminar Pulzcard: {e}")
+            flash('Hubo un error al eliminar la Pulzcard. Por favor, intenta de nuevo.', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+
+    return redirect(url_for('profile'))
+
+# Ruta de Prueba para Crear una vCard Manualmente
+@app.route('/test_vcard')
+def test_vcard():
+    test_vcard_content = """BEGIN:VCARD
+VERSION:3.0
+FN:Prueba Nombre
+ORG:Prueba Organización
+TITLE:Prueba Cargo
+TEL;TYPE=WORK,VOICE:123456789
+EMAIL:prueba@example.com
+URL:https://www.prueba.com
+ADR;TYPE=WORK:;;Calle Falsa 123
+END:VCARD"""
+
+    test_vcard_path = os.path.join(VCARD_FOLDER, 'test.vcf')
+    try:
+        with open(test_vcard_path, 'w') as f:
+            f.write(test_vcard_content)
+        return "Archivo de prueba vCard creado exitosamente."
+    except Exception as e:
+        return f"Error al crear el archivo de prueba vCard: {e}"
+
+# Crear las tablas de la base de datos
+with app.app_context():
+    db.create_all()  # Asegura que la base de datos y las tablas se creen
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+----- Fin de app.py -----
+
+----- Inicio de extensions.py -----
+# extensions.py
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+
+db = SQLAlchemy()
+migrate = Migrate()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+
+----- Fin de extensions.py -----
+
+----- Inicio de forms.py -----
+# forms.py
+
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError
+from models import User
+from flask_login import current_user
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Nombre de Usuario', validators=[
+                           DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[
+                             DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar Contraseña',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Crear Cuenta')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError(
+                'Este nombre de usuario ya está en uso. Por favor, elige otro.')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user:
+            raise ValidationError(
+                'Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+
+class LoginForm(FlaskForm):
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired()])
+    remember = BooleanField('Recordarme')
+    submit = SubmitField('Iniciar Sesión')
+
+class UpdateAccountForm(FlaskForm):
+    username = StringField('Nombre de Usuario', validators=[
+                           DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
+    confirm_password = PasswordField('Confirmar Nueva Contraseña',
+                                     validators=[EqualTo('password')])
+    submit = SubmitField('Actualizar Perfil')
+
+    def validate_username(self, username):
+        if username.data != current_user.username:
+            user = User.query.filter_by(username=username.data).first()
+            if user:
+                raise ValidationError(
+                    'Este nombre de usuario ya está en uso. Por favor, elige otro.')
+
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = User.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError(
+                    'Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    submit = SubmitField('Solicitar Restablecimiento de Contraseña')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError(
+                'No hay una cuenta asociada a este correo electrónico.')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Contraseña', validators=[
+                             DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar Contraseña',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Restablecer Contraseña')
+
+class PulzcardForm(FlaskForm):
+    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
+    first_name = StringField('Nombre', validators=[DataRequired()])
+    last_name = StringField('Apellido', validators=[DataRequired()])
+    organization = StringField(
+        'Nombre Organización', validators=[DataRequired()])
+    position = StringField('Cargo', validators=[DataRequired()])
+    phone = StringField('Número Telefónico', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[
+                        DataRequired(), Email()])
+    website = StringField('Página Web', validators=[DataRequired(), URL()])
+    address = StringField('Dirección', validators=[DataRequired()])
+    submit = SubmitField('Crear Tarjeta')
+
+class EditPulzcardForm(FlaskForm):
+    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired(), Length(max=100)])
+    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
+    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=50)])
+    organization = StringField('Nombre Organización', validators=[DataRequired(), Length(max=100)])
+    position = StringField('Cargo', validators=[DataRequired(), Length(max=100)])
+    phone = StringField('Número Telefónico', validators=[DataRequired(), Length(max=20)])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
+    website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
+    address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
+    submit = SubmitField('Actualizar Pulzcard')
+
+class DeletePulzcardForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+----- Fin de forms.py -----
+
+----- Inicio de minimal_app.py -----
+import os
+
+from flask import Flask
+from extensions import db, migrate
+
+app = Flask(__name__, instance_relative_config=True)
+
+# Crear el directorio 'instance' si no existe
+instance_dir = os.path.join(app.instance_path)
+os.makedirs(instance_dir, exist_ok=True)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
+
+db.init_app(app)
+migrate.init_app(app, db)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Asegura que la base de datos y las tablas se creen
+    app.run(debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
+
+----- Fin de minimal_app.py -----
+
+----- Inicio de models.py -----
+# models.py
+
+from extensions import db
+from flask_login import UserMixin
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from flask import current_app
+from datetime import datetime
+import uuid
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    # Relación con Pulzcards
+    pulzcards = db.relationship('Pulzcard', backref='owner', lazy=True)
+
+    def get_reset_token(self, expires_sec=3600):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        return s.dumps(self.email, salt='password-reset-salt')
+
+    @staticmethod
+    def verify_reset_token(token, expires_sec=3600):
+        s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        try:
+            email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
+        except SignatureExpired:
+            return None
+        except:
+            return None
+        return User.query.filter_by(email=email).first()
+
+class Pulzcard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    card_name = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    organization = db.Column(db.String(100), nullable=False)
+    position = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    website = db.Column(db.String(200), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f"Pulzcard('{self.card_name}', '{self.email}')"
+
+----- Fin de models.py -----
+
+----- Inicio de requirements.txt -----
+alembic==1.13.3
+bcrypt==4.2.0
+blinker==1.8.2
+click==8.1.7
+dnspython==2.7.0
+email_validator==2.2.0
+et-xmlfile==1.1.0
+Flask==3.0.3
+Flask-Admin==1.6.1
+Flask-Bcrypt==1.0.1
+Flask-Login==0.6.3
+Flask-Mail==0.10.0
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+gunicorn==23.0.0
+idna==3.10
+itsdangerous==2.2.0
+Jinja2==3.1.4
+Mako==1.3.5
+MarkupSafe==2.1.5
+numpy==1.26.1
+openpyxl==3.1.5
+packaging==24.1
+pandas==2.2.3
+pillow==10.4.0
+pypng==0.20220715.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+pytz==2024.2
+qrcode==7.4.2
+six==1.16.0
+SQLAlchemy==2.0.35
+typing_extensions==4.12.2
+tzdata==2024.2
+Werkzeug==3.0.4
+WTForms==3.1.2
+XlsxWriter==3.2.0
+psycopg2-binary==2.9.10
+
+
+----- Fin de requirements.txt -----
+
+----- Inicio de site_backup.db -----
+
+
+----- Fin de site_backup.db -----
+
+----- Inicio de test_db.py -----
+# test_db.py
+
+from sqlalchemy import create_engine
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_path = os.path.join(basedir, 'instance', 'site_new.db')
+db_uri = f'sqlite:///{db_path}'
+
+engine = create_engine(db_uri)
+
+try:
+    connection = engine.connect()
+    print("Conexión exitosa a la base de datos.")
+    connection.close()
+except Exception as e:
+    print(f"Error al conectar a la base de datos: {e}")
+
+----- Fin de test_db.py -----
+
+----- Inicio de instance/site_new.db -----
+----- No se pudo leer instance/site_new.db (archivo binario o no decodable) -----
+
+----- Fin de instance/site_new.db -----
+
+----- migrations/__pycache__/__init__.cpython-311.pyc no encontrado -----
 

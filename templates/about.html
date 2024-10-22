@@ -1,46 +1,49 @@
 <!-- templates/about.html -->
 
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
 {% extends 'base.html' %}
 
 {% block title %}Acerca de - Pulztag{% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-4">Acerca de Pulztag</h2>
-<div class="row align-items-center mb-5">
-    <!-- Texto Descriptivo -->
-    <div class="col-md-6">
-        <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes a través de soluciones
-            NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
-            innovación y el compromiso con la excelencia nos posicionan como socios estratégicos en la era digital.</p>
-        <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio,
-            facilitando conexiones más profundas y significativas con los clientes. Además, desarrollamos servicios
-            integrales que abarcan desde la implementación tecnológica hasta estrategias de marketing innovadoras,
-            asegurando que cada solución no solo cumpla, sino que supere las expectativas.</p>
-        <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
+<!-- Sección Acerca de con Fondo de Degradado -->
+<section class="jumbotron text-center mb-5">
+    <div class="container">
+        <h1 class="display-4">Acerca de Pulztag</h1>
+        <p class="lead">Reinventando la interacción entre empresas y clientes con soluciones NFC innovadoras.</p>
     </div>
-    <!-- Imagen Representativa -->  
-    <div class="col-md-6">
-        <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
-            alt="Pulztag Innovación NFC">
+    <div class="container">
+        <div class="row align-items-center mt-4">
+            <!-- Texto Descriptivo -->
+            <div class="col-md-6">
+                <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes a través de soluciones
+                    NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
+                    innovación y el compromiso con la excelencia nos posicionan como socios estratégicos en la era digital.</p>
+                <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio,
+                    facilitando conexiones más profundas y significativas con los clientes. Además, desarrollamos servicios
+                    integrales que abarcan desde la implementación tecnológica hasta estrategias de marketing innovadoras,
+                    asegurando que cada solución no solo cumpla, sino que supere las expectativas.</p>
+                <div class="text-center">
+                    <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
+                </div>
+            </div>
+            <!-- Imagen Representativa -->  
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
+                    alt="Pulztag Innovación NFC">
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Nuestra Misión y Visión -->
 <section class="mt-5">
     <div class="row">
         <!-- Misión -->
-        <div class="col-md-6">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la misión -->
-                <!-- <img src="{{ url_for('static', filename='images/mision.jpg') }}" class="card-img-top" alt="Misión"> -->
+        <div class="col-md-6 mb-4">
+            <div class="card text-center service-background h-100">
                 <div class="card-body">
                     <i class="bi bi-flag" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Misión</h5>
@@ -51,10 +54,8 @@
             </div>
         </div>
         <!-- Visión -->
-        <div class="col-md-6 mt-4 mt-md-0">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la visión -->
-                <!-- <img src="{{ url_for('static', filename='images/vision.jpg') }}" class="card-img-top" alt="Visión"> -->
+        <div class="col-md-6 mb-4">
+            <div class="card text-center service-background h-100">
                 <div class="card-body">
                     <i class="bi bi-eye" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Visión</h5>
@@ -67,15 +68,16 @@
     </div>
 </section>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Nuestros Valores -->
 <section class="mt-5">
     <h3 class="text-center mb-4">Nuestros Valores</h3>
     <div class="row">
         <!-- Valor 1: Innovación -->
-        <div class="col-md-4">
-            <div class="card text-center">
-                <!-- Imagen: valor_innovacion.jpg (Imagen que represente innovación) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_innovacion.jpg') }}" class="card-img-top" alt="Innovación"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-lightbulb" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Innovación</h5>
@@ -85,10 +87,8 @@
             </div>
         </div>
         <!-- Valor 2: Calidad -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_calidad.jpg (Imagen que represente calidad) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_calidad.jpg') }}" class="card-img-top" alt="Calidad"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-award" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Calidad</h5>
@@ -98,10 +98,8 @@
             </div>
         </div>
         <!-- Valor 3: Colaboración -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_colaboracion.jpg (Imagen que represente colaboración) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_colaboracion.jpg') }}" class="card-img-top" alt="Colaboración"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Colaboración</h5>
@@ -112,4 +110,8 @@
         </div>
     </div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 {% endblock %}

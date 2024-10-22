@@ -6,25 +6,23 @@
 
 {% block content %}
 <h2 class="text-center mb-4">Contáctanos</h2>
-<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
-    contacto contigo lo antes posible.</p>
+<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
 
 <div class="row justify-content-center">
     <div class="col-md-8">
         <form method="POST" action="{{ url_for('contact') }}">
+            {{ form.hidden_tag() }}  <!-- Esto incluye el CSRF token -->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                {{ form.nombre(class="form-control", placeholder="Tu nombre", required=True) }}
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com"
-                    required>
+                {{ form.email(class="form-control", placeholder="nombre@ejemplo.com", required=True) }}
             </div>
             <div class="mb-3">
                 <label for="mensaje" class="form-label">Mensaje</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="5" placeholder="Tu mensaje"
-                    required></textarea>
+                {{ form.mensaje(class="form-control", rows="5", placeholder="Tu mensaje", required=True) }}
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
