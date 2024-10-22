@@ -42,4 +42,4 @@ Desktop.ini
 .idea/
 
 # Archivos de base de datos específicos
-instance/site.db
+instance/site_new.db
