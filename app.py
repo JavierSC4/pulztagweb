@@ -420,21 +420,20 @@ END:VCARD"""
     return render_template('pulzcard/index.html', form=form)
 
 @app.route('/pulzcard/card/<card_id>')
-@login_required
 def pulzcard_card(card_id):
-    # Consultar la Pulzcard en la base de datos usando card_id y asegurarse de que pertenezca al usuario actual
-    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first()
+    # Consultar la Pulzcard en la base de datos usando solo card_id
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
-        flash('Tarjeta no encontrada o no tienes permiso para acceder a ella.', 'danger')
-        return redirect(url_for('profile'))
-
+        flash('Tarjeta no encontrada.', 'danger')
+        return redirect(url_for('home'))
+    
     # Leer la vCard
     vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
     print(f"Intentando leer vCard en: {vcard_path}")
     if not os.path.exists(vcard_path):
         print(f"vCard no encontrada en: {vcard_path}")
         flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('profile'))
+        return redirect(url_for('home'))
 
     with open(vcard_path, 'r') as f:
         vcard = f.read()
@@ -461,8 +460,12 @@ def pulzcard_card(card_id):
     return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
 
 @app.route('/pulzcard/vcards/<filename>')
-@login_required
 def pulzcard_download_vcard(filename):
+    # Opcional: Validar que el archivo existe y pertenece a una Pulzcard existente
+    file_path = os.path.join(VCARD_FOLDER, filename)
+    if not os.path.exists(file_path):
+        flash('Archivo no encontrado.', 'danger')
+        return redirect(url_for('home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 # Nueva Ruta: Perfil de Usuario
