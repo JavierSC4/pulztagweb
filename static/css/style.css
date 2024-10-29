@@ -1,5 +1,3 @@
-/* static/css/style.css */
-
 /* Tipografía Global */
 body {
     font-family: 'Roboto', sans-serif;
@@ -132,12 +130,102 @@ a:hover {
     box-shadow: none;
 }
 
-/* Estilos para el formulario de contacto y pedido */
-form {
-    background-color: #f9f9f9;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+/* Estilo para el botón de eliminación con ícono */
+form button {
+    display: inline-block;
+    margin: 0;
+    padding: 0.25rem 0.75rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button i {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+}
+
+form button:hover {
+    background-color: #c82333;
+}
+
+/* Responsividad en dispositivos móviles */
+@media (max-width: 768px) {
+    form button {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    form button i {
+        font-size: 0.9rem;
+    }
+}
+
+/* Color de los títulos y subtítulos en los formularios */
+.form-title,
+.form-subtitle {
+    color: #03c0ff;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #ffffff 0%, #ccefff 100%);
+    color: #333333;
+}
+
+/* Estilo para la imagen de perfil en Pulzcard */
+.profile-image {
+    width: 150px;
+    height: 150px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para enlaces, botones y textos en Pulzcard */
+.text-primary,
+.btn-outline-primary,
+.btn-outline-secondary,
+.text-primary.text-decoration-none {
+    color: #03c0ff !important;
+}
+
+.text-primary:hover,
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+    color: #0290b8 !important;
+}
+
+/* Estilos para el botón "Agregar Contacto" */
+.btn-outline-primary {
+    border-color: #03c0ff;
+    color: #03c0ff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #e0f7ff;
+    color: #0290b8;
+    border-color: #0290b8;
+}
+
+/* Estilos para el botón "Compartir URL" */
+.btn-outline-secondary {
+    border-color: #03c0ff;
+    color: #03c0ff;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #e0f7ff;
+    color: #0290b8;
+    border-color: #0290b8;
 }
 
 form .form-control {
@@ -167,27 +255,10 @@ form h4 {
     max-width: 200px;
 }
 
-/* Transiciones suaves para imágenes */
-img.rounded.shadow {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-img.rounded.shadow:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
 /* Botón de Envío personalizado */
 #submitBtn {
     padding: 0.75rem 2rem;
     font-size: 1rem;
-}
-
-/* Contenedor de pedido con formulario a la izquierda y la imagen a la derecha */
-.row.justify-content-center {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
 
 /* Responsividad para dispositivos móviles */
@@ -196,27 +267,20 @@ img.rounded.shadow:hover {
         flex-direction: column;
     }
 
-    /* Ajustar el tamaño máximo del campo de cantidad en dispositivos móviles */
     #cantidad {
         max-width: 100%;
     }
 
-    /* Ajustar los títulos de las etapas en dispositivos móviles */
     form h4 {
         font-size: 1.25rem;
     }
 
-    /* Ajustar el tamaño de las imágenes en dispositivos móviles */
     img.rounded.shadow {
         width: 100%;
     }
 }
 
-/* ------------------------------------- */
-/* Nuevos estilos para carga de archivos  */
-/* ------------------------------------- */
-
-/* Estilos para las listas de archivos adjuntos */
+/* Estilos para carga de archivos */
 .list-group-item {
     display: flex;
     justify-content: space-between;
@@ -238,50 +302,44 @@ img.rounded.shadow:hover {
     color: #cc0000;
 }
 
-/* Estilos para mensajes de error específicos */
+/* Estilos para mensajes de error */
 .text-danger {
     font-size: 0.9rem;
 }
 
-/* Estilos para las alertas de éxito */
+/* Estilos para alertas */
 .alert-success {
     background-color: #d4edda;
     color: #155724;
     border-color: #c3e6cb;
 }
 
-/* Estilos para las alertas de error */
 .alert-danger {
     background-color: #f8d7da;
     color: #721c24;
     border-color: #f5c6cb;
 }
 
-/* Opcional: Añadir margen superior para las alertas */
 .alert {
     margin-top: 20px;
 }
 
-/* Estilo para el texto de las secciones de subida de archivos */
 .text-muted {
-    color: #a7a7a7 !important; /* Asegúrate de que el color se aplique */
+    color: #a7a7a7 !important;
 }
 
-/* ------------------------------------- */
 /* Estilos para la sección de Soluciones Personalizadas */
-/* ------------------------------------- */
-
 .custom-solutions-section {
     background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
     color: #fff;
-    padding: 40px; /* Reducido desde 50px para menos margen */
+    padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .custom-solutions-section h4 {
-    font-size: 2.5rem; /* Aumentado el tamaño del texto */
-    margin-bottom: 20px; /* Reducido margen inferior */
+    font-size: 2.5rem;
+    margin-bottom: 20px;
 }
 
 .solutions-list {
@@ -291,78 +349,10 @@ img.rounded.shadow:hover {
 }
 
 .solution-item {
-    flex: 1 1 220px; /* Ajustado para mejor adaptabilidad */
-    margin: 10px; /* Reducido margen */
+    flex: 1 1 220px;
+    margin: 10px;
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 15px; /* Reducido padding */
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.solution-item h5 {
-    font-size: 1.5rem; /* Aumentado tamaño del texto */
-    margin-bottom: 8px; /* Reducido margen inferior */
-    color: #fff;
-}
-
-.solution-item p {
-    color: #e0f7fa;
-    font-size: 1.2rem; /* Tamaño incrementado del texto */
-    line-height: 1.5;  /* Opcional: Mejora la legibilidad */
-}
-
-.solution-item:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Responsividad para la sección de Soluciones Personalizadas */
-@media (max-width: 768px) {
-    .custom-solutions-section {
-        padding: 20px; /* Menor padding en móviles */
-    }
-
-    .custom-solutions-section h4 {
-        font-size: 2rem; /* Ajustar tamaño del título */
-        margin-bottom: 15px;
-    }
-
-    .solution-item {
-        flex: 1 1 100%; /* Apilar elementos en una sola columna */
-        margin: 5px 0;
-    }
-
-    .solution-item h5 {
-        font-size: 1.25rem;
-    }
-
-    .solution-item p {
-        font-size: 0.95rem;
-    }
-}
-
-/* ------------------------------------- */
-/* Mejora Adicional: Estilos para Precios */
-/* ------------------------------------- */
-
-.price {
-    color: #03c0ff;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.price-value {
-    font-size: 1.75rem;
-    color: #03c0ff;
-}
-
-@media (max-width: 768px) {
-    .price {
-        font-size: 1.25rem;
-    }
-
-    .price-value {
-        font-size: 1.5rem;
-    }
-}
+    transition: transform

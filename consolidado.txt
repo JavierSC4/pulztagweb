@@ -280,6 +280,19 @@ footer a:hover {
     color: #555555;
 }
 
+/* Clase para el fondo de las secciones de servicios */
+.service-background {
+    background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s ease;
+}
+
+.service-background:hover {
+    background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
+}
+
 /* Cards */
 .card {
     border: none;
@@ -870,47 +883,47 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Inicio de templates/about.html -----
 <!-- templates/about.html -->
 
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
 {% extends 'base.html' %}
 
 {% block title %}Acerca de - Pulztag{% endblock %}
 
 {% block content %}
-<h2 class="text-center mb-4">Acerca de Pulztag</h2>
-<div class="row align-items-center mb-5">
-    <!-- Texto Descriptivo -->
-    <div class="col-md-6">
-        <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes a través de soluciones
-            NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
-            innovación y el compromiso con la excelencia nos posicionan como socios estratégicos en la era digital.</p>
-        <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio,
-            facilitando conexiones más profundas y significativas con los clientes. Además, desarrollamos servicios
-            integrales que abarcan desde la implementación tecnológica hasta estrategias de marketing innovadoras,
-            asegurando que cada solución no solo cumpla, sino que supere las expectativas.</p>
-        <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
+<!-- Sección Acerca de con Fondo de Degradado -->
+<section class="jumbotron text-center mb-5">
+    <div class="container">
+        <h1 class="display-4">Acerca de Pulztag</h1>
+        <p class="lead">Reinventando la interacción entre empresas y clientes con soluciones NFC innovadoras.</p>
     </div>
-    <!-- Imagen Representativa -->  
-    <div class="col-md-6">
-        <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
-            alt="Pulztag Innovación NFC">
+    <div class="container">
+        <div class="row align-items-center mt-4">
+            <!-- Texto Descriptivo -->
+            <div class="col-md-6">
+                <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes con soluciones
+                    NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
+                    innovación nos posicionan como socios estratégicos en la era digital.</p>
+                <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio y proyecto.</p>
+                <div class="text-center">
+                    <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
+                </div>
+            </div>
+            <!-- Imagen Representativa -->  
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
+                    alt="Pulztag Innovación NFC">
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Nuestra Misión y Visión -->
 <section class="mt-5">
     <div class="row">
         <!-- Misión -->
-        <div class="col-md-6">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la misión -->
-                <!-- <img src="{{ url_for('static', filename='images/mision.jpg') }}" class="card-img-top" alt="Misión"> -->
+        <div class="col-md-6 mb-4">
+            <div class="card text-center service-background h-100">
                 <div class="card-body">
                     <i class="bi bi-flag" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Misión</h5>
@@ -921,10 +934,8 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
         <!-- Visión -->
-        <div class="col-md-6 mt-4 mt-md-0">
-            <div class="card text-center h-100">
-                <!-- Opcional: Imagen relacionada con la visión -->
-                <!-- <img src="{{ url_for('static', filename='images/vision.jpg') }}" class="card-img-top" alt="Visión"> -->
+        <div class="col-md-6 mb-4">
+            <div class="card text-center service-background h-100">
                 <div class="card-body">
                     <i class="bi bi-eye" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Visión</h5>
@@ -937,15 +948,16 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </section>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Nuestros Valores -->
 <section class="mt-5">
     <h3 class="text-center mb-4">Nuestros Valores</h3>
     <div class="row">
         <!-- Valor 1: Innovación -->
-        <div class="col-md-4">
-            <div class="card text-center">
-                <!-- Imagen: valor_innovacion.jpg (Imagen que represente innovación) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_innovacion.jpg') }}" class="card-img-top" alt="Innovación"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-lightbulb" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Innovación</h5>
@@ -955,10 +967,8 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
         <!-- Valor 2: Calidad -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_calidad.jpg (Imagen que represente calidad) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_calidad.jpg') }}" class="card-img-top" alt="Calidad"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-award" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Calidad</h5>
@@ -968,10 +978,8 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
         <!-- Valor 3: Colaboración -->
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
-                <!-- Imagen: valor_colaboracion.jpg (Imagen que represente colaboración) -->
-                <!-- <img src="{{ url_for('static', filename='images/valor_colaboracion.jpg') }}" class="card-img-top" alt="Colaboración"> -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center service-background">
                 <div class="card-body">
                     <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Colaboración</h5>
@@ -982,6 +990,10 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 {% endblock %}
 
 ----- Fin de templates/about.html -----
@@ -1200,25 +1212,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {% block content %}
 <h2 class="text-center mb-4">Contáctanos</h2>
-<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en
-    contacto contigo lo antes posible.</p>
+<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
 
 <div class="row justify-content-center">
     <div class="col-md-8">
         <form method="POST" action="{{ url_for('contact') }}">
+            {{ form.hidden_tag() }}  <!-- Esto incluye el CSRF token -->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                {{ form.nombre(class="form-control", placeholder="Tu nombre", required=True) }}
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com"
-                    required>
+                {{ form.email(class="form-control", placeholder="nombre@ejemplo.com", required=True) }}
             </div>
             <div class="mb-3">
                 <label for="mensaje" class="form-label">Mensaje</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="5" placeholder="Tu mensaje"
-                    required></textarea>
+                {{ form.mensaje(class="form-control", rows="5", placeholder="Tu mensaje", required=True) }}
             </div>
             <button type="submit" class="btn btn-primary">Enviar</button>
         </form>
@@ -1374,12 +1384,15 @@ document.addEventListener('DOMContentLoaded', function () {
     <a class="btn btn-primary btn-lg" href="#servicios" role="button">Nuestros Servicios</a>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Servicios Destacados -->
 <section id="servicios" class="mt-5">
     <h2 class="text-center mb-4">Nuestros Servicios</h2>
     <div class="row">
         <div class="col-md-4">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: servicios_personalizados.jpg (Imagen de dispositivos NFC personalizados) -->
                 <img src="{{ url_for('static', filename='images/servicios_personalizados.jpeg') }}" class="card-img-top"
                     alt="Dispositivos NFC Personalizados">
@@ -1392,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
         <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: desarrollo_servicios.jpg (Imagen de desarrollo de software o servicios) -->
                 <img src="{{ url_for('static', filename='images/desarrollo_servicios.jpeg') }}" class="card-img-top"
                     alt="Desarrollo de Servicios Personalizados">
@@ -1405,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
         </div>
         <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center">
+            <div class="card text-center service-background">
                 <!-- Imagen: fidelizacion_clientes.jpg (Imagen representativa de fidelización de clientes) -->
                 <img src="{{ url_for('static', filename='images/fidelizacion_clientes.jpeg') }}" class="card-img-top"
                     alt="Fidelización de Clientes">
@@ -1420,12 +1433,18 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </section>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Invitación a Ver Productos -->
 <section class="text-center mt-5">
     <h2>Explora Nuestros Productos</h2>
     <p>Descubre nuestra gama de dispositivos NFC personalizados diseñados para impulsar tu negocio.</p>
     <a class="btn btn-primary btn-lg" href="/products" role="button">Ver Productos</a>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Aplicaciones de Nuestras Soluciones NFC -->
 <section class="mt-5">
@@ -1483,6 +1502,9 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Clientes y Alianzas
 <!--<section class="mt-5">
@@ -1582,6 +1604,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="row justify-content-center">
     <div class="col-md-8 mb-4">
         <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">
+            {{ form.hidden_tag() }} <!-- CSRF token -->
+
             <!-- Campos del formulario -->
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre</label>
@@ -1689,6 +1713,9 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
     <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
     <div class="row mb-5">
         <div class="col-md-6">
@@ -1708,6 +1735,9 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
     <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
     <div class="row mb-5">
         <div class="col-md-6 order-md-2">
@@ -1726,6 +1756,9 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
     <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
     <div class="row mb-5">
         <div class="col-md-6">
@@ -1742,6 +1775,10 @@ document.addEventListener('DOMContentLoaded', function () {
             <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow">
         </div>
     </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
     <!-- Invitación a Crear tu Pulzcard -->
     <section class="mt-5 text-center">
         <h2>Crea tu Pulzcard</h2>
@@ -1980,7 +2017,7 @@ Desktop.ini
 .idea/
 
 # Archivos de base de datos específicos
-instance/site.db
+instance/site_new.db
 
 ----- Fin de .gitignore -----
 
@@ -1989,11 +2026,12 @@ instance/site.db
 
 import os
 import uuid
+from urllib.parse import urlparse
 from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
 from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
-from urllib.parse import urlparse
+import pandas as pd
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
@@ -2001,7 +2039,8 @@ from models import User, Pulzcard
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
-    PulzcardForm, EditPulzcardForm, DeletePulzcardForm
+    PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
+    ContactForm, OrderForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -2012,7 +2051,7 @@ app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Configuración de la Base de Datos
-db_path = os.path.join(app.instance_path, 'site.db')
+db_path = os.path.join(app.instance_path, 'site_new.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -2045,6 +2084,11 @@ def load_user(user_id):
 # Directorio para guardar las vCards
 VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
 os.makedirs(VCARD_FOLDER, exist_ok=True)
+
+# Directorio para guardar las subidas
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Extensiones permitidas (si las usas)
 ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
@@ -2079,19 +2123,12 @@ def login():
         flash('Ya estás logueado.', 'info')
         return redirect(url_for('home'))
     form = LoginForm()
-    next_page = request.args.get('next')
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Has iniciado sesión correctamente.', 'success')
-            # Obtener 'next' del formulario si no está en los argumentos
-            if not next_page:
-                next_page = request.form.get('next')
-            # Verificación de seguridad para 'next'
-            if not next_page or urlparse(next_page).netloc != '':
-                next_page = url_for('home')
-            return redirect(next_page)
+            return redirect(url_for('home'))  # Redirige siempre a 'home'
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -2171,14 +2208,11 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        mensaje = request.form.get('mensaje')
-
-        if not nombre or not email or not mensaje:
-            flash('Por favor, completa todos los campos.', 'danger')
-            return redirect(url_for('contact'))
+    form = ContactForm()  # Crear una instancia del formulario
+    if form.validate_on_submit():  # Usar validate_on_submit para verificar el envío
+        nombre = form.nombre.data
+        email = form.email.data
+        mensaje = form.mensaje.data
 
         try:
             msg = Message(
@@ -2194,7 +2228,7 @@ def contact():
             flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
 
-    return render_template('contact.html')
+    return render_template('contact.html', form=form)  # Pasar el formulario al template
 
 @app.route('/products')
 def products():
@@ -2203,11 +2237,13 @@ def products():
 @app.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        dispositivo = request.form.get('dispositivo')
-        mensaje = request.form.get('mensaje')
+    form = OrderForm()  # Crear una instancia del formulario
+    if form.validate_on_submit():
+        # Procesa el pedido
+        nombre = form.nombre.data
+        email = form.email.data
+        dispositivo = form.dispositivo.data
+        mensaje = form.mensaje.data
 
         # Validaciones básicas
         if not nombre or not email or not dispositivo or not mensaje:
@@ -2335,7 +2371,7 @@ def order():
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
-    return render_template('order.html')
+    return render_template('order.html', form=form)  # Pasar el formulario al template
 
 # Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -2408,21 +2444,20 @@ END:VCARD"""
     return render_template('pulzcard/index.html', form=form)
 
 @app.route('/pulzcard/card/<card_id>')
-@login_required
 def pulzcard_card(card_id):
-    # Consultar la Pulzcard en la base de datos usando card_id y asegurarse de que pertenezca al usuario actual
-    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first()
+    # Consultar la Pulzcard en la base de datos usando solo card_id
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
-        flash('Tarjeta no encontrada o no tienes permiso para acceder a ella.', 'danger')
-        return redirect(url_for('profile'))
-
+        flash('Tarjeta no encontrada.', 'danger')
+        return redirect(url_for('home'))
+    
     # Leer la vCard
     vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
     print(f"Intentando leer vCard en: {vcard_path}")
     if not os.path.exists(vcard_path):
         print(f"vCard no encontrada en: {vcard_path}")
         flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('profile'))
+        return redirect(url_for('home'))
 
     with open(vcard_path, 'r') as f:
         vcard = f.read()
@@ -2449,8 +2484,12 @@ def pulzcard_card(card_id):
     return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
 
 @app.route('/pulzcard/vcards/<filename>')
-@login_required
 def pulzcard_download_vcard(filename):
+    # Opcional: Validar que el archivo existe y pertenece a una Pulzcard existente
+    file_path = os.path.join(VCARD_FOLDER, filename)
+    if not os.path.exists(file_path):
+        flash('Archivo no encontrado.', 'danger')
+        return redirect(url_for('home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 # Nueva Ruta: Perfil de Usuario
@@ -2588,93 +2627,75 @@ login_manager = LoginManager()
 # forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, FileField, EmailField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError, Optional
 from models import User
 from flask_login import current_user
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[
-                           DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[
-                             DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirmar Contraseña',
-                                     validators=[DataRequired(), EqualTo('password')])
+    username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Crear Cuenta')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError(
-                'Este nombre de usuario ya está en uso. Por favor, elige otro.')
+            raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError(
-                'Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+            raise ValidationError('Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
 
 class LoginForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
     remember = BooleanField('Recordarme')
     submit = SubmitField('Iniciar Sesión')
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[
-                           DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
+    username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
-    confirm_password = PasswordField('Confirmar Nueva Contraseña',
-                                     validators=[EqualTo('password')])
+    confirm_password = PasswordField('Confirmar Nueva Contraseña', validators=[EqualTo('password')])
     submit = SubmitField('Actualizar Perfil')
 
     def validate_username(self, username):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
-                raise ValidationError(
-                    'Este nombre de usuario ya está en uso. Por favor, elige otro.')
+                raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
 
     def validate_email(self, email):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError(
-                    'Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+                raise ValidationError('Este correo electrónico ya está registrado. Por favor, usa otro correo.')
 
 class RequestResetForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     submit = SubmitField('Solicitar Restablecimiento de Contraseña')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError(
-                'No hay una cuenta asociada a este correo electrónico.')
+            raise ValidationError('No hay una cuenta asociada a este correo electrónico.')
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Contraseña', validators=[
-                             DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Confirmar Contraseña',
-                                     validators=[DataRequired(), EqualTo('password')])
+    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Restablecer Contraseña')
 
 class PulzcardForm(FlaskForm):
     card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
     first_name = StringField('Nombre', validators=[DataRequired()])
     last_name = StringField('Apellido', validators=[DataRequired()])
-    organization = StringField(
-        'Nombre Organización', validators=[DataRequired()])
+    organization = StringField('Nombre Organización', validators=[DataRequired()])
     position = StringField('Cargo', validators=[DataRequired()])
     phone = StringField('Número Telefónico', validators=[DataRequired()])
-    email = StringField('Correo Electrónico', validators=[
-                        DataRequired(), Email()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     website = StringField('Página Web', validators=[DataRequired(), URL()])
     address = StringField('Dirección', validators=[DataRequired()])
     submit = SubmitField('Crear Tarjeta')
@@ -2694,9 +2715,26 @@ class EditPulzcardForm(FlaskForm):
 class DeletePulzcardForm(FlaskForm):
     submit = SubmitField('Eliminar')
 
+class OrderForm(FlaskForm):
+    nombre = StringField('Nombre', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    dispositivo = StringField('Dispositivo', validators=[DataRequired()])
+    mensaje = TextAreaField('¿Qué necesitas?', validators=[DataRequired()])
+    logos = FileField('Subir Logos', validators=[Optional()])
+    excel = FileField('Subir Archivo Excel', validators=[Optional()])
+    submit = SubmitField('Enviar solicitud')
+
+class ContactForm(FlaskForm):  # Nuevo formulario de contacto
+    nombre = StringField('Nombre', validators=[DataRequired()])
+    email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
+    mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
+
 ----- Fin de forms.py -----
 
 ----- Inicio de minimal_app.py -----
+# minimal_app.py
+
 import os
 
 from flask import Flask
@@ -2708,7 +2746,7 @@ app = Flask(__name__, instance_relative_config=True)
 instance_dir = os.path.join(app.instance_path)
 os.makedirs(instance_dir, exist_ok=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site.db")}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_dir, "site_new.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
@@ -2808,19 +2846,19 @@ openpyxl==3.1.5
 packaging==24.1
 pandas==2.2.3
 pillow==10.4.0
+psycopg2-binary==2.9.10
 pypng==0.20220715.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
 qrcode==7.4.2
 six==1.16.0
-SQLAlchemy==2.0.35
+SQLAlchemy==2.0.36
 typing_extensions==4.12.2
 tzdata==2024.2
 Werkzeug==3.0.4
 WTForms==3.1.2
 XlsxWriter==3.2.0
-psycopg2-binary==2.9.10
 
 
 ----- Fin de requirements.txt -----

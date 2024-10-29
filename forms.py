@@ -1,7 +1,6 @@
-# forms.py
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, FileField, EmailField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, EmailField, URLField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError, Optional
 from models import User
 from flask_login import current_user
@@ -72,6 +71,7 @@ class PulzcardForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     website = StringField('Página Web', validators=[DataRequired(), URL()])
     address = StringField('Dirección', validators=[DataRequired()])
+    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
     submit = SubmitField('Crear Tarjeta')
 
 class EditPulzcardForm(FlaskForm):
@@ -84,6 +84,10 @@ class EditPulzcardForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
     website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
     address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
+    
+    # Campo para la imagen de perfil
+    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
+
     submit = SubmitField('Actualizar Pulzcard')
 
 class DeletePulzcardForm(FlaskForm):

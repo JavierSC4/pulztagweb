@@ -1,5 +1,3 @@
-<!-- templates/pulzcard/index.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Crear Pulzcard - PulztagWeb{% endblock %}
@@ -10,17 +8,18 @@
 <!-- Notificación de Error para URL Inválida -->
 {% if form.website.errors %}
     <div class="notification error">
-        Formato de URL de página web es incorrecto.
+        Formato de URL para la página web es incorrecto.
     </div>
 {% endif %}
 
-<form method="POST" id="pulzcardForm">
+<!-- Actualización: Añadir enctype para permitir la subida de archivos -->
+<form method="POST" id="pulzcardForm" enctype="multipart/form-data" class="container">
     {{ form.hidden_tag() }}
 
     <!-- Mostrar errores globales del formulario, excluyendo 'website' -->
     {% if form.errors and not form.website.errors %}
-        <div class="form-errors">
-            <ul>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
                 {% for field, errors in form.errors.items() %}
                     {% if field != 'website' %}
                         {% for error in errors %}
@@ -32,45 +31,78 @@
         </div>
     {% endif %}
 
-    <div class="form-group mb-3">
+    <!-- Datos Personales -->
+    <h4 class="form-subtitle mb-3">Datos Personales</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.first_name.label(class="form-label") }}
+            {{ form.first_name(class="form-control", placeholder="Nombre") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.last_name.label(class="form-label") }}
+            {{ form.last_name(class="form-control", placeholder="Apellido") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.phone.label(class="form-label") }}
+            {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+        </div>
+    </div>
+
+    <!-- Información de la Empresa -->
+    <h4 class="form-subtitle mb-3">Información de la Empresa</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.organization.label(class="form-label") }}
+            {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.position.label(class="form-label") }}
+            {{ form.position(class="form-control", placeholder="Cargo") }}
+        </div>
+    </div>
+
+    <!-- Otros Detalles -->
+    <h4 class="form-subtitle mb-3"">Otros Detalles</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.website.label(class="form-label") }}
+            {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+            <span id="website-error" class="error-message"></span>
+        </div>
+        <div class="col-md-6">
+            {{ form.address.label(class="form-label") }}
+            {{ form.address(class="form-control", placeholder="Dirección") }}
+        </div>
+    </div>
+
+    <!-- Foto de Perfil -->
+    <h4 class="form-subtitle mb-3">Foto de Perfil</h4>
+    <div class="form-group mb-4">
+        {{ form.image_file.label(class="form-label") }}
+        {{ form.image_file(class="form-control") }}
+        {% for error in form.image_file.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Nombre de la Tarjeta -->
+    <h4 class="form-subtitle mb-3">Nombre de la Tarjeta</h4>
+    <div class="form-group mb-4">
         {{ form.card_name.label(class="form-label") }}
         {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
     </div>
-    <div class="form-group mb-3">
-        {{ form.first_name.label(class="form-label") }}
-        {{ form.first_name(class="form-control", placeholder="Nombre") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.last_name.label(class="form-label") }}
-        {{ form.last_name(class="form-control", placeholder="Apellido") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.organization.label(class="form-label") }}
-        {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.position.label(class="form-label") }}
-        {{ form.position(class="form-control", placeholder="Cargo") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.phone.label(class="form-label") }}
-        {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.email.label(class="form-label") }}
-        {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.website.label(class="form-label") }}
-        {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
-        <span id="website-error" class="error-message"></span>
-    </div>
-    <div class="form-group mb-3">
-        {{ form.address.label(class="form-label") }}
-        {{ form.address(class="form-control", placeholder="Dirección") }}
-    </div>
+
+    <!-- Botón de Envío -->
     <div class="form-group text-center">
         {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
 
@@ -82,7 +114,7 @@
         const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
 
         if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
-            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.textContent = "Formato de URL de página web es incorrecto. Ej: https://www.ejemplo.com";
             errorSpan.style.color = "#721c24";
         } else {
             errorSpan.textContent = "";

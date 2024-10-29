@@ -44,6 +44,7 @@ class Pulzcard(db.Model):
     card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"

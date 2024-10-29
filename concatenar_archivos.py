@@ -32,7 +32,7 @@ archivos = [
     'site_backup.db',
     'test_db.py',
     'instance/site_new.db',
-    'migrations/__pycache__/__init__.cpython-311.pyc',   
+    'migrations/__pycache__/__init__.cpython-311.pyc',
 ]
 
 # Nombre del archivo de salida

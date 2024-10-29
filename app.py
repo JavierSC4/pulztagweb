@@ -355,6 +355,18 @@ def order():
 def pulzcard():
     form = PulzcardForm()
     if form.validate_on_submit():
+        # Handle the image file if provided
+        if form.image_file.data:
+            # Save the uploaded image file
+            image_file = form.image_file.data
+            filename = secure_filename(image_file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            image_file.save(image_path)
+            print(f"Image saved at: {image_path}")
+        else:
+            unique_filename = 'default.jpg'
+
         # Crear Pulzcard y agregar a la base de datos
         pulzcard = Pulzcard(
             card_name=form.card_name.data,
@@ -366,6 +378,7 @@ def pulzcard():
             email=form.email.data,
             website=form.website.data,
             address=form.address.data,
+            image_file=unique_filename,  # Store the image filename in the database
             owner=current_user
         )
 
@@ -404,6 +417,7 @@ END:VCARD"""
             flash('Hubo un error al guardar la Pulzcard.', 'danger')
             return redirect(url_for('pulzcard'))
 
+        # Commit de la Pulzcard y finalización
         try:
             db.session.commit()
             print("Pulzcard añadida a la base de datos correctamente.")
@@ -417,47 +431,51 @@ END:VCARD"""
         return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
     else:
         print("Formulario no validado. Errores:", form.errors)
+    
     return render_template('pulzcard/index.html', form=form)
-
 @app.route('/pulzcard/card/<card_id>')
 def pulzcard_card(card_id):
-    # Consultar la Pulzcard en la base de datos usando solo card_id
+    # Query the Pulzcard from the database using only card_id
     pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
     
-    # Leer la vCard
+    # Path to the vCard file
     vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
     print(f"Intentando leer vCard en: {vcard_path}")
+    
+    # Check if vCard file exists
     if not os.path.exists(vcard_path):
         print(f"vCard no encontrada en: {vcard_path}")
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
 
+    # Read the vCard content
     with open(vcard_path, 'r') as f:
         vcard = f.read()
 
-    # Extraer información para la página personalizada
-    contact_info = {}
-    for line in vcard.split('\n'):
-        if line.startswith('FN:'):
-            contact_info['full_name'] = line.replace('FN:', '')
-        elif line.startswith('ORG:'):
-            contact_info['organization'] = line.replace('ORG:', '')
-        elif line.startswith('TITLE:'):
-            contact_info['position'] = line.replace('TITLE:', '')
-        elif line.startswith('TEL'):
-            contact_info['phone'] = line.split(':')[1]
-        elif line.startswith('EMAIL:'):
-            contact_info['email'] = line.replace('EMAIL:', '')
-        elif line.startswith('URL:'):
-            contact_info['website'] = line.replace('URL:', '')
-        elif line.startswith('ADR'):
-            contact_info['address'] = line.split(':')[1]
+    # Extract contact information from the vCard
+    contact_info = {
+        "full_name": f"{pulzcard.first_name} {pulzcard.last_name}",
+        "organization": pulzcard.organization,
+        "position": pulzcard.position,
+        "phone": pulzcard.phone,
+        "email": pulzcard.email,
+        "website": pulzcard.website,
+        "address": pulzcard.address,
+        "image_file": pulzcard.image_file  # Add the image file from the database
+    }
 
+    # Print extracted contact information for debugging
     print(f"Información de contacto extraída: {contact_info}")
+    
+    # Render the template with the complete contact information
     return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/pulzcard/vcards/<filename>')
 def pulzcard_download_vcard(filename):
@@ -494,7 +512,19 @@ def edit_pulzcard(card_id):
         pulzcard.email = form.email.data
         pulzcard.website = form.website.data
         pulzcard.address = form.address.data
-        pulzcard.created_at = datetime.utcnow()  # Actualizar la fecha de modificación si es necesario
+
+        # Procesar la imagen de perfil si se ha subido una nueva
+        if form.image_file.data:
+            # Guardar la nueva imagen
+            image_file = form.image_file.data
+            filename = secure_filename(image_file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            image_file.save(image_path)
+            
+            # Actualizar el campo image_file en la base de datos
+            pulzcard.image_file = unique_filename
+
         db.session.commit()
 
         # Actualizar la vCard en el sistema de archivos

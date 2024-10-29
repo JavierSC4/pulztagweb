@@ -1,5 +1,3 @@
-<!-- templates/edit_pulzcard.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Editar Pulzcard - PulztagWeb{% endblock %}
@@ -9,8 +7,97 @@
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}">
+        <!-- Actualización: Añadir enctype para permitir la subida de archivos -->
+        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
+
+            <!-- Sección: Datos Personales -->
+            <h4 class="form-subtitle mb-3">Datos Personales</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(class="form-control", placeholder="Nombre") }}
+                    {% for error in form.first_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(class="form-control", placeholder="Apellido") }}
+                    {% for error in form.last_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+                    {% for error in form.phone.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Información de la Empresa -->
+            <h4 class="form-subtitle mb-3">Información de la Empresa</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.organization.label(class="form-label") }}
+                    {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+                    {% for error in form.organization.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.position.label(class="form-label") }}
+                    {{ form.position(class="form-control", placeholder="Cargo") }}
+                    {% for error in form.position.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Otros Detalles -->
+            <h4 class="form-subtitle mb-3"">Otros Detalles</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.website.label(class="form-label") }}
+                    {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+                    <span id="website-error" class="error-message"></span>
+                    {% for error in form.website.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(class="form-control", placeholder="Dirección") }}
+                    {% for error in form.address.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Foto de Perfil -->
+            <h4 class="form-subtitle mb-3"">Foto de Perfil</h4>
+            <div class="mb-3">
+                {{ form.image_file.label(class="form-label") }}
+                {{ form.image_file(class="form-control") }}
+                {% for error in form.image_file.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Sección: Nombre de la Tarjeta -->
+            <h4 class="form-subtitle mb-3">Nombre de la Tarjeta</h4>
             <div class="mb-3">
                 {{ form.card_name.label(class="form-label") }}
                 {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
@@ -18,64 +105,9 @@
                     <div class="text-danger">{{ error }}</div>
                 {% endfor %}
             </div>
-            <div class="mb-3">
-                {{ form.first_name.label(class="form-label") }}
-                {{ form.first_name(class="form-control", placeholder="Nombre") }}
-                {% for error in form.first_name.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.last_name.label(class="form-label") }}
-                {{ form.last_name(class="form-control", placeholder="Apellido") }}
-                {% for error in form.last_name.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.organization.label(class="form-label") }}
-                {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
-                {% for error in form.organization.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.position.label(class="form-label") }}
-                {{ form.position(class="form-control", placeholder="Cargo") }}
-                {% for error in form.position.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.phone.label(class="form-label") }}
-                {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
-                {% for error in form.phone.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.website.label(class="form-label") }}
-                {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
-                <span id="website-error" class="error-message"></span>
-                {% for error in form.website.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.address.label(class="form-label") }}
-                {{ form.address(class="form-control", placeholder="Dirección") }}
-                {% for error in form.address.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="text-center">
+
+            <!-- Botones de Acción -->
+            <div class="text-center mt-4">
                 {{ form.submit(class="btn btn-primary") }}
                 <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
             </div>
@@ -91,7 +123,7 @@
         const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
 
         if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
-            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.textContent = "Formato de URL de página web es incorrecto. Ej: https://www.ejemplo.com";
             errorSpan.style.color = "#721c24";
         } else {
             errorSpan.textContent = "";
