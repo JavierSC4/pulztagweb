@@ -16,7 +16,7 @@ from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm, TagForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm, EditTagForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -616,6 +616,24 @@ def delete_pulzcard(card_id):
         flash('Formulario inválido o token CSRF no válido.', 'danger')
 
     return redirect(url_for('profile'))
+
+@app.route('/tag/edit/<tag_id>', methods=['GET', 'POST'])
+@login_required
+def edit_tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id, user_id=current_user.id).first_or_404()
+    form = EditTagForm()
+
+    if form.validate_on_submit():
+        tag.tag_name = form.tag_name.data
+        tag.redirect_url = form.redirect_url.data
+        db.session.commit()
+        flash('Etiqueta actualizada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.tag_name.data = tag.tag_name
+        form.redirect_url.data = tag.redirect_url
+
+    return render_template('edit_tag.html', title='Editar Etiqueta', form=form, tag=tag)
 
 # Ruta de Prueba para Crear una vCard Manualmente
 @app.route('/test_vcard')

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Etiqueta{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center mb-4">Editar Etiqueta</h2>
+    <form method="POST" action="{{ url_for('edit_tag', tag_id=tag.id) }}">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.tag_name.label(class="form-label") }}
+            {{ form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
+        </div>
+        <div class="mb-3">
+            {{ form.redirect_url.label(class="form-label") }}
+            {{ form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
+        </div>
+        <button type="submit" class="btn btn-success">{{ form.submit.label.text }}</button>
+        <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
