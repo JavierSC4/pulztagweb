@@ -48,3 +48,14 @@ class Pulzcard(db.Model):
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"
+    
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tag_name = db.Column(db.String(100), nullable=False)
+    redirect_url = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    def __repr__(self):
+        return f"Tag('{self.tag_name}', '{self.redirect_url}')"

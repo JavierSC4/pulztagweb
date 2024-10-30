@@ -11,12 +11,12 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
-from models import User, Pulzcard
+from models import User, Pulzcard, Tag
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -487,13 +487,47 @@ def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 # Nueva Ruta: Perfil de Usuario
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
-    # Crear una instancia de DeletePulzcardForm para cada Pulzcard con un prefijo único
+    tags = Tag.query.filter_by(user_id=current_user.id).order_by(Tag.created_at.desc()).all()
+    tag_form = TagForm()
+
+    # Initialize delete forms for each Pulzcard
     delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
-    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards, delete_forms=delete_forms)
+
+    if tag_form.validate_on_submit():
+        new_tag = Tag(
+            tag_name=tag_form.tag_name.data,
+            redirect_url=tag_form.redirect_url.data,
+            user_id=current_user.id
+        )
+        db.session.add(new_tag)
+        db.session.commit()
+        flash('Tu etiqueta ha sido creada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template(
+        'profile.html', 
+        title='Perfil de Usuario', 
+        pulzcards=pulzcards, 
+        tags=tags, 
+        tag_form=tag_form, 
+        delete_forms=delete_forms  # Pass delete_forms to the template
+    )
+
+
+@app.route('/r/<tag_id>')
+def redirect_tag(tag_id):
+    # Find the tag based on the provided tag_id
+    tag = Tag.query.get(tag_id)
+    if tag:
+        # Redirect to the user-provided URL if the tag exists
+        return redirect(tag.redirect_url)
+    else:
+        flash('La etiqueta no existe o fue eliminada.', 'danger')
+        return redirect(url_for('profile'))
 
 # Nueva Ruta: Editar Pulzcard
 @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
