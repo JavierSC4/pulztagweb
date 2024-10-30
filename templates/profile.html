@@ -47,7 +47,7 @@
                             <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
                                 {{ delete_forms[card.id].hidden_tag() }}
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')">
-                                    <i class="fas fa-trash"></i>
+                                    <i class="fas fa-trash-alt"></i> <!-- Icon added here -->
                                 </button>
                             </form>
                         </td>
@@ -96,8 +96,31 @@
                 </tbody>
             </table>
         {% else %}
-            <p>No has creado ninguna etiqueta aún. <a href="{{ url_for('profile') }}">Crear una Etiqueta</a>.</p>
+            <p>No has creado ninguna etiqueta aún.</p>
         {% endif %}
+    </div>
+</div>
+
+<!-- Formulario para agregar una nueva Etiqueta -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h4>Agregar Tu Etiqueta</h4>
+        <form method="POST" action="{{ url_for('profile') }}">
+            {{ tag_form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ tag_form.tag_name.label(class="form-label") }}
+                    {{ tag_form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
+                </div>
+                <div class="col-md-4">
+                    {{ tag_form.redirect_url.label(class="form-label") }}
+                    {{ tag_form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    {{ tag_form.submit(class="btn btn-success") }} <!-- Removed full width class -->
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
