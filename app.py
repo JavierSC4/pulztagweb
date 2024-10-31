@@ -16,7 +16,7 @@ from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm, TagForm, EditTagForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -494,8 +494,9 @@ def profile():
     tags = Tag.query.filter_by(user_id=current_user.id).order_by(Tag.created_at.desc()).all()
     tag_form = TagForm()
 
-    # Initialize delete forms for each Pulzcard
+    # Initialize delete forms for each Pulzcard and Tag
     delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
+    delete_tag_forms = {tag.id: DeleteTagForm(prefix=str(tag.tag_id)) for tag in tags}
 
     if tag_form.validate_on_submit():
         new_tag = Tag(
@@ -514,20 +515,38 @@ def profile():
         pulzcards=pulzcards, 
         tags=tags, 
         tag_form=tag_form, 
-        delete_forms=delete_forms  # Pass delete_forms to the template
+        delete_forms=delete_forms,  # Pulzcard delete forms
+        delete_tag_forms=delete_tag_forms  # Tag delete forms
     )
-
 
 @app.route('/r/<tag_id>')
 def redirect_tag(tag_id):
-    # Find the tag based on the provided tag_id
-    tag = Tag.query.get(tag_id)
+    # Busca la etiqueta usando tag_id en lugar de id
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
     if tag:
-        # Redirect to the user-provided URL if the tag exists
         return redirect(tag.redirect_url)
     else:
         flash('La etiqueta no existe o fue eliminada.', 'danger')
         return redirect(url_for('profile'))
+
+@app.route('/tag/delete/<tag_id>', methods=['POST'])
+@login_required
+def delete_tag(tag_id):
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+
+    form = DeleteTagForm()
+    if form.validate_on_submit():
+        try:
+            db.session.delete(tag)
+            db.session.commit()
+            flash('Etiqueta eliminada exitosamente.', 'success')
+        except Exception as e:
+            print(f"Error al eliminar etiqueta: {e}")
+            flash('Hubo un error al eliminar la etiqueta. Por favor, intenta de nuevo.', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+
+    return redirect(url_for('profile'))
 
 # Nueva Ruta: Editar Pulzcard
 @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
@@ -620,7 +639,7 @@ def delete_pulzcard(card_id):
 @app.route('/tag/edit/<tag_id>', methods=['GET', 'POST'])
 @login_required
 def edit_tag(tag_id):
-    tag = Tag.query.filter_by(id=tag_id, user_id=current_user.id).first_or_404()
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
     form = EditTagForm()
 
     if form.validate_on_submit():

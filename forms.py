@@ -117,3 +117,6 @@ class EditTagForm(FlaskForm):
     tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
     redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
     submit = SubmitField('Actualizar')
+
+class DeleteTagForm(FlaskForm):
+    submit = SubmitField('Eliminar')

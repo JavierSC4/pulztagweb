@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <h2 class="text-center mb-4">Editar Etiqueta</h2>
-    <form method="POST" action="{{ url_for('edit_tag', tag_id=tag.id) }}">
+    <form method="POST" action="{{ url_for('edit_tag', tag_id=tag.tag_id) }}">
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.tag_name.label(class="form-label") }}

@@ -58,4 +58,4 @@ class Tag(db.Model):
     tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     
     def __repr__(self):
-        return f"Tag('{self.tag_name}', '{self.redirect_url}')"
+        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}')"
