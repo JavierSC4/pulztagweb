@@ -3,23 +3,88 @@
 {% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
 
 {% block content %}
+<style>
+    /* Fondo personalizado solo para esta página */
+    body {
+        background-image: url('{{ url_for("static", filename="images/fondo_card.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #333333;
+    }
+
+    /* Fondo y estilo para el encabezado "Tu Pulzcard" */
+    .card-header {
+        background: linear-gradient(135deg, #01b9f6 0%, #02a4da 100%);
+    }
+
+    .card-header h3 {
+        color: #ffffff;
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    /* Estilo de fuente independiente para el nombre completo */
+    .card-title {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
+        color: #03c0ff;
+    }
+
+    /* Estilo independiente para posición y organización */
+    .card-subtitle {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #9f9f9f;
+        margin-top: 0.5rem;
+    }
+
+    /* Imagen de perfil con sombra y ajuste de tamaño */
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border: 0px solid #ffffff;
+        object-fit: cover;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Separador personalizado */
+    hr {
+        border-top: 2px solid #03c0ff;
+        opacity: 0.8;
+        width: 80%;
+        margin: 1.5rem auto;
+    }
+</style>
+
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
             <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header card-header-custom text-white">
+                <div class="card-header text-white">
                     <h3 class="mb-0 text-center">Tu Pulzcard</h3>
                 </div>
                 <div class="card-body text-center p-4">
-                    <!-- Profile Image -->
+                    <!-- Imagen de Perfil -->
                     <div class="mb-4">
                         <img src="{{ url_for('uploaded_file', filename=contact['image_file']) }}" alt="Imagen de Perfil" class="rounded-circle profile-image shadow-lg">
                     </div>
 
-                    <h2 class="card-title font-weight-bold mb-2">{{ contact.full_name }}</h2>
-                    <p class="card-subtitle text-muted">{{ contact.position }}, {{ contact.organization }}</p>
+                    <h1 class="card-title font-weight-bold mb-3">{{ contact.full_name }}</h1>
+                    <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
                     
-                    <!-- Contact Information -->
+                    <!-- Separador -->
+                    <hr class="my-5">
+                    
+                    <!-- Información de Contacto -->
                     <div class="mt-4">
                         <p class="card-text">
                             <strong>Teléfono:</strong>
@@ -42,7 +107,7 @@
                         <p class="card-text"><strong>Dirección:</strong> {{ contact.address }}</p>
                     </div>
 
-                    <!-- Action Buttons -->
+                    <!-- Botones de Acción -->
                     <div class="d-flex justify-content-center mt-4 gap-3">
                         <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-outline-primary">
                             <i class="fa-solid fa-download me-1"></i>Agregar Contacto
@@ -53,12 +118,12 @@
                         <input type="hidden" id="cardURL" value="{{ request.url }}">
                     </div>
                     
-                    <!-- Instructions for Adding Contact -->
+                    <!-- Instrucciones para Agregar Contacto -->
                     <div class="mt-4">
                         <h5 class="form-subtitle mb-3">Instrucciones:</h5>
                         <ul class="list-unstyled text-muted">
-                            <li><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
-                            <li><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
+                            <li><i class="fab fa-android me-2"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
+                            <li><i class="fab fa-apple me-2"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
                         </ul>
                     </div>
                 </div>
@@ -67,7 +132,7 @@
     </div>
 </div>
 
-<!-- Script for copying URL to clipboard -->
+<!-- Script para copiar URL al portapapeles -->
 <script>
     function copyURL() {
         const url = document.getElementById('cardURL').value;

@@ -32,6 +32,8 @@
                 <div class="card-body">
                     <i class="bi bi-tools" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Dispositivos NFC Personalizados</h5>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
                     <p class="card-text">Diseñamos y configuramos dispositivos NFC adaptados a las necesidades
                         específicas de tu negocio.</p>
                 </div>
@@ -45,8 +47,9 @@
                 <div class="card-body">
                     <i class="bi bi-code-slash" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Desarrollo de Servicios Personalizados</h5>
-                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de
-                        georeferenciación y campañas de marketing NFC.</p>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
+                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de y campañas de marketing NFC.</p>
                 </div>
             </div>
         </div>
@@ -57,7 +60,9 @@
                     alt="Fidelización de Clientes">
                 <div class="card-body">
                     <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Fidelización de Clientes</h5>
+                    <h5 class="card-title mt-3">Fidelización y retención de Clientes</h5>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
                     <p class="card-text">Implementamos programas de fidelización utilizando tecnología NFC para
                         fortalecer la relación con tus clientes.</p>
                 </div>
@@ -96,16 +101,21 @@
                 <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
                 <li>Aplicaciones: Promociones, eventos, logística.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6">
-            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow">
+            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
     <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
     <div class="row mb-5">
-        <div class="col-md-6 order-md-2">
+        <div class="col-md-6">
             <h4>Tarjetas NFC Personalizadas</h4>
             <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
             <ul>
@@ -114,12 +124,17 @@
                 <li>Material: PVC</li>
                 <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$4.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$4.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6 order-md-1">
-            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow">
+            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
     <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
     <div class="row mb-5">
@@ -131,67 +146,56 @@
                 <li>Material: PVC o adhesivo fuerte</li>
                 <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6">
-            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow">
+            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
 
 <!-- Línea de Separación -->
 <hr class="my-5">
 
-<!-- Aplicaciones de Nuestras Soluciones NFC -->
 <section class="mt-5">
     <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: aplicacion_georeferenciacion.jpg (Imagen de georeferenciación NFC en acción) -->
-                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}"
-                    class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
+            <div class="card mb-4" style="max-width: 80%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Georeferenciación de Etiquetas NFC</h4>
-                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el
-                        seguimiento y la gestión eficiente de activos.</p>
+                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: campañas_marketing_nfc.jpg (Imagen de campaña de marketing utilizando NFC) -->
-                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top"
-                    alt="Campañas de Marketing NFC">
+            <div class="card mb-4" style="max-width: 80%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Campañas Publicitarias y Marketing</h4>
-                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de
-                        manera directa con tu audiencia. Reduce costos de producción gráfica</p>
+                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia. Reduce costos de producción gráfica</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: fidelizacion_programas.jpg (Imagen de programas de fidelización de clientes) -->
-                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top"
-                    alt="Programas de Fidelización de Clientes">
+            <div class="card mb-4" style="max-width: 80%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Programas de Fidelización de Clientes</h4>
-                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes
-                        y fomenten su lealtad.</p>
+                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: integracion_sistemas.jpg (Imagen de integración de sistemas NFC) -->
-                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top"
-                    alt="Integración de Sistemas NFC">
+            <div class="card mb-4" style="max-width: 80%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Integración de Sistemas</h4>
-                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar
-                        la eficiencia operativa.</p>
+                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
                 </div>
             </div>
         </div>

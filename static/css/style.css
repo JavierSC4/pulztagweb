@@ -91,6 +91,19 @@ footer a:hover {
     background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
 }
 
+/* Estilo personalizado para el texto de precio */
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333333;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.price:hover {
+    color: #555555; /* Color más claro al pasar el cursor */
+}
+
 /* Cards */
 .card {
     border: none;
@@ -356,3 +369,5 @@ form h4 {
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease;}
+
+    

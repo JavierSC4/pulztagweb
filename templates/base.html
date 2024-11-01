@@ -65,10 +65,6 @@
                         <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
-                            de</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
                     </li>
                     <!-- Nuevo Enlace para Crear Pulzcard -->
@@ -77,6 +73,10 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
+                            de</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
