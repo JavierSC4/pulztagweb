@@ -49,25 +49,26 @@
     <!-- Barra Superior -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container-fluid">
-            <!-- Marca de la Navbar -->
+            <!-- Logo de la Navbar alineado a la izquierda -->
             <a class="navbar-brand text-primary fw-bold" href="/">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pulztag Logo" height="40">
+                <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Pulztag Logo" height="40">
             </a>
+            
+            <!-- Botón de navegación móvil -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Enlaces de Navegación -->
+            
+            <!-- Enlaces de Navegación centrados -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Enlaces alineados a la izquierda -->
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav mx-auto"> <!-- Clase mx-auto para centrar -->
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
                     </li>
-                    <!-- Nuevo Enlace para Crear Pulzcard -->
                     <li class="nav-item">
                         <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
                     </li>
@@ -75,15 +76,15 @@
                         <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
-                            de</a>
+                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca de</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
                     </li>
                 </ul>
-                <!-- Botón desplegable alineado a la derecha -->
-                <ul class="navbar-nav">
+                
+                <!-- Menú desplegable alineado a la derecha -->
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         {% if current_user.is_authenticated %}
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
