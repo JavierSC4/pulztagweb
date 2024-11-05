@@ -198,8 +198,6 @@ def downgrade():
 ----- Fin de migrations/script.py.mako -----
 
 ----- Inicio de static/css/style.css -----
-/* static/css/style.css */
-
 /* Tipografía Global */
 body {
     font-family: 'Roboto', sans-serif;
@@ -293,6 +291,19 @@ footer a:hover {
     background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
 }
 
+/* Estilo personalizado para el texto de precio */
+.price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333333;
+    transition: color 0.3s ease;
+    text-align: center;
+}
+
+.price:hover {
+    color: #555555; /* Color más claro al pasar el cursor */
+}
+
 /* Cards */
 .card {
     border: none;
@@ -332,12 +343,102 @@ a:hover {
     box-shadow: none;
 }
 
-/* Estilos para el formulario de contacto y pedido */
-form {
-    background-color: #f9f9f9;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+/* Estilo para el botón de eliminación con ícono */
+form button {
+    display: inline-block;
+    margin: 0;
+    padding: 0.25rem 0.75rem;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button i {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+}
+
+form button:hover {
+    background-color: #c82333;
+}
+
+/* Responsividad en dispositivos móviles */
+@media (max-width: 768px) {
+    form button {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    form button i {
+        font-size: 0.9rem;
+    }
+}
+
+/* Color de los títulos y subtítulos en los formularios */
+.form-title,
+.form-subtitle {
+    color: #03c0ff;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #ffffff 0%, #ccefff 100%);
+    color: #333333;
+}
+
+/* Estilo para la imagen de perfil en Pulzcard */
+.profile-image {
+    width: 150px;
+    height: 150px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para enlaces, botones y textos en Pulzcard */
+.text-primary,
+.btn-outline-primary,
+.btn-outline-secondary,
+.text-primary.text-decoration-none {
+    color: #03c0ff !important;
+}
+
+.text-primary:hover,
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover {
+    color: #0290b8 !important;
+}
+
+/* Estilos para el botón "Agregar Contacto" */
+.btn-outline-primary {
+    border-color: #03c0ff;
+    color: #03c0ff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #e0f7ff;
+    color: #0290b8;
+    border-color: #0290b8;
+}
+
+/* Estilos para el botón "Compartir URL" */
+.btn-outline-secondary {
+    border-color: #03c0ff;
+    color: #03c0ff;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #e0f7ff;
+    color: #0290b8;
+    border-color: #0290b8;
 }
 
 form .form-control {
@@ -367,27 +468,10 @@ form h4 {
     max-width: 200px;
 }
 
-/* Transiciones suaves para imágenes */
-img.rounded.shadow {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-img.rounded.shadow:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
 /* Botón de Envío personalizado */
 #submitBtn {
     padding: 0.75rem 2rem;
     font-size: 1rem;
-}
-
-/* Contenedor de pedido con formulario a la izquierda y la imagen a la derecha */
-.row.justify-content-center {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
 
 /* Responsividad para dispositivos móviles */
@@ -396,27 +480,20 @@ img.rounded.shadow:hover {
         flex-direction: column;
     }
 
-    /* Ajustar el tamaño máximo del campo de cantidad en dispositivos móviles */
     #cantidad {
         max-width: 100%;
     }
 
-    /* Ajustar los títulos de las etapas en dispositivos móviles */
     form h4 {
         font-size: 1.25rem;
     }
 
-    /* Ajustar el tamaño de las imágenes en dispositivos móviles */
     img.rounded.shadow {
         width: 100%;
     }
 }
 
-/* ------------------------------------- */
-/* Nuevos estilos para carga de archivos  */
-/* ------------------------------------- */
-
-/* Estilos para las listas de archivos adjuntos */
+/* Estilos para carga de archivos */
 .list-group-item {
     display: flex;
     justify-content: space-between;
@@ -438,50 +515,44 @@ img.rounded.shadow:hover {
     color: #cc0000;
 }
 
-/* Estilos para mensajes de error específicos */
+/* Estilos para mensajes de error */
 .text-danger {
     font-size: 0.9rem;
 }
 
-/* Estilos para las alertas de éxito */
+/* Estilos para alertas */
 .alert-success {
     background-color: #d4edda;
     color: #155724;
     border-color: #c3e6cb;
 }
 
-/* Estilos para las alertas de error */
 .alert-danger {
     background-color: #f8d7da;
     color: #721c24;
     border-color: #f5c6cb;
 }
 
-/* Opcional: Añadir margen superior para las alertas */
 .alert {
     margin-top: 20px;
 }
 
-/* Estilo para el texto de las secciones de subida de archivos */
 .text-muted {
-    color: #a7a7a7 !important; /* Asegúrate de que el color se aplique */
+    color: #a7a7a7 !important;
 }
 
-/* ------------------------------------- */
 /* Estilos para la sección de Soluciones Personalizadas */
-/* ------------------------------------- */
-
 .custom-solutions-section {
     background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
     color: #fff;
-    padding: 40px; /* Reducido desde 50px para menos margen */
+    padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .custom-solutions-section h4 {
-    font-size: 2.5rem; /* Aumentado el tamaño del texto */
-    margin-bottom: 20px; /* Reducido margen inferior */
+    font-size: 2.5rem;
+    margin-bottom: 20px;
 }
 
 .solutions-list {
@@ -491,81 +562,15 @@ img.rounded.shadow:hover {
 }
 
 .solution-item {
-    flex: 1 1 220px; /* Ajustado para mejor adaptabilidad */
-    margin: 10px; /* Reducido margen */
+    flex: 1 1 220px;
+    margin: 10px;
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 15px; /* Reducido padding */
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
+    transition: transform 0.3s ease;}
 
-.solution-item h5 {
-    font-size: 1.5rem; /* Aumentado tamaño del texto */
-    margin-bottom: 8px; /* Reducido margen inferior */
-    color: #fff;
-}
-
-.solution-item p {
-    color: #e0f7fa;
-    font-size: 1.2rem; /* Tamaño incrementado del texto */
-    line-height: 1.5;  /* Opcional: Mejora la legibilidad */
-}
-
-.solution-item:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Responsividad para la sección de Soluciones Personalizadas */
-@media (max-width: 768px) {
-    .custom-solutions-section {
-        padding: 20px; /* Menor padding en móviles */
-    }
-
-    .custom-solutions-section h4 {
-        font-size: 2rem; /* Ajustar tamaño del título */
-        margin-bottom: 15px;
-    }
-
-    .solution-item {
-        flex: 1 1 100%; /* Apilar elementos en una sola columna */
-        margin: 5px 0;
-    }
-
-    .solution-item h5 {
-        font-size: 1.25rem;
-    }
-
-    .solution-item p {
-        font-size: 0.95rem;
-    }
-}
-
-/* ------------------------------------- */
-/* Mejora Adicional: Estilos para Precios */
-/* ------------------------------------- */
-
-.price {
-    color: #03c0ff;
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.price-value {
-    font-size: 1.75rem;
-    color: #03c0ff;
-}
-
-@media (max-width: 768px) {
-    .price {
-        font-size: 1.25rem;
-    }
-
-    .price-value {
-        font-size: 1.5rem;
-    }
-}
+    
 
 ----- Fin de static/css/style.css -----
 
@@ -673,72 +678,136 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Fin de static/js/script.js -----
 
 ----- Inicio de templates/pulzcard/card.html -----
-<!-- templates/pulzcard/card.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
 
 {% block content %}
+<style>
+    /* Fondo personalizado solo para esta página */
+    body {
+        background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #333333;
+    }
+
+    /* Fondo y estilo para el encabezado "Tu Pulzcard" */
+    .card-header {
+        background: linear-gradient(135deg, #01b9f6 0%, #02a4da 100%);
+    }
+
+    .card-header h3 {
+        color: #ffffff;
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    /* Estilo de fuente independiente para el nombre completo */
+    .card-title {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #03c0ff;
+    }
+
+    /* Estilo independiente para posición y organización */
+    .card-subtitle {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #9f9f9f;
+        margin-top: 0.5rem;
+    }
+
+    /* Imagen de perfil con sombra y ajuste de tamaño */
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border: 0px solid #ffffff;
+        object-fit: cover;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Separador personalizado */
+    hr {
+        border-top: 2px solid #03c0ff;
+        opacity: 0.8;
+        width: 80%;
+        margin: 1.5rem auto;
+    }
+</style>
+
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="mb-0">Tu Pulzcard</h3>
-                </div>
-                <div class="card-body text-center">
-                    <!-- Icono o Imagen Opcional -->
-                    <div class="mb-4">
-                        <i class="fa-solid fa-id-card fa-4x"></i>
-                        <!-- Si deseas usar una imagen, reemplaza la línea anterior con:
-                        <img src="{{ url_for('static', filename='images/profile.png') }}" alt="Profile Image" class="rounded-circle" width="150" height="150">
-                        -->
+        <div class="col-lg-6 col-md-8">
+            <div style="margin: 40px;"></div>
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-white">
+                    <div class="text-white">
+                        <img src="{{ url_for('static', filename='images/logocardv4.png') }}" alt="Pulztag Logo" height="40">
                     </div>
+                </div>
+                <div class="card-body text-center p-2">
+                    <!-- Imagen de Perfil -->
+                    <div class="mb-4">
+                        <div style="margin: 20px;"></div>
+                        <img src="{{ url_for('uploaded_file', filename=contact['image_file']) }}" alt="Imagen de Perfil" class="rounded-circle profile-image shadow-lg">
+                    </div>
+
+                    <h1 class="card-title font-weight-bold mb-3">{{ contact.full_name }}</h1>
+                    <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
                     
-                    <h2 class="card-title">{{ contact.full_name }}</h2>
-                    <p class="card-text"><strong>Organización:</strong> {{ contact.organization }}</p>
-                    <p class="card-text"><strong>Cargo:</strong> {{ contact.position }}</p>
-                    <p class="card-text">
-                        <strong>Teléfono:</strong>
-                        <a href="tel:{{ contact.phone }}" class="text-decoration-none">
-                            <i class="fa-solid fa-phone"></i> {{ contact.phone }}
-                        </a>
-                    </p>
-                    <p class="card-text">
-                        <strong>Email:</strong>
-                        <a href="mailto:{{ contact.email }}" class="text-decoration-none">
-                            <i class="fa-solid fa-envelope"></i> {{ contact.email }}
-                        </a>
-                    </p>
-                    <p class="card-text">
-                        <strong>Página Web:</strong>
-                        <a href="{{ contact.website }}" target="_blank" class="text-decoration-none">
-                            <i class="fa-solid fa-globe"></i> {{ contact.website }}
-                        </a>
-                    </p>
-                    <p class="card-text"><strong>Dirección:</strong> {{ contact.address }}</p>
+                    <!-- Separador -->
+                    <hr class="my-3">
                     
-                    <!-- Botón para descargar la vCard -->
-                    <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-success mt-3">
-                        <i class="fa-solid fa-download"></i> Agregar Contacto
-                    </a>
-                    
-                    <!-- Botón para compartir la URL -->
-                    <div class="mt-3">
-                        <strong>Compartir esta tarjeta:</strong><br>
-                        <button class="btn btn-secondary" onclick="copyURL()">
-                            <i class="fa-solid fa-share-nodes"></i> Compartir URL
+                    <!-- Información de Contacto -->
+                    <div class="mt-4">
+                        <p class="card-text">
+                            <strong>Teléfono:</strong>
+                            <a href="tel:{{ contact.phone }}" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-phone me-1"></i>{{ contact.phone }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <strong>Email:</strong>
+                            <a href="mailto:{{ contact.email }}" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-envelope me-1"></i>{{ contact.email }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <strong>Página Web:</strong>
+                            <a href="{{ contact.website }}" target="_blank" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-globe me-1"></i>{{ contact.website }}
+                            </a>
+                        </p>
+                        <p class="card-text"><strong>Dirección:</strong> {{ contact.address }}</p>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex justify-content-center mt-4 gap-3">
+                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-outline-primary">
+                            <i class="fa-solid fa-download me-1"></i>Agregar Contacto
+                        </a>
+                        <button class="btn btn-outline-secondary" onclick="copyURL()">
+                            <i class="fa-solid fa-share-nodes me-1"></i>Compartir URL
                         </button>
                         <input type="hidden" id="cardURL" value="{{ request.url }}">
                     </div>
                     
                     <!-- Instrucciones para Agregar Contacto -->
                     <div class="mt-4">
-                        <strong>Instrucciones para Agregar el Contacto:</strong>
-                        <ul class="list-unstyled">
-                            <li><strong>Android:</strong> Descarga el archivo vCard y ábrelo con la aplicación de contactos para agregarlo automáticamente.</li>
-                            <li><strong>iOS:</strong> Descarga el archivo vCard y selecciona "Agregar todos los contactos" para importarlo a tu lista de contactos.</li>
+                        <h5 class="form-subtitle mb-3">Instrucciones:</h5>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fab fa-android me-2"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
+                            <li><i class="fab fa-apple me-2"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
                         </ul>
                     </div>
                 </div>
@@ -747,37 +816,29 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </div>
 
-<!-- Script para copiar la URL al portapapeles -->
+<!-- Script para copiar URL al portapapeles -->
 <script>
     function copyURL() {
         const url = document.getElementById('cardURL').value;
         navigator.clipboard.writeText(url).then(() => {
-            // Usar una alerta más elegante con Bootstrap
-            const alertPlaceholder = document.createElement('div');
-            alertPlaceholder.innerHTML = `
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    URL copiada al portapapeles!
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-            `;
-            document.body.appendChild(alertPlaceholder);
-            setTimeout(() => {
-                alertPlaceholder.remove();
-            }, 3000);
+            showAlert('URL copiada al portapapeles!', 'success');
         }).catch(err => {
-            // Usar una alerta más elegante con Bootstrap
-            const alertPlaceholder = document.createElement('div');
-            alertPlaceholder.innerHTML = `
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    Error al copiar la URL: ${err}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>
-            `;
-            document.body.appendChild(alertPlaceholder);
-            setTimeout(() => {
-                alertPlaceholder.remove();
-            }, 3000);
+            showAlert('Error al copiar la URL: ' + err, 'danger');
         });
+    }
+
+    function showAlert(message, type) {
+        const alertPlaceholder = document.createElement('div');
+        alertPlaceholder.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(alertPlaceholder);
+        setTimeout(() => {
+            alertPlaceholder.remove();
+        }, 3000);
     }
 </script>
 {% endblock %}
@@ -785,8 +846,6 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Fin de templates/pulzcard/card.html -----
 
 ----- Inicio de templates/pulzcard/index.html -----
-<!-- templates/pulzcard/index.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Crear Pulzcard - PulztagWeb{% endblock %}
@@ -797,17 +856,18 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Notificación de Error para URL Inválida -->
 {% if form.website.errors %}
     <div class="notification error">
-        Formato de URL de página web es incorrecto.
+        Formato de URL para la página web es incorrecto.
     </div>
 {% endif %}
 
-<form method="POST" id="pulzcardForm">
+<!-- Actualización: Añadir enctype para permitir la subida de archivos -->
+<form method="POST" id="pulzcardForm" enctype="multipart/form-data" class="container">
     {{ form.hidden_tag() }}
 
     <!-- Mostrar errores globales del formulario, excluyendo 'website' -->
     {% if form.errors and not form.website.errors %}
-        <div class="form-errors">
-            <ul>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
                 {% for field, errors in form.errors.items() %}
                     {% if field != 'website' %}
                         {% for error in errors %}
@@ -819,45 +879,78 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     {% endif %}
 
-    <div class="form-group mb-3">
+    <!-- Datos Personales -->
+    <h4 class="form-subtitle mb-3">Datos Personales</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.first_name.label(class="form-label") }}
+            {{ form.first_name(class="form-control", placeholder="Nombre") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.last_name.label(class="form-label") }}
+            {{ form.last_name(class="form-control", placeholder="Apellido") }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.phone.label(class="form-label") }}
+            {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+        </div>
+    </div>
+
+    <!-- Información de la Empresa -->
+    <h4 class="form-subtitle mb-3">Información de la Empresa</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.organization.label(class="form-label") }}
+            {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+        </div>
+        <div class="col-md-6">
+            {{ form.position.label(class="form-label") }}
+            {{ form.position(class="form-control", placeholder="Cargo") }}
+        </div>
+    </div>
+
+    <!-- Otros Detalles -->
+    <h4 class="form-subtitle mb-3"">Otros Detalles</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form.website.label(class="form-label") }}
+            {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+            <span id="website-error" class="error-message"></span>
+        </div>
+        <div class="col-md-6">
+            {{ form.address.label(class="form-label") }}
+            {{ form.address(class="form-control", placeholder="Dirección") }}
+        </div>
+    </div>
+
+    <!-- Foto de Perfil -->
+    <h4 class="form-subtitle mb-3">Foto de Perfil</h4>
+    <div class="form-group mb-4">
+        {{ form.image_file.label(class="form-label") }}
+        {{ form.image_file(class="form-control") }}
+        {% for error in form.image_file.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Nombre de la Tarjeta -->
+    <h4 class="form-subtitle mb-3">Nombre de la Tarjeta</h4>
+    <div class="form-group mb-4">
         {{ form.card_name.label(class="form-label") }}
         {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
     </div>
-    <div class="form-group mb-3">
-        {{ form.first_name.label(class="form-label") }}
-        {{ form.first_name(class="form-control", placeholder="Nombre") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.last_name.label(class="form-label") }}
-        {{ form.last_name(class="form-control", placeholder="Apellido") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.organization.label(class="form-label") }}
-        {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.position.label(class="form-label") }}
-        {{ form.position(class="form-control", placeholder="Cargo") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.phone.label(class="form-label") }}
-        {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.email.label(class="form-label") }}
-        {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-    </div>
-    <div class="form-group mb-3">
-        {{ form.website.label(class="form-label") }}
-        {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
-        <span id="website-error" class="error-message"></span>
-    </div>
-    <div class="form-group mb-3">
-        {{ form.address.label(class="form-label") }}
-        {{ form.address(class="form-control", placeholder="Dirección") }}
-    </div>
+
+    <!-- Botón de Envío -->
     <div class="form-group text-center">
         {{ form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
 
@@ -869,7 +962,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
 
         if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
-            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.textContent = "Formato de URL de página web es incorrecto. Ej: https://www.ejemplo.com";
             errorSpan.style.color = "#721c24";
         } else {
             errorSpan.textContent = "";
@@ -994,6 +1087,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Línea de Separación -->
 <hr class="my-5">
 
+<!-- Call to Action Section -->
+<section class="text-center mt-5">
+    <h2>¿Listo para Transformar tu Negocio?</h2>
+    <p>Contáctanos hoy mismo y descubre cómo nuestras soluciones NFC pueden impulsar tu empresa.</p>
+    <a class="btn btn-primary btn-lg" href="/contact" role="button">Contactar</a>
+</section>
+
 {% endblock %}
 
 ----- Fin de templates/about.html -----
@@ -1100,31 +1200,28 @@ document.addEventListener('DOMContentLoaded', function () {
     <!-- End Google Tag Manager (noscript) -->
     
     <!-- Barra Superior -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container-fluid">
-            <!-- Marca de la Navbar -->
+            <!-- Logo de la Navbar alineado a la izquierda -->
             <a class="navbar-brand text-primary fw-bold" href="/">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pulztag Logo" height="40">
+                <img src="{{ url_for('static', filename='images/logobasev4.png') }}" alt="Pulztag Logo" height="40">
             </a>
+            
+            <!-- Botón de navegación móvil -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Enlaces de Navegación -->
+            
+            <!-- Enlaces de Navegación centrados -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Enlaces alineados a la izquierda -->
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav mx-auto"> <!-- Clase mx-auto para centrar -->
                     <li class="nav-item">
                         <a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca
-                            de</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a>
                     </li>
-                    <!-- Nuevo Enlace para Crear Pulzcard -->
                     <li class="nav-item">
                         <a class="nav-link{% if request.path.startswith('/pulzcard') %} active{% endif %}" href="{{ url_for('pulzcard') }}">Crear Pulzcard</a>
                     </li>
@@ -1132,11 +1229,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         <a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca de</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
                     </li>
                 </ul>
-                <!-- Botón desplegable alineado a la derecha -->
-                <ul class="navbar-nav">
+                
+                <!-- Menú desplegable alineado a la derecha -->
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         {% if current_user.is_authenticated %}
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
@@ -1235,6 +1336,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Información de Contacto Section -->
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
@@ -1250,13 +1354,14 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 {% endblock %}
 
 ----- Fin de templates/contact.html -----
 
 ----- Inicio de templates/edit_pulzcard.html -----
-<!-- templates/edit_pulzcard.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Editar Pulzcard - PulztagWeb{% endblock %}
@@ -1266,8 +1371,97 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}">
+        <!-- Actualización: Añadir enctype para permitir la subida de archivos -->
+        <form method="POST" action="{{ url_for('edit_pulzcard', card_id=pulzcard.card_id) }}" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
+
+            <!-- Sección: Datos Personales -->
+            <h4 class="form-subtitle mb-3">Datos Personales</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(class="form-control", placeholder="Nombre") }}
+                    {% for error in form.first_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(class="form-control", placeholder="Apellido") }}
+                    {% for error in form.last_name.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.phone.label(class="form-label") }}
+                    {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
+                    {% for error in form.phone.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Información de la Empresa -->
+            <h4 class="form-subtitle mb-3">Información de la Empresa</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.organization.label(class="form-label") }}
+                    {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
+                    {% for error in form.organization.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.position.label(class="form-label") }}
+                    {{ form.position(class="form-control", placeholder="Cargo") }}
+                    {% for error in form.position.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Otros Detalles -->
+            <h4 class="form-subtitle mb-3"">Otros Detalles</h4>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.website.label(class="form-label") }}
+                    {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
+                    <span id="website-error" class="error-message"></span>
+                    {% for error in form.website.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    {{ form.address.label(class="form-label") }}
+                    {{ form.address(class="form-control", placeholder="Dirección") }}
+                    {% for error in form.address.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sección: Foto de Perfil -->
+            <h4 class="form-subtitle mb-3"">Foto de Perfil</h4>
+            <div class="mb-3">
+                {{ form.image_file.label(class="form-label") }}
+                {{ form.image_file(class="form-control") }}
+                {% for error in form.image_file.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Sección: Nombre de la Tarjeta -->
+            <h4 class="form-subtitle mb-3">Nombre de la Tarjeta</h4>
             <div class="mb-3">
                 {{ form.card_name.label(class="form-label") }}
                 {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
@@ -1275,64 +1469,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="text-danger">{{ error }}</div>
                 {% endfor %}
             </div>
-            <div class="mb-3">
-                {{ form.first_name.label(class="form-label") }}
-                {{ form.first_name(class="form-control", placeholder="Nombre") }}
-                {% for error in form.first_name.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.last_name.label(class="form-label") }}
-                {{ form.last_name(class="form-control", placeholder="Apellido") }}
-                {% for error in form.last_name.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.organization.label(class="form-label") }}
-                {{ form.organization(class="form-control", placeholder="Nombre Organización") }}
-                {% for error in form.organization.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.position.label(class="form-label") }}
-                {{ form.position(class="form-control", placeholder="Cargo") }}
-                {% for error in form.position.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.phone.label(class="form-label") }}
-                {{ form.phone(class="form-control", placeholder="Número Telefónico") }}
-                {% for error in form.phone.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.website.label(class="form-label") }}
-                {{ form.website(class="form-control", placeholder="https://www.ejemplo.com", type="url", id="website") }}
-                <span id="website-error" class="error-message"></span>
-                {% for error in form.website.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="mb-3">
-                {{ form.address.label(class="form-label") }}
-                {{ form.address(class="form-control", placeholder="Dirección") }}
-                {% for error in form.address.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="text-center">
+
+            <!-- Botones de Acción -->
+            <div class="text-center mt-4">
                 {{ form.submit(class="btn btn-primary") }}
                 <a href="{{ url_for('profile') }}" class="btn btn-secondary">Cancelar</a>
             </div>
@@ -1348,7 +1487,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const urlPattern = /^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-.?=&%]*)*\/?$/;
 
         if (websiteInput.value && !urlPattern.test(websiteInput.value)) {
-            errorSpan.textContent = "Formato de URL de página web es incorrecto.";
+            errorSpan.textContent = "Formato de URL de página web es incorrecto. Ej: https://www.ejemplo.com";
             errorSpan.style.color = "#721c24";
         } else {
             errorSpan.textContent = "";
@@ -1375,17 +1514,13 @@ document.addEventListener('DOMContentLoaded', function () {
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
+<div style="margin: 100px;"></div>
 <!-- Hero Section -->
 <div class="jumbotron text-center">
     <h1 class="display-4">Transforma tu Negocio con Tecnología NFC</h1>
     <p class="lead">Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.</p>
     <!-- Imagen: hero_image.jpg (Una imagen representativa de dispositivos NFC en uso) -->
-    <hr class="my-4">
-    <a class="btn btn-primary btn-lg" href="#servicios" role="button">Nuestros Servicios</a>
 </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
 
 <!-- Servicios Destacados -->
 <section id="servicios" class="mt-5">
@@ -1399,6 +1534,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card-body">
                     <i class="bi bi-tools" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Dispositivos NFC Personalizados</h5>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
                     <p class="card-text">Diseñamos y configuramos dispositivos NFC adaptados a las necesidades
                         específicas de tu negocio.</p>
                 </div>
@@ -1412,8 +1549,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card-body">
                     <i class="bi bi-code-slash" style="font-size: 2rem; color: #03c0ff;"></i>
                     <h5 class="card-title mt-3">Desarrollo de Servicios Personalizados</h5>
-                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de
-                        georeferenciación y campañas de marketing NFC.</p>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
+                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de y campañas de marketing NFC.</p>
                 </div>
             </div>
         </div>
@@ -1424,7 +1562,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     alt="Fidelización de Clientes">
                 <div class="card-body">
                     <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Fidelización de Clientes</h5>
+                    <h5 class="card-title mt-3">Fidelización y retención de Clientes</h5>
+                    <!-- Línea de Separación -->
+                    <hr class="my-2">
                     <p class="card-text">Implementamos programas de fidelización utilizando tecnología NFC para
                         fortalecer la relación con tus clientes.</p>
                 </div>
@@ -1435,68 +1575,131 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <!-- Línea de Separación -->
 <hr class="my-5">
+    <!-- Invitación a Crear tu Pulzcard -->
+    <section class="mt-5 text-center">
+        <h2>Crea tu Pulzcard</h2>
+        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+    </section>
+
+    <!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Invitación a Ver Productos -->
 <section class="text-center mt-5">
     <h2>Explora Nuestros Productos</h2>
     <p>Descubre nuestra gama de dispositivos NFC personalizados diseñados para impulsar tu negocio.</p>
-    <a class="btn btn-primary btn-lg" href="/products" role="button">Ver Productos</a>
 </section>
+<div style="margin: 40px;"></div>
+
+    <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4>Etiquetas NFC</h4>
+            <p>Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
+            <ul>
+                <li>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
+                <li>Materiales: PVC y metálico</li>
+                <li>Resistentes al agua</li>
+                <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
+                <li>Aplicaciones: Promociones, eventos, logística.</li>
+            </ul>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
+        </div>
+    </div>
 
 <!-- Línea de Separación -->
 <hr class="my-5">
 
-<!-- Aplicaciones de Nuestras Soluciones NFC -->
+    <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4>Tarjetas NFC Personalizadas</h4>
+            <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
+            <ul>
+                <li>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
+                <li>Colores: Blanco y Negro</li>
+                <li>Material: PVC</li>
+                <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
+            </ul>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$4.990</span> (IVA inc.)</a>
+            </p>
+        </div>
+        <div class="col-md-6 order-md-1">
+            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
+        </div>
+    </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
+    <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h4>Stickers NFC</h4>
+            <p>Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
+            <ul>
+                <li>Impresión: Una o dos caras</li>
+                <li>Material: PVC o adhesivo fuerte</li>
+                <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
+            </ul>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
+        </div>
+        <div class="col-md-6">
+            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
+        </div>
+    </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <section class="mt-5">
     <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
+    <div style="margin: 40px;"></div>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: aplicacion_georeferenciacion.jpg (Imagen de georeferenciación NFC en acción) -->
-                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}"
-                    class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
+            <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Georeferenciación de Etiquetas NFC</h4>
-                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el
-                        seguimiento y la gestión eficiente de activos.</p>
+                    <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: campañas_marketing_nfc.jpg (Imagen de campaña de marketing utilizando NFC) -->
-                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top"
-                    alt="Campañas de Marketing NFC">
+            <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Campañas Publicitarias y Marketing</h4>
-                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de
-                        manera directa con tu audiencia. Reduce costos de producción gráfica</p>
+                    <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia. Reduce costos de producción gráfica</p>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: fidelizacion_programas.jpg (Imagen de programas de fidelización de clientes) -->
-                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top"
-                    alt="Programas de Fidelización de Clientes">
+            <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Programas de Fidelización de Clientes</h4>
-                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes
-                        y fomenten su lealtad.</p>
+                    <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card mb-4">
-                <!-- Imagen: integracion_sistemas.jpg (Imagen de integración de sistemas NFC) -->
-                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top"
-                    alt="Integración de Sistemas NFC">
+            <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC" style="max-width: 100%; height: auto;">
                 <div class="card-body">
                     <h4>Integración de Sistemas</h4>
-                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar
-                        la eficiencia operativa.</p>
+                    <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
                 </div>
             </div>
         </div>
@@ -1652,6 +1855,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 <!-- Información Bancaria Section -->
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
@@ -1670,6 +1876,9 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </div>
 
+<!-- Línea de Separación -->
+<hr class="my-5">
+
 {% endblock %}
 
 ----- Fin de templates/order.html -----
@@ -1682,10 +1891,8 @@ document.addEventListener('DOMContentLoaded', function () {
 {% block title %}Nuestros Productos - PulztagWeb{% endblock %}
 
 {% block content %}
+<div style="margin: 50px;"></div>
 <div class="container">
-    <h2 class="text-center mb-4">Nuestros Productos</h2>
-    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
-
     <!-- Soluciones Personalizadas Section Mejorada -->
     <div class="row mb-5">
         <div class="col-md-12">
@@ -1693,28 +1900,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h4 class="text-white">Soluciones Personalizadas para Industrias</h4>
                 <div class="solutions-list">
                     <div class="solution-item">
-                        <h5>Marketing y Publicidad</h5>
+                        <h5 style="color: white; font-weight: bold;">Marketing y Publicidad</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
                         <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
                     </div>
                     <div class="solution-item">
-                        <h5>Eventos</h5>
+                        <h5 style="color: white; font-weight: bold;">Eventos</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
                         <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
                     </div>
                     <div class="solution-item">
-                        <h5>Educación</h5>
+                        <h5 style="color: white; font-weight: bold;">Educación</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
                         <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
                     </div>
                     <div class="solution-item">
-                        <h5>Logística</h5>
+                        <h5 style="color: white; font-weight: bold;">Logística</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
                         <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <div style="margin: 20px;"></div>
+    <h2 class="text-center mb-4">Nuestros Productos</h2>
+    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
 
     <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
     <div class="row mb-5">
@@ -1728,10 +1943,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
                 <li>Aplicaciones: Promociones, eventos, logística.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6">
-            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow">
+            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
 
@@ -1740,7 +1957,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
     <div class="row mb-5">
-        <div class="col-md-6 order-md-2">
+        <div class="col-md-6">
             <h4>Tarjetas NFC Personalizadas</h4>
             <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
             <ul>
@@ -1749,10 +1966,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 <li>Material: PVC</li>
                 <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$4.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$4.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6 order-md-1">
-            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow">
+            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
 
@@ -1769,21 +1988,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 <li>Material: PVC o adhesivo fuerte</li>
                 <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
             </ul>
-            <p class="price text-center mt-3">Desde <span class="price-value">$2.990</span> (IVA inc.)</p>
+            <p class="price text-center mt-3">
+                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
+            </p>
         </div>
         <div class="col-md-6">
-            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow">
+            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
     <!-- Invitación a Crear tu Pulzcard -->
     <section class="mt-5 text-center">
         <h2>Crea tu Pulzcard</h2>
         <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
-        <a class="btn btn-success btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
     </section>
 </div>
 {% endblock %}
@@ -1791,8 +2008,6 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Fin de templates/products.html -----
 
 ----- Inicio de templates/profile.html -----
-<!-- templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
@@ -1806,12 +2021,17 @@ document.addEventListener('DOMContentLoaded', function () {
         <h4>Información Personal</h4>
         <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
         <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
-        <!-- Puedes agregar más información si lo deseas -->
     </div>
     <div class="col-md-6 text-end">
         <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
     </div>
 </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
+<!-- Cargar Font Awesome temporalmente en esta sección -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <!-- Lista de Pulzcards -->
 <div class="row">
@@ -1838,12 +2058,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>{{ card.email }}</td>
                         <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                         <td>
-                            <!-- Usar card.card_id en lugar de card.id -->
-                            <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" class="btn btn-info btn-sm" target="_blank">Ver</a>
-                            <a href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
+                            <a href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
                             <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
                                 {{ delete_forms[card.id].hidden_tag() }}
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')">Eliminar</button>
+                                <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
+                                    <i class="fas fa-trash" style="color: rgb(252, 42, 0); font-size: 1.8em;"></i>                                </button>
                             </form>
                         </td>
                     </tr>
@@ -1855,6 +2075,107 @@ document.addEventListener('DOMContentLoaded', function () {
         {% endif %}
     </div>
 </div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
+<!-- Lista de Etiquetas -->
+<div class="row">
+    <div class="col-md-12 mt-5">
+        <h4>Tus Etiquetas</h4>
+        {% if tags %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre de Etiqueta</th>
+                        <th>URL (a redireccionar)</th>
+                        <th>URL Generada</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tag in tags %}
+                    <tr>
+                        <td>{{ tag.tag_name }}</td>
+                        <td>
+                            {% set redirect_url_display = tag.redirect_url[:30] + '...' if tag.redirect_url|length > 30 else tag.redirect_url %}
+                            <a href="{{ tag.redirect_url }}" target="_blank">{{ redirect_url_display }}</a>
+                        </td>
+                        <td>
+                            {% set generated_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True) %}
+                            {% set shortened_url = generated_url[:30] + '...' if generated_url|length > 30 else generated_url %}
+                            <a href="{{ generated_url }}" target="_blank">{{ shortened_url }}</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="copyURL('{{ generated_url }}')">Copiar URL</button>
+                            <a href="{{ url_for('edit_tag', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+                            <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
+                                {{ delete_tag_forms[tag.id].hidden_tag() }}
+                                <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
+                                    <i class="fas fa-trash" style="color: rgb(252, 42, 0); font-size: 1.8em;"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No has creado ninguna etiqueta aún.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+
+<!-- Formulario para agregar una nueva Etiqueta -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h4>Agregar Tu Etiqueta</h4>
+        <form method="POST" action="{{ url_for('profile') }}">
+            {{ tag_form.hidden_tag() }}
+            <div class="row">
+                <div class="col-md-4">
+                    {{ tag_form.tag_name.label(class="form-label") }}
+                    {{ tag_form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
+                </div>
+                <div class="col-md-4">
+                    {{ tag_form.redirect_url.label(class="form-label") }}
+                    {{ tag_form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    {{ tag_form.submit(class="btn btn-success") }} <!-- Removed full width class -->
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Script for copying URL to clipboard -->
+<script>
+    function copyURL(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            showAlert('URL generada copiada al portapapeles!', 'success');
+        }).catch(err => {
+            showAlert('Error al copiar la URL: ' + err, 'danger');
+        });
+    }
+
+    function showAlert(message, type) {
+        const alertPlaceholder = document.createElement('div');
+        alertPlaceholder.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(alertPlaceholder);
+        setTimeout(() => {
+            alertPlaceholder.remove();
+        }, 3000);
+    }
+</script>
 {% endblock %}
 
 ----- Fin de templates/profile.html -----
@@ -1972,6 +2293,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ----- Fin de templates/reset_token.html -----
 
+----- Inicio de templates/tags.html -----
+{% extends 'base.html' %}
+
+{% block title %}Tags - PulztagWeb{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Tags</h2>
+<p>Esta sección está vacía por el momento.</p>
+{% endblock %}
+
+----- Fin de templates/tags.html -----
+
 ----- Inicio de .gitignore -----
 # Entorno virtual
 virtualenv/
@@ -2035,12 +2368,12 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import db, migrate, bcrypt, login_manager
-from models import User, Pulzcard
+from models import User, Pulzcard, Tag
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -2379,6 +2712,18 @@ def order():
 def pulzcard():
     form = PulzcardForm()
     if form.validate_on_submit():
+        # Handle the image file if provided
+        if form.image_file.data:
+            # Save the uploaded image file
+            image_file = form.image_file.data
+            filename = secure_filename(image_file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            image_file.save(image_path)
+            print(f"Image saved at: {image_path}")
+        else:
+            unique_filename = 'default.jpg'
+
         # Crear Pulzcard y agregar a la base de datos
         pulzcard = Pulzcard(
             card_name=form.card_name.data,
@@ -2390,6 +2735,7 @@ def pulzcard():
             email=form.email.data,
             website=form.website.data,
             address=form.address.data,
+            image_file=unique_filename,  # Store the image filename in the database
             owner=current_user
         )
 
@@ -2428,6 +2774,7 @@ END:VCARD"""
             flash('Hubo un error al guardar la Pulzcard.', 'danger')
             return redirect(url_for('pulzcard'))
 
+        # Commit de la Pulzcard y finalización
         try:
             db.session.commit()
             print("Pulzcard añadida a la base de datos correctamente.")
@@ -2441,47 +2788,51 @@ END:VCARD"""
         return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
     else:
         print("Formulario no validado. Errores:", form.errors)
+    
     return render_template('pulzcard/index.html', form=form)
-
 @app.route('/pulzcard/card/<card_id>')
 def pulzcard_card(card_id):
-    # Consultar la Pulzcard en la base de datos usando solo card_id
+    # Query the Pulzcard from the database using only card_id
     pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
     
-    # Leer la vCard
+    # Path to the vCard file
     vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
     print(f"Intentando leer vCard en: {vcard_path}")
+    
+    # Check if vCard file exists
     if not os.path.exists(vcard_path):
         print(f"vCard no encontrada en: {vcard_path}")
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
 
+    # Read the vCard content
     with open(vcard_path, 'r') as f:
         vcard = f.read()
 
-    # Extraer información para la página personalizada
-    contact_info = {}
-    for line in vcard.split('\n'):
-        if line.startswith('FN:'):
-            contact_info['full_name'] = line.replace('FN:', '')
-        elif line.startswith('ORG:'):
-            contact_info['organization'] = line.replace('ORG:', '')
-        elif line.startswith('TITLE:'):
-            contact_info['position'] = line.replace('TITLE:', '')
-        elif line.startswith('TEL'):
-            contact_info['phone'] = line.split(':')[1]
-        elif line.startswith('EMAIL:'):
-            contact_info['email'] = line.replace('EMAIL:', '')
-        elif line.startswith('URL:'):
-            contact_info['website'] = line.replace('URL:', '')
-        elif line.startswith('ADR'):
-            contact_info['address'] = line.split(':')[1]
+    # Extract contact information from the vCard
+    contact_info = {
+        "full_name": f"{pulzcard.first_name} {pulzcard.last_name}",
+        "organization": pulzcard.organization,
+        "position": pulzcard.position,
+        "phone": pulzcard.phone,
+        "email": pulzcard.email,
+        "website": pulzcard.website,
+        "address": pulzcard.address,
+        "image_file": pulzcard.image_file  # Add the image file from the database
+    }
 
+    # Print extracted contact information for debugging
     print(f"Información de contacto extraída: {contact_info}")
+    
+    # Render the template with the complete contact information
     return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/pulzcard/vcards/<filename>')
 def pulzcard_download_vcard(filename):
@@ -2493,13 +2844,66 @@ def pulzcard_download_vcard(filename):
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 # Nueva Ruta: Perfil de Usuario
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
-    # Crear una instancia de DeletePulzcardForm para cada Pulzcard con un prefijo único
+    tags = Tag.query.filter_by(user_id=current_user.id).order_by(Tag.created_at.desc()).all()
+    tag_form = TagForm()
+
+    # Initialize delete forms for each Pulzcard and Tag
     delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
-    return render_template('profile.html', title='Perfil de Usuario', pulzcards=pulzcards, delete_forms=delete_forms)
+    delete_tag_forms = {tag.id: DeleteTagForm(prefix=str(tag.tag_id)) for tag in tags}
+
+    if tag_form.validate_on_submit():
+        new_tag = Tag(
+            tag_name=tag_form.tag_name.data,
+            redirect_url=tag_form.redirect_url.data,
+            user_id=current_user.id
+        )
+        db.session.add(new_tag)
+        db.session.commit()
+        flash('Tu etiqueta ha sido creada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+
+    return render_template(
+        'profile.html', 
+        title='Perfil de Usuario', 
+        pulzcards=pulzcards, 
+        tags=tags, 
+        tag_form=tag_form, 
+        delete_forms=delete_forms,  # Pulzcard delete forms
+        delete_tag_forms=delete_tag_forms  # Tag delete forms
+    )
+
+@app.route('/r/<tag_id>')
+def redirect_tag(tag_id):
+    # Busca la etiqueta usando tag_id en lugar de id
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
+    if tag:
+        return redirect(tag.redirect_url)
+    else:
+        flash('La etiqueta no existe o fue eliminada.', 'danger')
+        return redirect(url_for('profile'))
+
+@app.route('/tag/delete/<tag_id>', methods=['POST'])
+@login_required
+def delete_tag(tag_id):
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+
+    form = DeleteTagForm()
+    if form.validate_on_submit():
+        try:
+            db.session.delete(tag)
+            db.session.commit()
+            flash('Etiqueta eliminada exitosamente.', 'success')
+        except Exception as e:
+            print(f"Error al eliminar etiqueta: {e}")
+            flash('Hubo un error al eliminar la etiqueta. Por favor, intenta de nuevo.', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+
+    return redirect(url_for('profile'))
 
 # Nueva Ruta: Editar Pulzcard
 @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
@@ -2518,7 +2922,19 @@ def edit_pulzcard(card_id):
         pulzcard.email = form.email.data
         pulzcard.website = form.website.data
         pulzcard.address = form.address.data
-        pulzcard.created_at = datetime.utcnow()  # Actualizar la fecha de modificación si es necesario
+
+        # Procesar la imagen de perfil si se ha subido una nueva
+        if form.image_file.data:
+            # Guardar la nueva imagen
+            image_file = form.image_file.data
+            filename = secure_filename(image_file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            image_file.save(image_path)
+            
+            # Actualizar el campo image_file en la base de datos
+            pulzcard.image_file = unique_filename
+
         db.session.commit()
 
         # Actualizar la vCard en el sistema de archivos
@@ -2577,6 +2993,24 @@ def delete_pulzcard(card_id):
 
     return redirect(url_for('profile'))
 
+@app.route('/tag/edit/<tag_id>', methods=['GET', 'POST'])
+@login_required
+def edit_tag(tag_id):
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+    form = EditTagForm()
+
+    if form.validate_on_submit():
+        tag.tag_name = form.tag_name.data
+        tag.redirect_url = form.redirect_url.data
+        db.session.commit()
+        flash('Etiqueta actualizada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.tag_name.data = tag.tag_name
+        form.redirect_url.data = tag.redirect_url
+
+    return render_template('edit_tag.html', title='Editar Etiqueta', form=form, tag=tag)
+
 # Ruta de Prueba para Crear una vCard Manualmente
 @app.route('/test_vcard')
 def test_vcard():
@@ -2624,10 +3058,9 @@ login_manager = LoginManager()
 ----- Fin de extensions.py -----
 
 ----- Inicio de forms.py -----
-# forms.py
-
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, FileField, EmailField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, EmailField, URLField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError, Optional
 from models import User
 from flask_login import current_user
@@ -2698,6 +3131,7 @@ class PulzcardForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     website = StringField('Página Web', validators=[DataRequired(), URL()])
     address = StringField('Dirección', validators=[DataRequired()])
+    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
     submit = SubmitField('Crear Tarjeta')
 
 class EditPulzcardForm(FlaskForm):
@@ -2710,6 +3144,10 @@ class EditPulzcardForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
     website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
     address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
+    
+    # Campo para la imagen de perfil
+    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
+
     submit = SubmitField('Actualizar Pulzcard')
 
 class DeletePulzcardForm(FlaskForm):
@@ -2729,6 +3167,19 @@ class ContactForm(FlaskForm):  # Nuevo formulario de contacto
     email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
     mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
     submit = SubmitField('Enviar')
+
+class TagForm(FlaskForm):
+    tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
+    redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
+    submit = SubmitField('Guardar')
+
+class EditTagForm(FlaskForm):
+    tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
+    redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
+    submit = SubmitField('Actualizar')
+
+class DeleteTagForm(FlaskForm):
+    submit = SubmitField('Eliminar')
 
 ----- Fin de forms.py -----
 
@@ -2813,9 +3264,21 @@ class Pulzcard(db.Model):
     card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"
+    
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tag_name = db.Column(db.String(100), nullable=False)
+    redirect_url = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    def __repr__(self):
+        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}')"
 
 ----- Fin de models.py -----
 
@@ -2859,7 +3322,6 @@ tzdata==2024.2
 Werkzeug==3.0.4
 WTForms==3.1.2
 XlsxWriter==3.2.0
-
 
 ----- Fin de requirements.txt -----
 

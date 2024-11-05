@@ -22,6 +22,7 @@ archivos = [
     'templates/register.html',
     'templates/reset_request.html',
     'templates/reset_token.html',
+    'templates/tags.html',
     '.gitignore',
     'app.py',
     'extensions.py',

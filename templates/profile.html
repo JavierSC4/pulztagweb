@@ -53,7 +53,8 @@
                             <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
                                 {{ delete_forms[card.id].hidden_tag() }}
                                 <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
-                                    <i class="fas fa-trash" style="color: rgb(252, 42, 0); font-size: 1.8em;"></i>                                </button>
+                                    <i class="fas fa-trash" style="color: rgb(252, 42, 0); font-size: 1.8em;"></i>
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -63,6 +64,11 @@
         {% else %}
             <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
         {% endif %}
+        
+        <!-- Hipervínculo para Crear una Nueva Pulzcard -->
+        <div class="mt-3">
+            <a href="{{ url_for('pulzcard') }}" class="btn btn-success">Crear nuevo Pulzcard</a>
+        </div>
     </div>
 </div>
 
@@ -113,33 +119,53 @@
         {% else %}
             <p>No has creado ninguna etiqueta aún.</p>
         {% endif %}
+        
+        <!-- Botón para Agregar una Nueva Etiqueta -->
+        <div class="mt-3">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">
+                Agregar Etiqueta
+            </button>
+        </div>
     </div>
 </div>
 
 <!-- Línea de Separación -->
 <hr class="my-5">
 
-<!-- Formulario para agregar una nueva Etiqueta -->
-<div class="row mb-4">
-    <div class="col-md-12">
-        <h4>Agregar Tu Etiqueta</h4>
-        <form method="POST" action="{{ url_for('profile') }}">
-            {{ tag_form.hidden_tag() }}
-            <div class="row">
-                <div class="col-md-4">
-                    {{ tag_form.tag_name.label(class="form-label") }}
-                    {{ tag_form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
-                </div>
-                <div class="col-md-4">
-                    {{ tag_form.redirect_url.label(class="form-label") }}
-                    {{ tag_form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    {{ tag_form.submit(class="btn btn-success") }} <!-- Removed full width class -->
-                </div>
-            </div>
-        </form>
+<!-- Formulario para agregar una nueva Etiqueta dentro de una Modal -->
+<!-- Modal -->
+<div class="modal fade" id="agregarEtiquetaModal" tabindex="-1" aria-labelledby="agregarEtiquetaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('profile') }}">
+          {{ tag_form.hidden_tag() }}
+          <div class="modal-header">
+            <h5 class="modal-title" id="agregarEtiquetaModalLabel">Agregar Nueva Etiqueta</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+              <div class="mb-3">
+                  {{ tag_form.tag_name.label(class="form-label") }}
+                  {{ tag_form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
+                  {% for error in tag_form.tag_name.errors %}
+                      <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+              </div>
+              <div class="mb-3">
+                  {{ tag_form.redirect_url.label(class="form-label") }}
+                  {{ tag_form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
+                  {% for error in tag_form.redirect_url.errors %}
+                      <div class="text-danger">{{ error }}</div>
+                  {% endfor %}
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            {{ tag_form.submit(class="btn btn-success") }}
+          </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <!-- Script for copying URL to clipboard -->
@@ -165,5 +191,11 @@
             alertPlaceholder.remove();
         }, 3000);
     }
+
+    // Opcional: Abrir la modal automáticamente si hay errores en el formulario
+    {% if tag_form.errors %}
+        var agregarEtiquetaModal = new bootstrap.Modal(document.getElementById('agregarEtiquetaModal'));
+        agregarEtiquetaModal.show();
+    {% endif %}
 </script>
 {% endblock %}
