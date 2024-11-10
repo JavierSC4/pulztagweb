@@ -5,6 +5,12 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, Valida
 from models import User
 from flask_login import current_user
 
+
+class VerificationForm(FlaskForm):
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    code = StringField('Código de Verificación', validators=[DataRequired(), Length(6, 6)])
+    submit = SubmitField('Verificar')
+
 class RegistrationForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
@@ -109,9 +115,9 @@ class ContactForm(FlaskForm):  # Nuevo formulario de contacto
     submit = SubmitField('Enviar')
 
 class TagForm(FlaskForm):
-    tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
-    redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
-    submit = SubmitField('Guardar')
+    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired(), Length(min=2, max=50)])
+    redirect_url = StringField('URL a Redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
+    submit = SubmitField('Crear Etiqueta')
 
 class EditTagForm(FlaskForm):
     tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])

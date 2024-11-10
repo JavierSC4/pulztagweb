@@ -43,3 +43,6 @@ Desktop.ini
 
 # Archivos de base de datos específicos
 instance/site_new.db
+
+# Archivos de configuración específicos
+script_crear_admin.py

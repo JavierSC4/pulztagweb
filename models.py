@@ -1,9 +1,10 @@
 # models.py
 
 from extensions import db
-from flask_login import UserMixin
+from flask_admin.contrib.sqla import ModelView
+from flask_login import UserMixin, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-from flask import current_app
+from flask import current_app, redirect, url_for, flash, request
 from datetime import datetime
 import uuid
 
@@ -12,6 +13,9 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_verified = db.Column(db.Boolean, default=False)  # Campo para marcar si el usuario está verificado
+    verification_code = db.Column(db.String(6), nullable=True)  # Código de verificación temporal
     # Relación con Pulzcards
     pulzcards = db.relationship('Pulzcard', backref='owner', lazy=True)
 
@@ -59,3 +63,10 @@ class Tag(db.Model):
     
     def __repr__(self):
         return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}')"
+    
+class SecureModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin  # Verifica si el usuario es admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('login', next=request.url))

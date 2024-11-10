@@ -1,0 +1,159 @@
+<!-- templates/qrcode_card.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Código QR - PulztagWeb{% endblock %}
+
+{% block content %}
+<style>
+    /* Fondo personalizado igual al de la barra principal */
+    body {
+        background-color: #f8f9fa; /* Color de fondo base */
+        background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #333333; /* Color de texto igual al de card.html */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Estilos para la tarjeta del código QR */
+    .qrcode-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 450px;
+        width: 100%;
+        text-align: center;
+        margin: auto;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .qrcode-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Estilo para el encabezado */
+    .qrcode-header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* Mismo degradado que card.html */
+        border-radius: 15px 15px 0 0;
+        padding: 20px;
+        color: #ffffff;
+        margin: -30px -30px 20px -30px;
+    }
+
+    .qrcode-header h3 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    /* Imagen del QR */
+    .qrcode-image {
+        margin: 20px 0;
+    }
+
+    /* Botones de acción verticales */
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-buttons a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border: 2px solid #6a11cb;
+        border-radius: 50%;
+        color: #6a11cb;
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .action-buttons a:hover {
+        background-color: #6a11cb;
+        color: #ffffff;
+    }
+
+    /* Botón para regresar al perfil */
+    .btn-back {
+        margin-top: 30px;
+    }
+
+    /* Ajuste del footer */
+    .footer {
+        margin-top: auto;
+    }
+
+    /* Estilos para dispositivos móviles */
+    @media (max-width: 576px) {
+        .qrcode-card {
+            padding: 20px;
+            max-width: 90%;
+        }
+
+        .action-buttons a {
+            width: 40px;
+            height: 40px;
+        }
+    }
+</style>
+
+<p><strong>text-indent: 4em;</strong></p>
+
+<div class="qrcode-card">
+    <!-- Encabezado de la tarjeta -->
+    <div class="qrcode-header">
+        <h3>Código QR de {{ entity_type.capitalize() }}</h3>
+    </div>
+
+    <!-- Imagen del QR con animación de carga -->
+    <div class="qrcode-image">
+        <div id="qrLoader" class="loader"></div>
+        <img id="qrImage" src="{{ qr_url }}" alt="Código QR" class="img-fluid rounded shadow-lg">
+    </div>
+
+    <!-- Botones de acción verticales -->
+    <div class="action-buttons">
+        <a href="{{ qr_url }}" target="_blank" title="Ver Código QR" aria-label="Ver Código QR">
+            <i class="fas fa-search"></i>
+        </a>
+        <a href="{{ qr_url }}" download="{{ download_filename }}" title="Descargar QR" aria-label="Descargar Código QR">
+            <i class="fas fa-download"></i>
+        </a>
+    </div>
+
+    <!-- Botón para regresar al perfil -->
+    <div class="btn-back">
+        <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al Perfil
+        </a>
+    </div>
+</div>
+
+<!-- Script para manejar la carga del QR -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const qrImage = document.getElementById('qrImage');
+        const qrLoader = document.getElementById('qrLoader');
+
+        qrImage.onload = function () {
+            qrLoader.style.display = 'none';
+            qrImage.classList.add('loaded');
+        };
+
+        qrImage.onerror = function () {
+            qrLoader.style.display = 'none';
+            alert('Error al cargar el código QR. Por favor, intenta de nuevo.');
+        };
+    });
+</script>
+{% endblock %}

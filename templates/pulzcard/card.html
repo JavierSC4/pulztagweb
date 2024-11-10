@@ -64,21 +64,43 @@
         margin: 1.5rem auto;
     }
 </style>
+<!-- Cargar Font Awesome 5.15.4 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Espaciado Superior -->
+<div style="margin: 100px;"></div>
 
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
-            <div style="margin: 40px;"></div>
             <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header text-white">
-                    <div class="text-white">
-                        <img src="{{ url_for('static', filename='images/logocardv4.png') }}" alt="Pulztag Logo" height="40">
+                <!-- Encabezado con logo y botones -->
+                <div class="card-header text-white d-flex justify-content-between align-items-center p-3">
+                    <!-- Logo a la izquierda -->
+                    <div>
+                        <img src="{{ url_for('static', filename='images/logocardv2.png') }}" alt="Pulztag Logo" height="30">
+                    </div>                    
+                    <!-- Botones a la derecha -->
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-custom-white btn-icon">
+                            <i class="fas fa-user-plus" style="font-size: 1.0em;"></i>
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <!-- Botón Volver -->
+                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon">
+                            <i class="fas fa-chevron-right" style="font-size: 1.0em;"></i>
+                        </a>
+                        {% endif %}
+                        <!--<button class="btn btn-custom-white" onclick="copyURL()">
+                            <i class="fas fa-share-alt me-1"></i>Compartir URL
+                        </button> -->
+                        <input type="hidden" id="cardURL" value="{{ request.url }}">
                     </div>
                 </div>
+                <div style="margin: 10px;"></div>
                 <div class="card-body text-center p-2">
                     <!-- Imagen de Perfil -->
                     <div class="mb-4">
-                        <div style="margin: 20px;"></div>
                         <img src="{{ url_for('uploaded_file', filename=contact['image_file']) }}" alt="Imagen de Perfil" class="rounded-circle profile-image shadow-lg">
                     </div>
 
@@ -93,33 +115,25 @@
                         <p class="card-text">
                             <strong>Teléfono:</strong>
                             <a href="tel:{{ contact.phone }}" class="text-primary text-decoration-none">
-                                <i class="fa-solid fa-phone me-1"></i>{{ contact.phone }}
+                                <i class="fas fa-phone me-1"></i>{{ contact.phone }}
                             </a>
                         </p>
                         <p class="card-text">
                             <strong>Email:</strong>
                             <a href="mailto:{{ contact.email }}" class="text-primary text-decoration-none">
-                                <i class="fa-solid fa-envelope me-1"></i>{{ contact.email }}
+                                <i class="fas fa-envelope me-1"></i>{{ contact.email }}
                             </a>
                         </p>
                         <p class="card-text">
                             <strong>Página Web:</strong>
                             <a href="{{ contact.website }}" target="_blank" class="text-primary text-decoration-none">
-                                <i class="fa-solid fa-globe me-1"></i>{{ contact.website }}
+                                <i class="fas fa-globe me-1"></i>{{ contact.website }}
                             </a>
                         </p>
-                        <p class="card-text"><strong>Dirección:</strong> {{ contact.address }}</p>
-                    </div>
-
-                    <!-- Botones de Acción -->
-                    <div class="d-flex justify-content-center mt-4 gap-3">
-                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-outline-primary">
-                            <i class="fa-solid fa-download me-1"></i>Agregar Contacto
-                        </a>
-                        <button class="btn btn-outline-secondary" onclick="copyURL()">
-                            <i class="fa-solid fa-share-nodes me-1"></i>Compartir URL
-                        </button>
-                        <input type="hidden" id="cardURL" value="{{ request.url }}">
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <strong>Dirección:</strong> {{ contact.address }}
+                        </p>
                     </div>
                     
                     <!-- Instrucciones para Agregar Contacto -->

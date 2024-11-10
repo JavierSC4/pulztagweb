@@ -1,0 +1,42 @@
+<!-- templates/create_item.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Item - PulztagWeb{% endblock %}
+
+{% block content %}
+<div style="margin: 100px;"></div>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Crear Nuevo Item</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="row">
+                <!-- Opción Pulzcard -->
+                <div class="col-md-6 mb-4">
+                    <a href="{{ url_for('pulzcard') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center">
+                            <img src="{{ url_for('static', filename='images/pulzcard_form.jpeg') }}" class="card-img-top" alt="Pulzcard">
+                            <div class="card-body">
+                                <h5 class="card-title">Pulzcard (vCard)</h5>
+                                <p class="card-text">Crea una Pulzcard personalizada con tu información de contacto.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Opción Etiqueta -->
+                <div class="col-md-6 mb-4">
+                    <a href="{{ url_for('create_tag') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center">
+                            <img src="{{ url_for('static', filename='images/tags_form.jpg') }}" class="card-img-top" alt="Etiqueta">
+                            <div class="card-body">
+                                <h5 class="card-title">Etiqueta</h5>
+                                <p class="card-text">Crea una etiqueta personalizada para redireccionar a una URL específica.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

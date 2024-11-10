@@ -5,43 +5,7 @@
 {% block title %}Nuestros Productos - PulztagWeb{% endblock %}
 
 {% block content %}
-<div style="margin: 50px;"></div>
-<div class="container">
-    <!-- Soluciones Personalizadas Section Mejorada -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="custom-solutions-section text-center p-5 rounded shadow">
-                <h4 class="text-white">Soluciones Personalizadas para Industrias</h4>
-                <div class="solutions-list">
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Marketing y Publicidad</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Eventos</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Educación</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
-                    </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Logística</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="margin: 20px;"></div>
+<div style="margin: 100px;"></div>
     <h2 class="text-center mb-4">Nuestros Productos</h2>
     <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
 
@@ -89,8 +53,8 @@
         </div>
     </div>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <!-- Línea de Separación -->
+    <hr class="my-5">
 
     <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
     <div class="row mb-5">
@@ -110,11 +74,15 @@
             <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
         </div>
     </div>
+
+    <!-- Línea de Separación -->
+    <hr class="my-5">
+
     <!-- Invitación a Crear tu Pulzcard -->
     <section class="mt-5 text-center">
         <h2>Crea tu Pulzcard</h2>
         <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('create_item') }}" role="button">Crear Pulztag</a>
     </section>
 </div>
 {% endblock %}

@@ -370,4 +370,34 @@ form h4 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease;}
 
+/* Botones personalizados */
+.btn-custom-white {
+    /* Degradado de transparente a blanco */
+    background: linear-gradient(to bottom, #9cd6fd, transparent);
     
+    color: #ffffff; /* Color de ícono en blanco */
+    border: 2px solid #ffffff; /* Borde en blanco */
+    transition: background 0.3s, color 0.3s;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Opcional: añadir un poco de radio a las esquinas */
+    border-radius: 4px;
+}
+
+/* Hover con color de fondo azul */
+.btn-custom-white:hover {
+    background-color: #fede9d;
+    color: #ffffff;
+    border-color: #93f66f;
+}
+
+/* Estilo específico para botones de solo ícono */
+.btn-icon {
+    padding: 0.5rem;
+    width: 40px; /* Ajustar el tamaño del botón si es necesario */
+    height: 40px; /* Ajustar el tamaño del botón si es necesario */
+    border-radius: 50%; /* Hacer el botón circular */
+}

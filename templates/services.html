@@ -1,0 +1,102 @@
+<!-- templates/order.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Nuestros Productos - PulztagWeb{% endblock %}
+
+{% block content %}
+<div style="margin: 100px;"></div>
+    <h2 class="text-center mb-4">Nuestros Servicios</h2>
+    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
+<div class="container">
+    <!-- Soluciones Personalizadas Section Mejorada -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="custom-solutions-section text-center p-5 rounded shadow">
+                <h4 class="text-white">Soluciones Personalizadas para Industrias</h4>
+                <div class="solutions-list">
+                    <div class="solution-item">
+                        <h5 style="color: white; font-weight: bold;">Marketing y Publicidad</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
+                        <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5 style="color: white; font-weight: bold;">Eventos</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
+                        <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5 style="color: white; font-weight: bold;">Educación</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
+                        <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
+                    </div>
+                    <div class="solution-item">
+                        <h5 style="color: white; font-weight: bold;">Logística</h5>
+                        <!-- Línea de Separación -->
+                        <hr class="my-2">
+                        <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Línea de Separación -->
+    <hr class="my-5">
+
+    <section class="mt-5">
+        <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
+        <div style="margin: 40px;"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC" style="max-width: 100%; height: auto;">
+                    <div class="card-body">
+                        <h4>Georeferenciación de Etiquetas NFC</h4>
+                        <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC" style="max-width: 100%; height: auto;">
+                    <div class="card-body">
+                        <h4>Campañas Publicitarias y Marketing</h4>
+                        <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia. Reduce costos de producción gráfica</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes" style="max-width: 100%; height: auto;">
+                    <div class="card-body">
+                        <h4>Programas de Fidelización de Clientes</h4>
+                        <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC" style="max-width: 100%; height: auto;">
+                    <div class="card-body">
+                        <h4>Integración de Sistemas</h4>
+                        <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Invitación a Crear tu Pulzcard -->
+    <section class="mt-5 text-center">
+        <h2>Crea tu Pulzcard</h2>
+        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+    </section>
+</div>
+{% endblock %}

@@ -4,19 +4,24 @@ import os
 import uuid
 from urllib.parse import urlparse
 from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
+from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
+from random import randint
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import pandas as pd
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-from extensions import db, migrate, bcrypt, login_manager
-from models import User, Pulzcard, Tag
+from extensions import mail, db, migrate, bcrypt, login_manager, oauth
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from models import db, User, Pulzcard, Tag, SecureModelView
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm, VerificationForm  # Importa el nuevo formulario de contacto
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -24,6 +29,7 @@ from datetime import datetime
 load_dotenv()
 
 app = Flask(__name__, instance_relative_config=True)
+bcrypt = Bcrypt(app)  # Inicializa bcrypt en la app de Flask
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Configuración de la Base de Datos
@@ -35,6 +41,28 @@ db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager.init_app(app)
+oauth.init_app(app)  # Inicializar `oauth` con la instancia de `app`
+mail.init_app(app)
+
+# Registrar el cliente de Google OAuth
+google = oauth.register(
+    name='google',
+    client_id=os.getenv('GOOGLE_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',  # Cambiado para mayor claridad
+    client_kwargs={'scope': 'openid email profile'},
+)
+
+# Inicializar Flask-Admin
+admin = Admin(app, name='Panel de Administración', template_mode='bootstrap4')
+
+# Agregar vistas con la clase SecureModelView al panel de administración
+admin.add_view(SecureModelView(User, db.session))
+admin.add_view(SecureModelView(Pulzcard, db.session))
+admin.add_view(SecureModelView(Tag, db.session))
 
 # Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -52,6 +80,15 @@ csrf = CSRFProtect(app)
 # Configuración de Flask-Login
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'warning'
+
+def send_verification_email(user):
+    verification_code = str(randint(100000, 999999))  # Genera un código de 6 dígitos
+    user.verification_code = verification_code
+    db.session.commit()
+
+    msg = Message('Código de verificación', recipients=[user.email])
+    msg.body = f'Tu código de verificación es: {verification_code}'
+    mail.send(msg)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -77,6 +114,45 @@ def allowed_file(filename, allowed_extensions):
 # Configurar el serializador
 s = URLSafeTimedSerializer(app.secret_key)
 
+@app.route('/verify', methods=['GET', 'POST'])
+def verify():
+    form = VerificationForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.verification_code == form.code.data:
+            user.is_verified = True
+            user.verification_code = None  # Limpia el código
+            db.session.commit()
+            flash('Cuenta verificada exitosamente.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Código de verificación incorrecto.', 'danger')
+    return render_template('verify.html', form=form)
+
+@app.route('/login/google')
+def google_login():
+    redirect_uri = url_for('google_authorize', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@app.route('/authorize/google')
+def google_authorize():
+    token = oauth.google.authorize_access_token()
+    user_info = oauth.google.get('userinfo').json()
+
+    user = User.query.filter_by(email=user_info['email']).first()
+    if not user:
+        user = User(
+            username=user_info['name'],
+            email=user_info['email'],
+            is_verified=True  # Marcar automáticamente como verificado
+        )
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    flash('Inicio de sesión exitoso con Google.', 'success')
+    return redirect(url_for('home'))
+
 # Rutas de Autenticación
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -85,11 +161,37 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        # Generar una contraseña aleatoria
+        random_password = str(uuid.uuid4())[:8]  # Genera una contraseña aleatoria de 8 caracteres
+        hashed_password = bcrypt.generate_password_hash(random_password).decode('utf-8')
+
+        # Crear el usuario con is_admin=False
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password, is_admin=False)
         db.session.add(user)
         db.session.commit()
-        flash('Tu cuenta ha sido creada! Ahora puedes iniciar sesión.', 'success')
+
+        # Enviar el correo con la contraseña generada
+        try:
+            msg = Message(
+                'Tu nueva cuenta en PulztagWeb',
+                recipients=[user.email]
+            )
+            msg.body = f'''Hola {user.username},
+
+Tu cuenta ha sido creada exitosamente. Aquí tienes tu contraseña temporal:
+
+Contraseña: {random_password}
+
+Por favor, inicia sesión y cámbiala en tu perfil lo antes posible.
+
+Gracias por unirte a PulztagWeb.
+'''
+            mail.send(msg)
+            flash('Tu cuenta ha sido creada. Se ha enviado un correo con tu contraseña temporal.', 'success')
+        except Exception as e:
+            print(f"Error al enviar el correo: {e}")
+            flash('Hubo un error al enviar el correo. Por favor, contacta al soporte.', 'danger')
+
         return redirect(url_for('login'))
     return render_template('register.html', title='Registrar', form=form)
 
@@ -209,6 +311,10 @@ def contact():
 @app.route('/products')
 def products():
     return render_template('products.html')
+
+@app.route('/services')
+def services():
+    return render_template('services.html')
 
 @app.route('/order', methods=['GET', 'POST'])
 @login_required
@@ -348,6 +454,11 @@ def order():
             return redirect(url_for('order'))
 
     return render_template('order.html', form=form)  # Pasar el formulario al template
+
+@app.route('/create_item')
+@login_required
+def create_item():
+    return render_template('create_item.html')
 
 # Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -635,6 +746,22 @@ def delete_pulzcard(card_id):
         flash('Formulario inválido o token CSRF no válido.', 'danger')
 
     return redirect(url_for('profile'))
+
+@app.route('/create_tag', methods=['GET', 'POST'])
+@login_required
+def create_tag():
+    form = TagForm()
+    if form.validate_on_submit():
+        new_tag = Tag(
+            tag_name=form.tag_name.data,
+            redirect_url=form.redirect_url.data,
+            user_id=current_user.id
+        )
+        db.session.add(new_tag)
+        db.session.commit()
+        flash('Tu etiqueta ha sido creada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    return render_template('create_tag.html', title='Crear Etiqueta', form=form)
 
 @app.route('/tag/edit/<tag_id>', methods=['GET', 'POST'])
 @login_required
