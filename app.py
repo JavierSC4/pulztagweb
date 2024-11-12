@@ -3,7 +3,10 @@
 import os
 import uuid
 from urllib.parse import urlparse
-from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, abort
+import qrcode
+from io import BytesIO
+import base64
+from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, send_file, abort
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
 from random import randint
@@ -273,7 +276,7 @@ def reset_token(token):
         db.session.commit()
         flash('Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Restablecer Contraseña', form=form)
+    return render_template('reset_token.html', title='Restablecer Contraseña', form=form, token=token)
 
 # Rutas Existentes
 @app.route('/')
@@ -780,6 +783,44 @@ def edit_tag(tag_id):
         form.redirect_url.data = tag.redirect_url
 
     return render_template('edit_tag.html', title='Editar Etiqueta', form=form, tag=tag)
+
+@app.route('/tag/qrcode_image/<tag_id>')
+@login_required
+def tag_qrcode_image(tag_id):
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+    url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True)
+    # Generar el código QR
+    qr_img = qrcode.make(url)
+    img_io = BytesIO()
+    qr_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
+
+@app.route('/tag/qrcode/<tag_id>')
+@login_required
+def tag_qrcode(tag_id):
+    tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+    qr_image_url = url_for('tag_qrcode_image', tag_id=tag.tag_id)
+    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Etiqueta', tag_id=tag_id)
+
+@app.route('/pulzcard/qrcode_image/<card_id>')
+@login_required
+def pulzcard_qrcode_image(card_id):
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
+    url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)
+    # Generar el código QR
+    qr_img = qrcode.make(url)
+    img_io = BytesIO()
+    qr_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
+
+@app.route('/pulzcard/qrcode/<card_id>')
+@login_required
+def pulzcard_qrcode(card_id):
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
+    qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id)
+    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Pulzcard', tag_id=card_id)
 
 # Ruta de Prueba para Crear una vCard Manualmente
 @app.route('/test_vcard')

@@ -81,19 +81,21 @@
                         <img src="{{ url_for('static', filename='images/logocardv2.png') }}" alt="Pulztag Logo" height="30">
                     </div>                    
                     <!-- Botones a la derecha -->
+                    <!-- Botones a la derecha -->
                     <div class="d-flex gap-2">
-                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-custom-white btn-icon">
+                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-custom-white btn-icon" title="Descargar vCard">
                             <i class="fas fa-user-plus" style="font-size: 1.0em;"></i>
                         </a>
+                        <!-- Botón para copiar URL -->
+                        <button class="btn btn-custom-white btn-icon" onclick="copyURL()" title="Copiar URL">
+                            <i class="fas fa-copy" style="font-size: 1.0em;"></i>
+                        </button>
                         {% if current_user.is_authenticated %}
                         <!-- Botón Volver -->
-                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon">
+                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
                             <i class="fas fa-chevron-right" style="font-size: 1.0em;"></i>
                         </a>
                         {% endif %}
-                        <!--<button class="btn btn-custom-white" onclick="copyURL()">
-                            <i class="fas fa-share-alt me-1"></i>Compartir URL
-                        </button> -->
                         <input type="hidden" id="cardURL" value="{{ request.url }}">
                     </div>
                 </div>

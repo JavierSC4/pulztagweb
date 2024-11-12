@@ -401,3 +401,28 @@ form h4 {
     height: 40px; /* Ajustar el tamaño del botón si es necesario */
     border-radius: 50%; /* Hacer el botón circular */
 }
+
+.btn-custom-white {
+    background: linear-gradient(to bottom, #9cd6fd, transparent);
+    color: #ffffff;
+    border: 2px solid #ffffff;
+    transition: background 0.3s, color 0.3s;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.btn-custom-white:hover {
+    background-color: #fede9d;
+    color: #ffffff;
+    border-color: #93f66f;
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}

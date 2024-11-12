@@ -53,6 +53,9 @@
                         <td>
                             <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
                             <a href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+                            <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                <i class="fas fa-qrcode"></i>
+                            </a>
                             <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
                                 {{ delete_forms[card.id].hidden_tag() }}
                                 <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
@@ -83,7 +86,7 @@
 <!-- Lista de Etiquetas -->
 <div class="row">
     <div class="col-md-12 mt-5">
-        <h4>Tus Etiquetas</h4>
+        <h4>Tus Etiquetas y QR Code</h4>
         {% if tags %}
             <table class="table table-striped">
                 <thead>
@@ -109,6 +112,9 @@
                         </td>
                         <td>
                             <button class="btn btn-outline-secondary btn-sm" onclick="copyURL('{{ generated_url }}')">Copiar URL</button>
+                            <a href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                <i class="fas fa-qrcode"></i>
+                            </a>
                             <a href="{{ url_for('edit_tag', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
                             <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
                                 {{ delete_tag_forms[tag.id].hidden_tag() }}
