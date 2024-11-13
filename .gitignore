@@ -46,3 +46,5 @@ instance/site_new.db
 
 # Archivos de configuración específicos
 script_crear_admin.py
+script_reset_database.py
+script_corregir_admins.py
