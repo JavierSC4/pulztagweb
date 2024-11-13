@@ -13,13 +13,54 @@
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
-<div style="margin: 100px;"></div>
+<div style="margin: 80px;"></div>
+
 <!-- Hero Section -->
-<div class="jumbotron text-center">
-    <h1 class="display-4">Transforma tu Negocio con Tecnología NFC</h1>
-    <p class="lead">Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.</p>
-    <!-- Imagen: hero_image.jpg (Una imagen representativa de dispositivos NFC en uso) -->
-</div>
+<section class="hero-section position-relative overflow-hidden">
+    <!-- Contenedor para el video -->
+    <div class="video-container">
+        <video id="hero-video" autoplay muted playsinline class="hero-video-bg">
+            Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
+        </video>
+    </div>
+    <!-- Overlay para mejorar la legibilidad del texto -->
+    <div class="overlay"></div>
+    <!-- Contenido -->
+    <div class="container-fluid position-relative z-index-2 px-0">
+        <div class="row align-items-center min-vh-100 mx-0">
+            <div class="col-lg-7 col-md-8 text-center text-lg-start">
+                <div class="content-wrapper px-4 px-md-5">
+                    <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
+                        Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
+                    </h1>
+                    <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
+                        Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
+                    </p>
+                    <a href="#servicios" class="btn btn-primary btn-lg me-2" data-aos="fade-up" data-aos-delay="400">
+                        Nuestros Servicios
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
+                        Contáctanos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Overlay para mejorar la legibilidad del texto -->
+    <div class="overlay"></div>
+</section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
+    <!-- Invitación a Crear tu Pulzcard -->
+    <section id="servicios" class="mt-5 text-center">
+        <h2>Crea tu Pulzcard</h2>
+        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
+    </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Servicios Destacados -->
 <section id="servicios" class="mt-5">
@@ -71,15 +112,6 @@
         </div>
     </div>
 </section>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-    <!-- Invitación a Crear tu Pulzcard -->
-    <section class="mt-5 text-center">
-        <h2>Crea tu Pulzcard</h2>
-        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
-    </section>
 
     <!-- Línea de Separación -->
 <hr class="my-5">

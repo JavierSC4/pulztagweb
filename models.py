@@ -12,12 +12,11 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String(60), nullable=True)  # Cambiado a True
     is_admin = db.Column(db.Boolean, default=False)
-    is_verified = db.Column(db.Boolean, default=False)  # Campo para marcar si el usuario está verificado
-    verification_code = db.Column(db.String(6), nullable=True)  # Código de verificación temporal
-    # Relación con Pulzcards
-    pulzcards = db.relationship('Pulzcard', backref='owner', lazy=True)
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_code = db.Column(db.String(6), nullable=True)
+    must_change_password = db.Column(db.Boolean, default=True)
 
     def get_reset_token(self, expires_sec=3600):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -49,6 +48,9 @@ class Pulzcard(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
+
+    # Definir la relación con User
+    owner = db.relationship('User', backref=db.backref('pulzcards', lazy=True))
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"

@@ -32,7 +32,6 @@ from datetime import datetime
 load_dotenv()
 
 app = Flask(__name__, instance_relative_config=True)
-bcrypt = Bcrypt(app)  # Inicializa bcrypt en la app de Flask
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Configuración de la Base de Datos
@@ -164,33 +163,34 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Generar una contraseña aleatoria
-        random_password = str(uuid.uuid4())[:8]  # Genera una contraseña aleatoria de 8 caracteres
-        hashed_password = bcrypt.generate_password_hash(random_password).decode('utf-8')
-
-        # Crear el usuario con is_admin=False
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password, is_admin=False)
+        # Crear el usuario sin contraseña
+        user = User(username=form.username.data, email=form.email.data, is_admin=False, must_change_password=True)
         db.session.add(user)
         db.session.commit()
 
-        # Enviar el correo con la contraseña generada
+        # Generar token
+        token = user.get_reset_token()
+
+        # Enviar correo con enlace
         try:
             msg = Message(
-                'Tu nueva cuenta en PulztagWeb',
+                'Configura tu Contraseña en PulztagWeb',
                 recipients=[user.email]
             )
+            reset_url = url_for('reset_token', token=token, _external=True)
             msg.body = f'''Hola {user.username},
 
-Tu cuenta ha sido creada exitosamente. Aquí tienes tu contraseña temporal:
+Gracias por registrarte en PulztagWeb. Por favor, haz clic en el siguiente enlace para establecer tu contraseña:
 
-Contraseña: {random_password}
+{reset_url}
 
-Por favor, inicia sesión y cámbiala en tu perfil lo antes posible.
+Si no solicitaste este registro, por favor ignora este correo.
 
-Gracias por unirte a PulztagWeb.
+Saludos,
+Equipo de PulztagWeb
 '''
             mail.send(msg)
-            flash('Tu cuenta ha sido creada. Se ha enviado un correo con tu contraseña temporal.', 'success')
+            flash('Cuenta creada. Revisa tu correo para establecer tu contraseña.', 'success')
         except Exception as e:
             print(f"Error al enviar el correo: {e}")
             flash('Hubo un error al enviar el correo. Por favor, contacta al soporte.', 'danger')
@@ -208,11 +208,27 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
+            if user.must_change_password:
+                flash('Por favor, establece una nueva contraseña.', 'warning')
+                return redirect(url_for('change_password'))
             flash('Has iniciado sesión correctamente.', 'success')
-            return redirect(url_for('home'))  # Redirige siempre a 'home'
+            return redirect(url_for('home'))
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        current_user.password = hashed_password
+        current_user.must_change_password = False
+        db.session.commit()
+        flash('Tu contraseña ha sido actualizada.', 'success')
+        return redirect(url_for('home'))
+    return render_template('change_password.html', title='Cambiar Contraseña', form=form)
 
 @app.route('/logout')
 def logout():
@@ -273,10 +289,11 @@ def reset_token(token):
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user.password = hashed_password
+        user.must_change_password = False
         db.session.commit()
         flash('Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión.', 'success')
         return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Restablecer Contraseña', form=form, token=token)
+    return render_template('reset_token.html', title='Establecer Contraseña', form=form, token=token)
 
 # Rutas Existentes
 @app.route('/')
@@ -459,7 +476,6 @@ def order():
     return render_template('order.html', form=form)  # Pasar el formulario al template
 
 @app.route('/create_item')
-@login_required
 def create_item():
     return render_template('create_item.html')
 
@@ -493,7 +509,7 @@ def pulzcard():
             website=form.website.data,
             address=form.address.data,
             image_file=unique_filename,  # Store the image filename in the database
-            owner=current_user
+            user_id=current_user.id  # Asignar el ID del usuario actual
         )
 
         # Añadir a la sesión y hacer flush para obtener card_id
@@ -845,8 +861,8 @@ END:VCARD"""
         return f"Error al crear el archivo de prueba vCard: {e}"
 
 # Crear las tablas de la base de datos
-with app.app_context():
-    db.create_all()  # Asegura que la base de datos y las tablas se creen
+# with app.app_context():
+#     db.create_all()  # Asegura que la base de datos y las tablas se creen
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -17,23 +17,103 @@ h6 {
 }
 
 /* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra para destacar la navbar */
+}
+
 .navbar-brand {
     font-family: 'Montserrat', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.8rem; /* Aumentado de 1.5rem a 1.8rem */
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand img {
+    margin-right: 10px; /* Espacio entre logo y texto */
 }
 
 .nav-link {
     color: #555555 !important;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.3s, background-color 0.3s;
+    font-size: 1.0rem; /* Aumentado de 1.07rem a 1.2rem */
+    padding: 0.5rem 1rem; /* Mayor área clicable */
+    border-radius: 5px; /* Bordes redondeados */
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0%;
+    height: 1px;
+    background-color: #03c0ff;
+    left: 0;
+    bottom: 0;
+    transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+    width: 100%; /* Subrayado animado al hacer hover */
 }
 
 .nav-link:hover {
     color: #03c0ff !important;
+    transform: translateY(-2px); /* Subir ligeramente al pasar el cursor */
+    background-color: rgba(3, 192, 255, 0.1); /* Fondo sutil al pasar el cursor */
 }
 
 .nav-link.active {
     color: #03c0ff !important;
-    font-weight: 500;
+    font-weight: 600; /* Aumentado de 500 a 600 para mayor énfasis */
+    background-color: rgba(3, 192, 255, 0.2); /* Fondo para el enlace activo */
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #03c0ff;
+    color: #ffffff;
+}
+
+/* Botones de la Cuenta */
+.navbar-nav .dropdown-toggle::after {
+    margin-left: 0.3em;
+    vertical-align: 0.3em;
+}
+
+/* Responsividad para la Navbar */
+@media (max-width: 992px) {
+    .nav-link {
+        font-size: 1rem; /* Reducido para pantallas pequeñas */
+        padding: 0.5rem; /* Ajuste de padding */
+    }
+}
+
+/* Ajustes Adicionales para Mejorar la Apariencia */
+.navbar-light .navbar-nav .nav-link {
+    color: #555555;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+    color: #03c0ff;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #03c0ff;
+}
+
+/* Iconos en los Enlaces de Navegación */
+.nav-link i {
+    font-size: 1.1rem;
+    vertical-align: middle;
 }
 
 /* Footer */
@@ -368,7 +448,8 @@ form h4 {
     padding: 15px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease;}
+    transition: transform 0.3s ease;
+}
 
 /* Botones personalizados */
 .btn-custom-white {
@@ -387,33 +468,6 @@ form h4 {
     border-radius: 4px;
 }
 
-/* Hover con color de fondo azul */
-.btn-custom-white:hover {
-    background-color: #fede9d;
-    color: #ffffff;
-    border-color: #93f66f;
-}
-
-/* Estilo específico para botones de solo ícono */
-.btn-icon {
-    padding: 0.5rem;
-    width: 40px; /* Ajustar el tamaño del botón si es necesario */
-    height: 40px; /* Ajustar el tamaño del botón si es necesario */
-    border-radius: 50%; /* Hacer el botón circular */
-}
-
-.btn-custom-white {
-    background: linear-gradient(to bottom, #9cd6fd, transparent);
-    color: #ffffff;
-    border: 2px solid #ffffff;
-    transition: background 0.3s, color 0.3s;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-}
-
 .btn-custom-white:hover {
     background-color: #fede9d;
     color: #ffffff;
@@ -425,4 +479,85 @@ form h4 {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+}
+
+/* Estilos para la sección Hero en login y register */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    height: 85vh; /* Ajustar según necesidad */
+}
+
+.hero-video-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 187, 255, 0.356);
+    z-index: 2;
+}
+
+.hero-section .container-fluid {
+    position: relative;
+    z-index: 3;
+}
+
+.login-card, .register-card {
+    background-color: rgba(255, 255, 255, 0.85); /* Semi-transparente */
+    backdrop-filter: blur(5px); /* Efecto de desenfoque */
+}
+
+/* Responsividad para pantallas pequeñas */
+@media (max-width: 576px) {
+    .login-card, .register-card {
+        width: 90%;
+        padding: 1.5rem;
+    }
+}
+
+.content-wrapper {
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+@media (max-width: 576px) {
+    h1.display-2 {
+        font-size: 2rem;
+    }
+    p.lead {
+        font-size: 1rem;
+    }
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    .content-wrapper {
+        padding-top: 30px;
+        padding-bottom: 30px;
+    }
+    /* Ajustar márgenes y padding en secciones */
+    section {
+        margin: 20px 0;
+    }
+}
+
+/* Ajustar imágenes */
+img.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+
+.text-highlight {
+    color: #ffd700;
 }
