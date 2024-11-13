@@ -19,7 +19,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import mail, db, migrate, bcrypt, login_manager, oauth
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import db, User, Pulzcard, Tag, SecureModelView
+from models import User, Pulzcard, Tag, SecureModelView
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
@@ -74,7 +74,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
-mail = Mail(app)
+mail.init_app(app)  # Initialize the existing Mail instance with the app
 
 # Inicializar CSRFProtect
 csrf = CSRFProtect(app)
