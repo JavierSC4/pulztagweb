@@ -861,15 +861,8 @@ END:VCARD"""
         return f"Error al crear el archivo de prueba vCard: {e}"
 
 # Crear las tablas de la base de datos
-# with app.app_context():
-#     db.create_all()  # Asegura que la base de datos y las tablas se creen
-
 with app.app_context():
-    try:
-        result = User.query.first()  # Consulta básica para probar la conexión
-        print("Conexión exitosa. Primer usuario encontrado:", result)
-    except Exception as e:
-        print("Error al conectar con la base de datos:", e)
+    db.create_all()  # Asegura que la base de datos y las tablas se creen
 
 if __name__ == '__main__':
     app.run(debug=True)
