@@ -572,10 +572,10 @@ img.img-fluid {
 }
 
 @media (max-width: 768px) {
-    .hero-section .btn-group {
+    .hero-section .btn-stack {
         display: flex;
         flex-direction: column;
-        gap: 10px; /* Ajusta este valor para la separación deseada */
+        gap: 15px; /* Espacio entre los botones en móvil */
         align-items: center;
     }
 }
