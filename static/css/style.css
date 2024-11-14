@@ -570,3 +570,12 @@ img.img-fluid {
 .text-highlight {
     color: #ffd700;
 }
+
+@media (max-width: 768px) {
+    .hero-section .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* Ajusta este valor para la separación deseada */
+        align-items: center;
+    }
+}
