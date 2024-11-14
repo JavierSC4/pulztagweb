@@ -5,6 +5,8 @@
 {% block title %}Crear Item - PulztagWeb{% endblock %}
 
 {% block content %}
+<!-- Cargar Font Awesome temporalmente en esta sección -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <div class="col-lg-8 offset-lg-2 col-md-10 text-center">
     <div class="card create-item-card p-4 shadow-lg" style="background: #ffd9001c; backdrop-filter: blur(5px); border-radius: 1rem; margin: auto;">
         <h2 class="text-center mb-4 text-white">Crear Nuevo Item</h2>
@@ -78,9 +80,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         // Lista de videos a reproducir (reutilizar la misma lógica)
         const videos = [
-            "{{ url_for('static', filename='videos/nfc_1.mp4') }}",
-            "{{ url_for('static', filename='videos/qr_1.mp4') }}",
-            "{{ url_for('static', filename='videos/pc_1.mp4') }}"
+            "{{ url_for('static', filename='videos/nfc_4_short.mp4') }}",
+            "{{ url_for('static', filename='videos/pc_1_short.mp4') }}",
+            "{{ url_for('static', filename='videos/qr_1_short.mp4') }}",
+            "{{ url_for('static', filename='videos/nfc_3_short.mp4') }}"
         ];
 
         let videoIndex = 0;

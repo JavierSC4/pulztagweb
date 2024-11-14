@@ -131,6 +131,19 @@ footer a:hover {
     text-decoration: underline;
 }
 
+footer .container {
+    max-width: 1200px;
+}
+
+footer div {
+    display: flex;
+    align-items: center;
+}
+
+.footer-text {
+    margin-left: 400px; /* Ajusta el valor según prefieras el desplazamiento */
+}
+
 /* Botones Personalizados */
 .btn-primary {
     background-color: #03c0ff;
