@@ -1,223 +1,25 @@
 <!-- templates/index.html -->
-
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
-{% extends 'base.html' %}
+{% extends 'video_base.html' %}
 
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
-{% block content %}
-
-<!-- Hero Section -->
-<section class="hero-section position-relative overflow-hidden">
-    <!-- Contenedor para el video -->
-    <div class="video-container">
-        <video id="hero-video" autoplay muted playsinline class="hero-video-bg">
-            Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
-        </video>
-    </div>
-    <!-- Overlay para mejorar la legibilidad del texto -->
-    <div class="overlay"></div>
-    <!-- Contenido -->
-    <div class="container-fluid position-relative z-index-2 px-0">
-        <div class="row align-items-center min-vh-100 mx-0">
-            <div class="col-lg-7 col-md-8 text-center text-lg-start">
-                <div class="content-wrapper px-4 px-md-5">
-                    <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
-                        Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
-                    </h1>
-                    <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
-                        Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
-                    </p>
-                    <a href="#servicios" class="btn btn-primary btn-lg me-2" data-aos="fade-up" data-aos-delay="400">
-                        Nuestros Servicios
-                    </a>
-                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
-                        Contáctanos
-                    </a>
-                </div>
-            </div>
+{% block video_content %}
+<div class="col-lg-7 col-md-8 text-center text-lg-start">
+    <div class="content-wrapper px-4 px-md-5">
+        <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
+            Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
+        </h1>
+        <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
+            Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
+        </p>
+        <div class="btn-stack">
+            <a href="{{ url_for('create_item') }}" class="btn btn-dark bg-gradient btn-lg" data-aos="fade-up" data-aos-delay="400">
+                Obtén tu Pulztag Gratis
+            </a>
+            <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
+                Contáctanos
+            </a>
         </div>
     </div>
-    <!-- Overlay para mejorar la legibilidad del texto -->
-    <div class="overlay"></div>
-</section>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-    <!-- Invitación a Crear tu Pulzcard -->
-    <section id="servicios" class="mt-5 text-center">
-        <h2>Crea tu Pulzcard</h2>
-        <p>Comparte tu información de contacto de manera innovadora y eficiente con nuestra Pulzcard. Con esta tarjeta NFC personalizada, tus clientes podrán acceder a tus datos de contacto con solo un toque, facilitando el networking y fortaleciendo tus relaciones comerciales.</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('pulzcard') }}" role="button">Crear Pulzcard</a>
-    </section>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Servicios Destacados -->
-<section id="servicios" class="mt-5">
-    <h2 class="text-center mb-4">Nuestros Servicios</h2>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card text-center service-background">
-                <!-- Imagen: servicios_personalizados.jpg (Imagen de dispositivos NFC personalizados) -->
-                <img src="{{ url_for('static', filename='images/servicios_personalizados.jpeg') }}" class="card-img-top"
-                    alt="Dispositivos NFC Personalizados">
-                <div class="card-body">
-                    <i class="bi bi-tools" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Dispositivos NFC Personalizados</h5>
-                    <!-- Línea de Separación -->
-                    <hr class="my-2">
-                    <p class="card-text">Diseñamos y configuramos dispositivos NFC adaptados a las necesidades
-                        específicas de tu negocio.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center service-background">
-                <!-- Imagen: desarrollo_servicios.jpg (Imagen de desarrollo de software o servicios) -->
-                <img src="{{ url_for('static', filename='images/desarrollo_servicios.jpeg') }}" class="card-img-top"
-                    alt="Desarrollo de Servicios Personalizados">
-                <div class="card-body">
-                    <i class="bi bi-code-slash" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Desarrollo de Servicios Personalizados</h5>
-                    <!-- Línea de Separación -->
-                    <hr class="my-2">
-                    <p class="card-text">Colaboramos contigo para crear soluciones únicas, como aplicaciones de y campañas de marketing NFC.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 mt-4 mt-md-0">
-            <div class="card text-center service-background">
-                <!-- Imagen: fidelizacion_clientes.jpg (Imagen representativa de fidelización de clientes) -->
-                <img src="{{ url_for('static', filename='images/fidelizacion_clientes.jpeg') }}" class="card-img-top"
-                    alt="Fidelización de Clientes">
-                <div class="card-body">
-                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Fidelización y retención de Clientes</h5>
-                    <!-- Línea de Separación -->
-                    <hr class="my-2">
-                    <p class="card-text">Implementamos programas de fidelización utilizando tecnología NFC para
-                        fortalecer la relación con tus clientes.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-    <!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Invitación a Ver Productos -->
-<section class="text-center mt-5">
-    <h2>Explora Nuestros Productos</h2>
-    <p>Descubre nuestra gama de dispositivos NFC personalizados diseñados para impulsar tu negocio.</p>
-</section>
-<div style="margin: 40px;"></div>
-
-    <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Etiquetas NFC</h4>
-            <p>Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
-            <ul>
-                <li>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
-                <li>Materiales: PVC y metálico</li>
-                <li>Resistentes al agua</li>
-                <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
-                <li>Aplicaciones: Promociones, eventos, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
-            </p>
-        </div>
-        <div class="col-md-6">
-            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
-    </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-    <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Tarjetas NFC Personalizadas</h4>
-            <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
-            <ul>
-                <li>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
-                <li>Colores: Blanco y Negro</li>
-                <li>Material: PVC</li>
-                <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$4.990</span> (IVA inc.)</a>
-            </p>
-        </div>
-        <div class="col-md-6 order-md-1">
-            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
-    </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-    <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Stickers NFC</h4>
-            <p>Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
-            <ul>
-                <li>Impresión: Una o dos caras</li>
-                <li>Material: PVC o adhesivo fuerte</li>
-                <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
-            </p>
-        </div>
-        <div class="col-md-6">
-            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
-    </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Clientes y Alianzas
-<!--<section class="mt-5">
-    <h2 class="text-center mb-4">Nuestros Clientes y Alianzas</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-4 text-center">
-            <!-- Imagen: cliente1_logo.jpg (Logo del cliente 1)
-            <img src="{{ url_for('static', filename='images/cliente1_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 1 Logo">
-        </div>
-        <div class="col-md-4 text-center mt-4 mt-md-0">
-            <!-- Imagen: cliente2_logo.jpg (Logo del cliente 2)
-            <img src="{{ url_for('static', filename='images/cliente2_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 2 Logo">
-        </div>
-        <div class="col-md-4 text-center mt-4 mt-md-0">
-            <!-- Imagen: cliente3_logo.jpg (Logo del cliente 3)
-            <img src="{{ url_for('static', filename='images/cliente3_logo.jpeg') }}" class="img-fluid mb-3"
-                alt="Cliente 3 Logo">
-        </div>
-    </div>
-    <!-- Puedes agregar más logos o testimonios según sea necesario
-</section>
-
-<!-- Call to Action Section -->
-<section class="text-center mt-5">
-    <h2>¿Listo para Transformar tu Negocio?</h2>
-    <p>Contáctanos hoy mismo y descubre cómo nuestras soluciones NFC pueden impulsar tu empresa.</p>
-    <a class="btn btn-primary btn-lg" href="/contact" role="button">Contactar</a>
-</section>
+</div>
 {% endblock %}

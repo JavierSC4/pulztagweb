@@ -1,13 +1,15 @@
 <!-- templates/base.html -->
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <!-- Google Tag Manager -->
     <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-        var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';j.async=true;
-        j.src='https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': 
+        new Date().getTime(),event:'gtm.js'});
+        var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+        j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+        f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-NC88XS28');
     </script>
     <!-- End Google Tag Manager -->
@@ -47,53 +49,14 @@
     <!-- Barra Superior -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand text-primary fw-bold d-flex align-items-center" href="/">
-                <img src="{{ url_for('static', filename='images/logobasev4.png') }}" alt="Pulztag Logo" height="40" class="me-2">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/services' %} active{% endif %}" href="{{ url_for('services') }}">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path.startswith('/create_item') %} active{% endif %}" href="{{ url_for('create_item') }}">Crear Item</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca de</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a></li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        {% if current_user.is_authenticated %}
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ current_user.username }}
-                            <i class="bi bi-person-circle ms-1"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-                        </ul>
-                        {% else %}
-                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Mi Cuenta <i class="bi bi-lock-fill ms-1"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('register') }}">Crear Cuenta</a></li>
-                        </ul>
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
+            {% include 'navbar.html' %}
         </div>
     </nav>
 
     <!-- Espacio para evitar que el contenido quede oculto bajo la barra de navegación -->
     <div style="margin-top: 90px;"></div>
 
-    <!-- Contenido Principal -->
+    <!-- Contenedor Principal -->
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -122,25 +85,6 @@
     <!-- JS Personalizado -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const videos = [
-                "{{ url_for('static', filename='videos/longvideo.mp4') }}"
-            ];
-            let videoIndex = 0;
-            const videoElement = document.getElementById('hero-video');
-            function playNextVideo() {
-                videoElement.src = videos[videoIndex];
-                videoElement.play();
-                videoIndex = (videoIndex + 1) % videos.length;
-            }
-            playNextVideo();
-            videoElement.addEventListener('ended', function () {
-                playNextVideo();
-            });
-        });
-    </script>
-    
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,12 +1,11 @@
 <!-- templates/login.html -->
-
 {% extends 'video_base.html' %}
 
 {% block title %}Iniciar Sesión - PulztagWeb{% endblock %}
 
-{% block content %}
+{% block video_content %}
 <div class="col-lg-6 offset-lg-3 col-md-8 text-center">
-<div class="card login-card p-4 shadow-lg" style="background: rgba(0, 187, 255, 0); backdrop-filter: blur(5px); border-radius: 1rem; width: 100%; max-width: 400px; margin: auto;">
+    <div class="card login-card p-4 shadow-lg" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px); border-radius: 1rem; width: 100%; max-width: 400px; margin: auto;">
         <h2 class="text-center mb-4 text-white">Iniciar Sesión</h2>
         <form method="POST" action="{{ url_for('login') }}">
             {{ form.hidden_tag() }}
@@ -54,53 +53,4 @@
         </p>
     </div>
 </div>
-{% endblock %}
-
-{% block styles %}
-<style>
-    /* Estilos específicos para el formulario de inicio de sesión */
-    .login-card {
-        background-color: rgba(255, 255, 255, 0.85); /* Semi-transparente */
-        backdrop-filter: blur(5px); /* Efecto de desenfoque */
-    }
-
-    /* Responsividad para pantallas pequeñas */
-    @media (max-width: 576px) {
-        .login-card {
-            width: 90%;
-            padding: 1.5rem;
-        }
-    }
-</style>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Lista de videos a reproducir (reutilizar la misma lógica)
-        const videos = [
-            "{{ url_for('static', filename='videos/longvideo.mp4') }}"
-        ];
-
-        let videoIndex = 0;
-        const videoElement = document.getElementById('hero-video');
-
-        // Función para cargar y reproducir el siguiente video
-        function playNextVideo() {
-            videoElement.src = videos[videoIndex];
-            videoElement.play();
-
-            // Incrementar el índice y reiniciar si es necesario
-            videoIndex = (videoIndex + 1) % videos.length;
-        }
-
-        // Reproducir el primer video
-        playNextVideo();
-
-        // Escuchar el evento 'ended' para saber cuándo un video termina
-        videoElement.addEventListener('ended', function () {
-            playNextVideo();
-        });
-    });
-</script>
 {% endblock %}
