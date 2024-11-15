@@ -570,3 +570,12 @@ img.img-fluid {
 .text-highlight {
     color: #ffd700;
 }
+
+@media (max-width: 768px) {
+    .hero-section .btn-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 15px; /* Espacio entre los botones en móvil */
+        align-items: center;
+    }
+}
