@@ -5,85 +5,84 @@
 {% block title %}Nuestros Productos - PulztagWeb{% endblock %}
 
 {% block content %}
-<!-- Cargar Font Awesome temporalmente en esta sección -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <h2 class="text-center mb-4">Nuestros Productos</h2>
-    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Nuestros Productos</h2>
+        <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
 
-    <!-- Etiquetas NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Etiquetas NFC</h4>
-            <p>Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
-            <ul>
-                <li>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
-                <li>Materiales: PVC y metálico</li>
-                <li>Resistentes al agua</li>
-                <li>Opciones de adhesivo: Media resistencia o alta resistencia</li>
-                <li>Aplicaciones: Promociones, eventos, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
-            </p>
+        <!-- Grid de Productos -->
+        <div class="row gy-5">
+            <!-- Producto 1: Etiquetas NFC -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ url_for('static', filename='images/etiquetas_nfc.jpeg') }}" class="card-img-top" alt="Etiquetas NFC" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title text-primary">Etiquetas NFC</h4>
+                        <p class="card-text">Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Dimensiones: 30.0 mm diámetro x 0.9 mm espesor</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Materiales: PVC y metálico</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Resistentes al agua</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Opciones de adhesivo: Media resistencia o alta resistencia</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Aplicaciones: Promociones, eventos, logística.</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 2: Tarjetas NFC Personalizadas -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ url_for('static', filename='images/tarjetas_nfc.jpeg') }}" class="card-img-top" alt="Tarjetas NFC Personalizadas" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title text-primary">Tarjetas NFC Personalizadas</h4>
+                        <p class="card-text">Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Colores: Blanco y Negro</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Material: PVC</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                                Desde <span class="fw-bold">$4.990</span> (IVA inc.)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Producto 3: Stickers NFC -->
+            <div class="col-lg-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <img src="{{ url_for('static', filename='images/stickers_nfc.jpg') }}" class="card-img-top" alt="Stickers NFC" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <h4 class="card-title text-primary">Stickers NFC</h4>
+                        <p class="card-text">Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
+                        <ul class="list-unstyled mb-4">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Impresión: Una o dos caras</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Material: PVC o adhesivo fuerte</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Aplicaciones: Branding, marketing interactivo, logística.</li>
+                        </ul>
+                        <div class="mt-auto">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-6">
-            <img src="/static/images/etiquetas_nfc.jpeg" alt="Etiquetas NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
+
+        <!-- Invitación a Crear tu Pulzcard -->
+        <section class="mt-5 text-center">
+            <h2 class="mb-4">Crea tu Pulztag</h2>
+            <p class="mb-4">Comparte tu información de manera innovadora y eficiente con nuestras Pulztag. Administra y edita tus Tarjetas Inteligentes, códigos QR, y etiquetas NFC.</p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('create_item') }}" role="button">Crear Pulztag</a>
+        </section>
     </div>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-    <!-- Tarjetas NFC Personalizadas Section: Texto Derecha / Imagen Izquierda -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Tarjetas NFC Personalizadas</h4>
-            <p>Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
-            <ul>
-                <li>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
-                <li>Colores: Blanco y Negro</li>
-                <li>Material: PVC</li>
-                <li>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$4.990</span> (IVA inc.)</a>
-            </p>
-        </div>
-        <div class="col-md-6 order-md-1">
-            <img src="/static/images/tarjetas_nfc.jpeg" alt="Tarjetas NFC Personalizadas" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
-    </div>
-
-    <!-- Línea de Separación -->
-    <hr class="my-5">
-
-    <!-- Stickers NFC Section: Texto Izquierda / Imagen Derecha -->
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h4>Stickers NFC</h4>
-            <p>Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
-            <ul>
-                <li>Impresión: Una o dos caras</li>
-                <li>Material: PVC o adhesivo fuerte</li>
-                <li>Aplicaciones: Branding, marketing interactivo, logística.</li>
-            </ul>
-            <p class="price text-center mt-3">
-                <a href="{{ url_for('order') }}" class="price-link">Desde <span class="price-value">$2.990</span> (IVA inc.)</a>
-            </p>
-        </div>
-        <div class="col-md-6">
-            <img src="/static/images/stickers_nfc.jpg" alt="Stickers NFC" class="img-fluid rounded shadow" style="max-width: 85%; height: auto;">
-        </div>
-    </div>
-
-    <!-- Línea de Separación -->
-    <hr class="my-5">
-
-    <!-- Invitación a Crear tu Pulzcard -->
-    <section class="mt-5 text-center">
-        <h2>Crea tu Pulztag</h2>
-        <p>Comparte tu información de manera innovadora y eficiente con nuestras Pulztag. Administra y edita tus Tarjetas Inteligentes, códigos QR, y etiquetas NFC.</p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('create_item') }}" role="button">Crear Pulztag</a>
-    </section>
-</div>
 {% endblock %}
