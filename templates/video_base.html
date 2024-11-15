@@ -8,6 +8,7 @@
     <div class="video-container">
         <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
             <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
+            <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
@@ -29,6 +30,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             // Lista de videos a reproducir en secuencia (opcional)
             const videos = [
+                "{{ url_for('static', filename='videos/longvideo.mp4') }}",
                 "{{ url_for('static', filename='videos/longvideo.mp4') }}",
             ];
             let videoIndex = 0;
