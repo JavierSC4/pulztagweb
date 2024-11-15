@@ -13,27 +13,30 @@
 <!-- Cargar Font Awesome temporalmente en esta sección -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Hero Section -->
-    <section class="hero-section position-relative overflow-hidden">
-        <!-- Contenedor para el video -->
-        <div class="video-container">
-            <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
-                Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
-            </video>
-        </div>
-        <!-- Overlay para mejorar la legibilidad del texto -->
-        <div class="overlay"></div>
-        <!-- Contenido -->
-        <div class="container-fluid position-relative z-index-2 px-0">
-            <div class="row align-items-center min-vh-100 mx-0">
-                <div class="col-lg-7 col-md-8 text-center text-lg-start">
-                    <div class="content-wrapper px-4 px-md-5">
-                        <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
-                            Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
-                        </h1>
-                        <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
-                            Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
-                        </p>
-                        <a href="{{ url_for('create_item') }}" class="btn btn-dark bg-gradient btn-lg me-2" data-aos="fade-up" data-aos-delay="400">
+<!-- Hero Section -->
+<section class="hero-section position-relative overflow-hidden">
+    <!-- Contenedor para el video -->
+    <div class="video-container">
+        <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
+            <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
+            Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
+        </video>
+    </div>
+    <!-- Overlay para mejorar la legibilidad del texto -->
+    <div class="overlay"></div>
+    <!-- Contenido -->
+    <div class="container-fluid position-relative z-index-2 px-0">
+        <div class="row align-items-center min-vh-100 mx-0">
+            <div class="col-lg-7 col-md-8 text-center text-lg-start">
+                <div class="content-wrapper px-4 px-md-5">
+                    <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
+                        Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
+                    </h1>
+                    <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
+                        Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
+                    </p>
+                    <div class="btn-stack">
+                        <a href="{{ url_for('create_item') }}" class="btn btn-dark bg-gradient btn-lg" data-aos="fade-up" data-aos-delay="400">
                             Obtén tu Pulztag Gratis
                         </a>
                         <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
@@ -43,9 +46,10 @@
                 </div>
             </div>
         </div>
-        <!-- Overlay para mejorar la legibilidad del texto -->
-        <div class="overlay"></div>
-    </section>
+    </div>
+    <!-- Overlay para mejorar la legibilidad del texto -->
+    <div class="overlay"></div>
+</section>
     
 
 <!-- Línea de Separación -->

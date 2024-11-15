@@ -1,47 +1,59 @@
+
 <!-- templates/video_base.html -->
-{% extends 'base.html' %}
 
-{% block content %}
-<!-- Video Background Section -->
-<section class="hero-section position-relative overflow-hidden">
-    <!-- Contenedor para el video -->
-    <div class="video-container">
-        <video id="hero-video" autoplay muted playsinline loop preload="auto" class="hero-video-bg" controls>
-            <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
-            Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
-        </video>
-    </div>
-    <!-- Overlay para mejorar la legibilidad del texto -->
-    <div class="overlay"></div>
-    <!-- Contenido Principal sobre el Video -->
-    <div class="container-fluid position-relative z-index-2 px-0">
-        <div class="row align-items-center min-vh-100 mx-0">
-            {% block video_content %}{% endblock %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    {% include 'head.html' %}
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC88XS28"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Barra Superior -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container-fluid">
+            {% include 'navbar.html' %}
         </div>
-    </div>
-</section>
-{% endblock %}
+    </nav>
 
-{% block scripts %}
-    {{ super() }}
-    <!-- Si no necesitas manejar múltiples videos, puedes eliminar este script -->
-<!--
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Lista de videos a reproducir en secuencia (opcional)
-        const videos = [
-            "{{ url_for('static', filename='videos/longvideo.mp4') }}",
-            "{{ url_for('static', filename='videos/longvideo.mp4') }}",
-        ];
-        let videoIndex = 0;
-        const videoElement = document.getElementById('hero-video');
-        function playNextVideo() {
-            videoElement.src = videos[videoIndex];
-            videoElement.play();
-            videoIndex = (videoIndex + 1) % videos.length;
-        }
-        videoElement.addEventListener('ended', playNextVideo);
-    });
-</script>
--->
-{% endblock %}
+    <!-- Video Background Section -->
+    <section class="hero-section position-relative overflow-hidden">
+        <!-- Contenedor para el video -->
+        <div class="video-container">
+            <div class="video-container">
+                <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
+                    Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
+                </video>
+            </div>
+        </div>
+        <!-- Overlay para mejorar la legibilidad del texto -->
+        <div class="overlay"></div>
+        <!-- Contenido Principal -->
+        <div class="container-fluid position-relative z-index-2 px-0">
+            <div class="row align-items-center min-vh-100 mx-0">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    {% include 'footer.html' %}
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JS Personalizado -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>
