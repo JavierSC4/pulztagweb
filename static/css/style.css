@@ -419,6 +419,7 @@ form button:hover {
 }
 
 .hero-video-bg {
+    display: block; /* Asegúrate de que el video se muestre */
     position: absolute;
     top: 0;
     left: 0;
