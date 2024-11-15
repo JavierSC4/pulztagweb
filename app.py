@@ -838,6 +838,10 @@ def pulzcard_qrcode(card_id):
     qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id)
     return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Pulzcard', tag_id=card_id)
 
+@app.route('/test_video')
+def test_video():
+    return render_template('test_video.html')
+
 # Ruta de Prueba para Crear una vCard Manualmente
 @app.route('/test_vcard')
 def test_vcard():

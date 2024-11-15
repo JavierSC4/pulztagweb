@@ -1,0 +1,27 @@
+<!-- templates/test_video.html -->
+{% extends 'base.html' %}
+
+{% block title %}Prueba Video - PulztagWeb{% endblock %}
+
+{% block content %}
+<section class="hero-section position-relative overflow-hidden">
+    <!-- Contenedor para el video -->
+    <div class="video-container">
+        <video id="test-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
+            <source src="{{ url_for('static', filename='videos/test.mp4') }}" type="video/mp4">
+            Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
+        </video>
+    </div>
+    <!-- Overlay para mejorar la legibilidad del texto -->
+    <div class="overlay"></div>
+    <!-- Contenido Principal sobre el Video -->
+    <div class="container-fluid position-relative z-index-2 px-0">
+        <div class="row align-items-center min-vh-100 mx-0">
+            <div class="col text-center">
+                <h1 class="text-white">Prueba de Video de Fondo</h1>
+                <p class="text-white">Si ves este texto y el video se reproduce automáticamente, la configuración es correcta.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

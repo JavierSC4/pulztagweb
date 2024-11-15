@@ -8,7 +8,6 @@
     <div class="video-container">
         <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
             <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
-            <source src="{{ url_for('static', filename='videos/longvideo.webm') }}" type="video/webm">
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
@@ -25,13 +24,12 @@
 
 {% block scripts %}
     {{ super() }}
-    <!-- Elimina o ajusta este script si no necesitas manejar múltiples videos -->
+    <!-- Si no necesitas manejar múltiples videos, puedes eliminar este script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Lista de videos a reproducir en secuencia (opcional)
             const videos = [
                 "{{ url_for('static', filename='videos/longvideo.mp4') }}",
-                "{{ url_for('static', filename='videos/another_video.mp4') }}"
             ];
             let videoIndex = 0;
             const videoElement = document.getElementById('hero-video');
