@@ -1,25 +1,23 @@
 <!-- templates/index.html -->
 
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
+    <!-- End Google Tag Manager -->
+
 {% extends 'base.html' %}
-
-
-{% block head %}
-    {{ super() }}
-{% endblock %}
 
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
-<!-- Cargar Font Awesome temporalmente en esta sección -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Hero Section -->
 <!-- Hero Section -->
 <section class="hero-section position-relative overflow-hidden">
     <!-- Contenedor para el video -->
     <div class="video-container">
         <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
-            <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
-
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
@@ -36,14 +34,12 @@
                     <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="200">
                         Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
                     </p>
-                    <div class="btn-stack">
-                        <a href="{{ url_for('create_item') }}" class="btn btn-dark bg-gradient btn-lg" data-aos="fade-up" data-aos-delay="400">
-                            Obtén tu Pulztag Gratis
-                        </a>
-                        <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
-                            Contáctanos
-                        </a>
-                    </div>
+                    <a href="{{ url_for('create_item') }}" class="btn btn-dark bg-gradient btn-lg me-2" data-aos="fade-up" data-aos-delay="400">
+                        Obtén tu Pulztag Gratis
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg" data-aos="fade-up" data-aos-delay="600">
+                        Contáctanos
+                    </a>
                 </div>
             </div>
         </div>
@@ -51,7 +47,6 @@
     <!-- Overlay para mejorar la legibilidad del texto -->
     <div class="overlay"></div>
 </section>
-    
 
 <!-- Línea de Separación -->
 <hr class="my-5">
