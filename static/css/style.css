@@ -579,3 +579,44 @@ img.img-fluid {
         align-items: center;
     }
 }
+
+/* Estilos para la sección informativa */
+.about-section {
+    background-color: #f9f9f9;
+}
+
+.about-section .card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.about-section .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para la sección de llamada a la acción */
+.cta-section {
+    background-image: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    color: #ffffff;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    color: #ffffff;
+}
+
+.cta-section p {
+    font-size: 1.25rem;
+}
+
+.cta-section .btn-light {
+    color: #03c0ff;
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+.cta-section .btn-light:hover {
+    color: #ffffff;
+    background-color: transparent;
+    border-color: #ffffff;
+}
