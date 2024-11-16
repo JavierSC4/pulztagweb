@@ -67,28 +67,21 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Lista de videos a reproducir (reutilizar la misma lógica)
         const videos = [
             "{{ url_for('static', filename='videos/prueba_1.mp4') }}",
             "{{ url_for('static', filename='videos/prueba_2.mp4') }}"
         ];
-
         let videoIndex = 0;
         const videoElement = document.getElementById('hero-video');
+        const sourceElement = videoElement.getElementsByTagName('source')[0];
 
-        // Función para cargar y reproducir el siguiente video
         function playNextVideo() {
-            videoElement.src = videos[videoIndex];
-            videoElement.play();
-
-            // Incrementar el índice y reiniciar si es necesario
+            sourceElement.src = videos[videoIndex];
+            videoElement.load(); // Recargar el video con la nueva fuente
+            videoElement.play(); // Intentar reproducir el video
             videoIndex = (videoIndex + 1) % videos.length;
         }
 
-        // Reproducir el primer video
-        playNextVideo();
-
-        // Escuchar el evento 'ended' para saber cuándo un video termina
         videoElement.addEventListener('ended', function () {
             playNextVideo();
         });

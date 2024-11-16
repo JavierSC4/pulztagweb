@@ -130,12 +130,15 @@
             ];
             let videoIndex = 0;
             const videoElement = document.getElementById('hero-video');
+            const sourceElement = videoElement.getElementsByTagName('source')[0];
+
             function playNextVideo() {
-                videoElement.src = videos[videoIndex];
-                videoElement.play();
+                sourceElement.src = videos[videoIndex];
+                videoElement.load(); // Recargar el video con la nueva fuente
+                videoElement.play(); // Intentar reproducir el video
                 videoIndex = (videoIndex + 1) % videos.length;
             }
-            playNextVideo();
+
             videoElement.addEventListener('ended', function () {
                 playNextVideo();
             });
