@@ -125,8 +125,8 @@ def verify():
             user.is_verified = True
             user.verification_code = None  # Limpia el código
             db.session.commit()
-            flash('Cuenta verificada exitosamente.', 'success')
-            return redirect(url_for('login'))
+            flash('Cuenta creada. Revisa tu correo para establecer tu contraseña.', 'success')
+            return render_template('login.html', title='Iniciar Sesión', form=LoginForm())
         else:
             flash('Código de verificación incorrecto.', 'danger')
     return render_template('verify.html', form=form)
