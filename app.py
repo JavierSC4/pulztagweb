@@ -497,7 +497,7 @@ def pulzcard():
         else:
             unique_filename = 'default.jpg'
 
-        # Crear Pulzcard y agregar a la base de datos
+        # Crear la Pulzcard con el campo de plantilla
         pulzcard = Pulzcard(
             card_name=form.card_name.data,
             first_name=form.first_name.data,
@@ -508,8 +508,9 @@ def pulzcard():
             email=form.email.data,
             website=form.website.data,
             address=form.address.data,
-            image_file=unique_filename,  # Store the image filename in the database
-            user_id=current_user.id  # Asignar el ID del usuario actual
+            image_file=unique_filename,
+            user_id=current_user.id,
+            template=form.template.data  # Añadir esta línea
         )
 
         # Añadir a la sesión y hacer flush para obtener card_id
@@ -565,27 +566,22 @@ END:VCARD"""
     return render_template('pulzcard/index.html', form=form)
 @app.route('/pulzcard/card/<card_id>')
 def pulzcard_card(card_id):
-    # Query the Pulzcard from the database using only card_id
     pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
     
-    # Path to the vCard file
-    vcard_path = os.path.join(VCARD_FOLDER, f'{card_id}.vcf')
-    print(f"Intentando leer vCard en: {vcard_path}")
+    # Obtener el template desde los parámetros de la URL
+    selected_template = request.args.get('template')
+    valid_templates = ['template1', 'template2', 'template3']  # Añade todos tus templates aquí
+
+    # Validar el template seleccionado
+    if selected_template and selected_template in valid_templates:
+        template_name = f"pulzcard/{selected_template}.html"
+    else:
+        # Usar el template predeterminado de la Pulzcard o 'template1' si no está definido
+        template_name = f"pulzcard/{pulzcard.template if pulzcard.template in valid_templates else 'template1'}.html"
     
-    # Check if vCard file exists
-    if not os.path.exists(vcard_path):
-        print(f"vCard no encontrada en: {vcard_path}")
-        flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('home'))
-
-    # Read the vCard content
-    with open(vcard_path, 'r') as f:
-        vcard = f.read()
-
-    # Extract contact information from the vCard
     contact_info = {
         "full_name": f"{pulzcard.first_name} {pulzcard.last_name}",
         "organization": pulzcard.organization,
@@ -594,14 +590,10 @@ def pulzcard_card(card_id):
         "email": pulzcard.email,
         "website": pulzcard.website,
         "address": pulzcard.address,
-        "image_file": pulzcard.image_file  # Add the image file from the database
+        "image_file": pulzcard.image_file
     }
 
-    # Print extracted contact information for debugging
-    print(f"Información de contacto extraída: {contact_info}")
-    
-    # Render the template with the complete contact information
-    return render_template('pulzcard/card.html', contact=contact_info, card_id=card_id)
+    return render_template(template_name, contact=contact_info, card_id=card_id)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -695,6 +687,7 @@ def edit_pulzcard(card_id):
         pulzcard.email = form.email.data
         pulzcard.website = form.website.data
         pulzcard.address = form.address.data
+        pulzcard.template = form.template.data
 
         # Procesar la imagen de perfil si se ha subido una nueva
         if form.image_file.data:
@@ -737,6 +730,7 @@ END:VCARD"""
         form.email.data = pulzcard.email
         form.website.data = pulzcard.website
         form.address.data = pulzcard.address
+        form.template.data = pulzcard.template
 
     return render_template('edit_pulzcard.html', title='Editar Pulzcard', form=form, pulzcard=pulzcard)
 

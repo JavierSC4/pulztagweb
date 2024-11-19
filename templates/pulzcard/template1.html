@@ -1,0 +1,183 @@
+<!-- templates/pulzcard/template1.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
+
+{% block content %}
+<style>
+    /* Fondo personalizado solo para esta página */
+    body {
+        background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #333333;
+    }
+
+    /* Fondo y estilo para el encabezado "Tu Pulzcard" */
+    .card-header {
+        background: linear-gradient(135deg, #01b9f6 0%, #02a4da 100%);
+    }
+
+    .card-header h3 {
+        color: #ffffff;
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    /* Estilo de fuente independiente para el nombre completo */
+    .card-title {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #03c0ff;
+    }
+
+    /* Estilo independiente para posición y organización */
+    .card-subtitle {
+        font-family: 'Myriad Pro', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #9f9f9f;
+        margin-top: 0.5rem;
+    }
+
+    /* Imagen de perfil con sombra y ajuste de tamaño */
+    .profile-image {
+        width: 200px;
+        height: 200px;
+        border: 0px solid #ffffff;
+        object-fit: cover;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-image:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Separador personalizado */
+    hr {
+        border-top: 2px solid #03c0ff;
+        opacity: 0.8;
+        width: 80%;
+        margin: 1.5rem auto;
+    }
+</style>
+<!-- Cargar Font Awesome 6.7.0 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
+    integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Espaciado Superior -->
+<div style="margin: 90px;"></div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <!-- Encabezado con logo y botones -->
+                <div class="card-header text-white d-flex justify-content-between align-items-center p-3">
+                    <!-- Logo a la izquierda -->
+                    <div>
+                        <img src="{{ url_for('static', filename='images/logocardv2.png') }}" alt="Pulztag Logo" height="30">
+                    </div>                    
+                    <!-- Botones a la derecha -->
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-custom-white btn-icon" title="Descargar vCard">
+                            <i class="fa-solid fa-circle-down" style="font-size: 1.0em;"></i>
+                        </a>
+                        <!-- Botón para copiar URL -->
+                        <button class="btn btn-custom-white btn-icon" onclick="copyURL()" title="Copiar URL">
+                            <i class="fa-solid fa-clone" style="font-size: 1.0em;"></i>
+                        </button>
+                        {% if current_user.is_authenticated %}
+                        <!-- Botón Volver -->
+                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
+                            <i class="fa-solid fa-angles-left" style="font-size: 1.0em;"></i>
+                        </a>
+                        {% endif %}
+                        <input type="hidden" id="cardURL" value="{{ request.url }}">
+                    </div>
+                </div>
+                <div style="margin: 10px;"></div>
+                <div class="card-body text-center p-2">
+                    <!-- Imagen de Perfil -->
+                    <div class="mb-4">
+                        <img src="{{ url_for('uploaded_file', filename=contact['image_file']) }}" alt="Imagen de Perfil" class="rounded-circle profile-image shadow-lg">
+                    </div>
+
+                    <h1 class="card-title font-weight-bold mb-3">{{ contact.full_name }}</h1>
+                    <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
+                    
+                    <!-- Separador -->
+                    <hr class="my-3">
+                    
+                    <!-- Información de Contacto -->
+                    <div class="mt-4">
+                        <p class="card-text">
+                            <strong>Teléfono:</strong>
+                            <a href="tel:{{ contact.phone }}" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-mobile-screen-button"></i>{{ contact.phone }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <strong>Email:</strong>
+                            <a href="mailto:{{ contact.email }}" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-envelope"></i>{{ contact.email }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <strong>Página Web:</strong>
+                            <a href="{{ contact.website }}" target="_blank" class="text-primary text-decoration-none">
+                                <i class="fa-solid fa-globe"></i>{{ contact.website }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <i class="fa-solid fa-map-location"></i>
+                            <strong>Dirección:</strong> {{ contact.address }}
+                        </p>
+                    </div>
+                    
+                    <!-- Instrucciones para Agregar Contacto -->
+                    <div class="mt-4">
+                        <h5 class="form-subtitle mb-3">Instrucciones:</h5>
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fa-brands fa-android"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
+                            <li><i class="fa-brands fa-apple"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para copiar URL al portapapeles -->
+<script>
+    function copyURL() {
+        const url = document.getElementById('cardURL').value;
+        navigator.clipboard.writeText(url).then(() => {
+            showAlert('URL copiada al portapapeles!', 'success');
+        }).catch(err => {
+            showAlert('Error al copiar la URL: ' + err, 'danger');
+        });
+    }
+
+    function showAlert(message, type) {
+        const alertPlaceholder = document.createElement('div');
+        alertPlaceholder.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+        document.body.appendChild(alertPlaceholder);
+        setTimeout(() => {
+            alertPlaceholder.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

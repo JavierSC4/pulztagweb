@@ -48,6 +48,7 @@ class Pulzcard(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
+    template = db.Column(db.String(20), nullable=False, default='template1')
 
     # Definir la relación con User
     owner = db.relationship('User', backref=db.backref('pulzcards', lazy=True))

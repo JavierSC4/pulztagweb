@@ -11,5 +11,6 @@ db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+login_manager.login_message = ''  # Elimina el mensaje
 mail = Mail()  # Inicializa mail
 oauth = OAuth()

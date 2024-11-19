@@ -10,8 +10,11 @@
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
-<!-- Cargar Font Awesome temporalmente en esta sección -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Cargar Font Awesome 6.7.0 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
+    integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <!-- Hero Section -->
 <!-- Hero Section -->
 <section class="hero-section position-relative overflow-hidden">
@@ -30,13 +33,13 @@
             <div class="col-lg-7 col-md-8 text-center text-lg-start">
                 <div class="content-wrapper px-4 px-md-5">
                     <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
-                        Transforma tu Negocio con <span class="text-highlight">Tecnología NFC</span>
+                        Reduce tus costos con <span class="text-highlight">Tecnología NFC</span>
                     </h1>
                     <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="400">
-                        Dispositivos NFC personalizados y servicios a medida para impulsar tu crecimiento.
+                        Elimina gastos innecesarios en impresiones y actualiza tu contenido en tiempo real.
                     </p>
                     <div class="btn-stack d-flex flex-wrap">
-                        <a href="{{ url_for('create_item') }}" class="btn btn-warning bg-gradient btn-lg fw-bold me-3 mb-3" data-aos="fade-up" data-aos-delay="400">
+                        <a href="{{ url_for('create_item') }}" class="btn btn-lg fw-bold me-3 mb-3" data-aos="fade-up" data-aos-delay="400" style="background-color: #ffd700; color: #333333; border: none;">
                             Obtén tu Pulztag Gratis
                         </a>
                         <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg fw-bold mb-3" data-aos="fade-up" data-aos-delay="600">
@@ -50,6 +53,9 @@
     <!-- Overlay para mejorar la legibilidad del texto -->
     <div class="overlay"></div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Nueva Sección Informativa -->
 <section class="about-section py-5">
@@ -69,7 +75,9 @@
                             Comparte tu información de contacto de forma instantánea con una tarjeta NFC personalizada.
                         </p>
                         <div class="mt-auto">
-                            <a href="{{ url_for('pulzcard') }}" class="btn btn-primary w-100">Crear Tu Pulzcard</a>
+                            <a href="{{ url_for('pulzcard') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
+                                Crear Tu Pulzcard
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -84,7 +92,9 @@
                             Desde Pulztag.com, crea y administra fácilmente tus etiquetas NFC y códigos QR personalizados. Redirige a tus clientes a contenido específico y potencia tus campañas de marketing interactivo.
                         </p>
                         <div class="mt-auto">
-                            <a href="{{ url_for('create_tag') }}" class="btn btn-primary w-100">Gestionar Tus Tags</a>
+                            <a href="{{ url_for('create_tag') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
+                                Gestionar Tus Tags
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -99,7 +109,9 @@
                             Desarrollamos aplicaciones NFC personalizadas para diversas industrias y necesidades.
                         </p>
                         <div class="mt-auto">
-                            <a href="{{ url_for('services') }}" class="btn btn-primary w-100">Ver Servicios</a>
+                            <a href="{{ url_for('services') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
+                                Ver Servicios
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -107,6 +119,9 @@
         </div>
     </div>
 </section>
+
+<!-- Línea de Separación -->
+<hr class="my-5">
 
 <!-- Sección de Llamado a la Acción -->
 <section class="cta-section bg-primary text-white py-5">

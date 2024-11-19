@@ -1,0 +1,21 @@
+<!-- templates/smartcontent_options.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Opciones de Contenido{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Selecciona una Opción</h2>
+    <form method="GET" action="{{ url_for('smartcontent_redirect') }}">
+        <div class="mb-3">
+            <select class="form-select" name="option_id" required>
+                {% for option in options %}
+                    <option value="{{ option.option_id }}">{{ option.option_title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Aceptar</button>
+    </form>
+</div>
+{% endblock %}

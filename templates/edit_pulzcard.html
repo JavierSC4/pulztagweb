@@ -108,6 +108,13 @@
                 {% endfor %}
             </div>
 
+            <!-- Añadir esta sección donde corresponda en el formulario -->
+            <h4 class="form-subtitle mb-3">Selecciona una Plantilla</h4>
+            <div class="mb-3">
+                {{ form.template.label(class="form-label") }}
+                {{ form.template(class="form-control") }}
+            </div>
+
             <!-- Botones de Acción -->
             <div class="text-center mt-4">
                 {{ form.submit(class="btn btn-primary") }}

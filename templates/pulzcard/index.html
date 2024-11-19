@@ -1,3 +1,5 @@
+<!-- templates/pulzcard/index.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Crear Pulzcard - PulztagWeb{% endblock %}
@@ -97,6 +99,13 @@
     <div class="form-group mb-4">
         {{ form.card_name.label(class="form-label") }}
         {{ form.card_name(class="form-control", placeholder="Nombre de Tarjeta") }}
+    </div>
+
+        <!-- Añadir esta sección donde corresponda en el formulario -->
+    <h4 class="form-subtitle mb-3">Selecciona una Plantilla</h4>
+    <div class="mb-3">
+        {{ form.template.label(class="form-label") }}
+        {{ form.template(class="form-control") }}
     </div>
 
     <!-- Botón de Envío -->

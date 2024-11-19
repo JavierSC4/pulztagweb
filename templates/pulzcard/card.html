@@ -1,3 +1,5 @@
+<!-- templates/pulzcard/card.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
@@ -64,8 +66,10 @@
         margin: 1.5rem auto;
     }
 </style>
-<!-- Cargar Font Awesome 5.15.4 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Cargar Font Awesome 6.7.0 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
+    integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <!-- Espaciado Superior -->
 <div style="margin: 90px;"></div>
@@ -81,19 +85,18 @@
                         <img src="{{ url_for('static', filename='images/logocardv2.png') }}" alt="Pulztag Logo" height="30">
                     </div>                    
                     <!-- Botones a la derecha -->
-                    <!-- Botones a la derecha -->
                     <div class="d-flex gap-2">
                         <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" class="btn btn-custom-white btn-icon" title="Descargar vCard">
-                            <i class="fas fa-user-plus" style="font-size: 1.0em;"></i>
+                            <i class="fa-solid fa-circle-down" style="font-size: 1.0em;"></i>
                         </a>
                         <!-- Botón para copiar URL -->
                         <button class="btn btn-custom-white btn-icon" onclick="copyURL()" title="Copiar URL">
-                            <i class="fas fa-copy" style="font-size: 1.0em;"></i>
+                            <i class="fa-solid fa-clone" style="font-size: 1.0em;"></i>
                         </button>
                         {% if current_user.is_authenticated %}
                         <!-- Botón Volver -->
                         <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
-                            <i class="fas fa-chevron-right" style="font-size: 1.0em;"></i>
+                            <i class="fa-solid fa-angles-left" style="font-size: 1.0em;"></i>
                         </a>
                         {% endif %}
                         <input type="hidden" id="cardURL" value="{{ request.url }}">
@@ -117,23 +120,23 @@
                         <p class="card-text">
                             <strong>Teléfono:</strong>
                             <a href="tel:{{ contact.phone }}" class="text-primary text-decoration-none">
-                                <i class="fas fa-phone me-1"></i>{{ contact.phone }}
+                                <i class="fa-solid fa-mobile-screen-button"></i>{{ contact.phone }}
                             </a>
                         </p>
                         <p class="card-text">
                             <strong>Email:</strong>
                             <a href="mailto:{{ contact.email }}" class="text-primary text-decoration-none">
-                                <i class="fas fa-envelope me-1"></i>{{ contact.email }}
+                                <i class="fa-solid fa-envelope"></i>{{ contact.email }}
                             </a>
                         </p>
                         <p class="card-text">
                             <strong>Página Web:</strong>
                             <a href="{{ contact.website }}" target="_blank" class="text-primary text-decoration-none">
-                                <i class="fas fa-globe me-1"></i>{{ contact.website }}
+                                <i class="fa-solid fa-globe"></i>{{ contact.website }}
                             </a>
                         </p>
                         <p class="card-text">
-                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <i class="fa-solid fa-map-location"></i>
                             <strong>Dirección:</strong> {{ contact.address }}
                         </p>
                     </div>
@@ -142,8 +145,8 @@
                     <div class="mt-4">
                         <h5 class="form-subtitle mb-3">Instrucciones:</h5>
                         <ul class="list-unstyled text-muted">
-                            <li><i class="fab fa-android me-2"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
-                            <li><i class="fab fa-apple me-2"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
+                            <li><i class="fa-brands fa-android"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
+                            <li><i class="fa-brands fa-apple"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
                         </ul>
                     </div>
                 </div>
