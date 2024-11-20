@@ -1,3 +1,5 @@
+/* static/js/script.js */
+
 document.addEventListener('DOMContentLoaded', function () {
     // Logo Upload Elements
     const logoUpload = document.getElementById('logoUpload');
