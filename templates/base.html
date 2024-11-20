@@ -31,6 +31,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css"
         integrity="sha512-9xKTRVabjVeZmc+GUW8GgSmcREDunMM+Dt/GrzchfN8tkwHizc5RP4Ok/MXFFy5rIjJjzhndFScTceq5e6GvVQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -136,18 +137,22 @@
             ];
             let videoIndex = 0;
             const videoElement = document.getElementById('hero-video');
-            const sourceElement = videoElement.getElementsByTagName('source')[0];
+            const sourceElement = videoElement ? videoElement.getElementsByTagName('source')[0] : null;
 
             function playNextVideo() {
-                sourceElement.src = videos[videoIndex];
-                videoElement.load(); // Recargar el video con la nueva fuente
-                videoElement.play(); // Intentar reproducir el video
-                videoIndex = (videoIndex + 1) % videos.length;
+                if (sourceElement) {
+                    sourceElement.src = videos[videoIndex];
+                    videoElement.load(); // Recargar el video con la nueva fuente
+                    videoElement.play(); // Intentar reproducir el video
+                    videoIndex = (videoIndex + 1) % videos.length;
+                }
             }
 
-            videoElement.addEventListener('ended', function () {
-                playNextVideo();
-            });
+            if (videoElement && sourceElement) { // Verifica si el elemento existe
+                videoElement.addEventListener('ended', function () {
+                    playNextVideo();
+                });
+            }
         });
     </script>
     

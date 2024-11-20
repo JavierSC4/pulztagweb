@@ -1,6 +1,6 @@
 /* Tipografía Global */
 body {
-    background-image: url("/static/images/backssground.jpg"), url("/static/images/backup.jpg");
+    background-image: url("/static/images/background.jpg"), url("/static/images/backup.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
