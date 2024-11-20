@@ -673,3 +673,121 @@ img.img-fluid {
 .custom-table button:hover {
     transform: scale(1.1); /* Efecto de agrandamiento para botones */
 }
+
+/* Estilos para las tarjetas de servicio */
+.service-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.service-card .card-title {
+    color: #03c0ff;
+    font-weight: 600;
+}
+
+.service-card .card-text {
+    color: #555555;
+}
+
+/* Estilos para las tarjetas de aplicación */
+.application-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.application-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.application-card .card-title {
+    color: #03c0ff;
+    font-weight: 600;
+}
+
+.application-card .card-text {
+    color: #555555;
+}
+
+/* Íconos de Font Awesome */
+.service-card i {
+    color: #03c0ff;
+    transition: color 0.3s;
+}
+
+.service-card:hover i {
+    color: #0290b8;
+}
+
+/* Fondo y color de la sección personalizada */
+.custom-solutions-section {
+    background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    color: #fff;
+    border-radius: 15px;
+}
+
+.custom-solutions-section h3 {
+    color: #ffffff;
+}
+
+/* Ajustes para las imágenes de las aplicaciones */
+.application-card img {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Tipografía Mejorada */
+h2.display-4 {
+    font-weight: 700;
+}
+
+h3 {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.card-title {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Animaciones sutiles */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Estilos para los íconos de contacto */
+.contact-icon {
+    color: #3498db; /* Color inicial del ícono */
+    font-size: 1.5rem; /* Tamaño del ícono */
+    transition: color 0.3s, transform 0.3s;
+    display: inline-block;
+    text-decoration: none; /* Eliminar subrayado */
+}
+
+.contact-icon:hover {
+    color: #2980b9; /* Color al pasar el cursor */
+    transform: scale(1.2); /* Aumentar ligeramente el tamaño */
+}

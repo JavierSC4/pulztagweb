@@ -2,96 +2,193 @@
 
 {% extends 'base.html' %}
 
-{% block title %}Nuestros Productos - PulztagWeb{% endblock %}
+{% block title %}Nuestros Servicios - PulztagWeb{% endblock %}
 
 {% block content %}
-    
-    <h2 class="text-center mb-4">Nuestros Servicios</h2>
-    <p class="text-center mb-5">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
-<div class="container">
-    <!-- Soluciones Personalizadas Section Mejorada -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="custom-solutions-section text-center p-5 rounded shadow">
-                <h5 style="color: white; font-weight: bold;">Soluciones Personalizadas para Industrias</h5>
-                <!-- Línea de Separación -->
-                <hr class="my-2">
-                <div class="solutions-list">
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Marketing y Publicidad</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
+<div class="container my-5">
+
+    <!-- Sección de Encabezado -->
+    <div class="text-center mb-5">
+        <h2 class="display-4">Nuestros Servicios</h2>
+        <p class="lead">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
+    </div>
+
+<!-- Soluciones Personalizadas para Industrias -->
+<section class="mb-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="custom-solutions-section p-5 rounded">
+                <h3 class="mb-4">Soluciones Personalizadas para Industrias</h3>
+                <div class="row">
+                    <!-- Servicio 1: Marketing y Publicidad -->
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card service-card h-100 text-center">
+                            <div class="card-body d-flex flex-column">
+                                <i class="fas fa-bullhorn fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Marketing y Publicidad</h5>
+                                <p class="card-text">Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
+                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                                <div class="mt-auto d-flex justify-content-end">
+                                    <a href="{{ url_for('contact', message='Estoy interesado en conocer más sobre las campañas de Marketing y Publicidad con NFC.') }}" 
+                                       class="contact-icon" 
+                                       aria-label="Contactar sobre Marketing y Publicidad" 
+                                       title="Contactar sobre Marketing y Publicidad">
+                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Eventos</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
+                    <!-- Servicio 2: Eventos -->
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card service-card h-100 text-center">
+                            <div class="card-body d-flex flex-column">
+                                <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Eventos</h5>
+                                <p class="card-text">Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
+                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                                <div class="mt-auto d-flex justify-content-end">
+                                    <a href="{{ url_for('contact', message='Me gustaría saber más sobre el control de accesos y branding en eventos utilizando NFC.') }}" 
+                                       class="contact-icon" 
+                                       aria-label="Contactar sobre Eventos" 
+                                       title="Contactar sobre Eventos">
+                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Educación</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Uso de tokens NFC para administrar acceso y participación en cursos.</p>
+                    <!-- Servicio 3: Educación -->
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card service-card h-100 text-center">
+                            <div class="card-body d-flex flex-column">
+                                <i class="fas fa-graduation-cap fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Educación</h5>
+                                <p class="card-text">Uso de tokens NFC para administrar acceso y participación en cursos.</p>
+                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                                <div class="mt-auto d-flex justify-content-end">
+                                    <a href="{{ url_for('contact', message='Quiero obtener información sobre el uso de tokens NFC en el sector educativo.') }}" 
+                                       class="contact-icon" 
+                                       aria-label="Contactar sobre Educación" 
+                                       title="Contactar sobre Educación">
+                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="solution-item">
-                        <h5 style="color: white; font-weight: bold;">Logística</h5>
-                        <!-- Línea de Separación -->
-                        <hr class="my-2">
-                        <p>Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
+                    <!-- Servicio 4: Logística -->
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card service-card h-100 text-center">
+                            <div class="card-body d-flex flex-column">
+                                <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title">Logística</h5>
+                                <p class="card-text">Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
+                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                                <div class="mt-auto d-flex justify-content-end">
+                                    <a href="{{ url_for('contact', message='Estoy interesado en saber cómo las etiquetas NFC pueden mejorar la logística y el seguimiento de productos.') }}" 
+                                       class="contact-icon" 
+                                       aria-label="Contactar sobre Logística" 
+                                       title="Contactar sobre Logística">
+                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Línea de Separación -->
-    <hr class="my-5">
+<!-- Línea de Separación -->
+<hr class="my-5">
 
-    <section class="mt-5">
-        <h2 class="text-center mb-4">Aplicaciones de Nuestras Soluciones NFC</h2>
-        <div style="margin: 40px;"></div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC" style="max-width: 100%; height: auto;">
-                    <div class="card-body">
-                        <h4>Georeferenciación de Etiquetas NFC</h4>
-                        <p>Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC" style="max-width: 100%; height: auto;">
-                    <div class="card-body">
-                        <h4>Campañas Publicitarias y Marketing</h4>
-                        <p>Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia. Reduce costos de producción gráfica</p>
+<!-- Aplicaciones de Nuestras Soluciones NFC -->
+<section>
+    <div class="text-center mb-5">
+        <h2 class="display-4">Aplicaciones de Nuestras Soluciones NFC</h2>
+        <p class="lead">Explora las diversas aplicaciones de nuestras tecnologías NFC para potenciar tu negocio.</p>
+    </div>
+    <div class="row">
+        <!-- Aplicación 1: Georeferenciación de Etiquetas NFC -->
+        <div class="col-md-6 mb-4">
+            <div class="card application-card h-100">
+                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Georeferenciación de Etiquetas NFC</h5>
+                    <p class="card-text">Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
+                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                    <div class="mt-auto d-flex justify-content-end">
+                        <a href="{{ url_for('contact', message='Estoy interesado en conocer más sobre la georeferenciación de etiquetas NFC para mi negocio.') }}" 
+                           class="contact-icon" 
+                           aria-label="Contactar sobre Georeferenciación de Etiquetas NFC" 
+                           title="Contactar sobre Georeferenciación de Etiquetas NFC">
+                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes" style="max-width: 100%; height: auto;">
-                    <div class="card-body">
-                        <h4>Programas de Fidelización de Clientes</h4>
-                        <p>Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC" style="max-width: 100%; height: auto;">
-                    <div class="card-body">
-                        <h4>Integración de Sistemas</h4>
-                        <p>Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
+        <!-- Aplicación 2: Campañas Publicitarias y Marketing -->
+        <div class="col-md-6 mb-4">
+            <div class="card application-card h-100">
+                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Campañas Publicitarias y Marketing</h5>
+                    <p class="card-text">Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia, reduciendo costos de producción gráfica.</p>
+                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                    <div class="mt-auto d-flex justify-content-end">
+                        <a href="{{ url_for('contact', message='Me gustaría saber más sobre las campañas publicitarias y marketing con tecnología NFC.') }}" 
+                           class="contact-icon" 
+                           aria-label="Contactar sobre Campañas Publicitarias y Marketing" 
+                           title="Contactar sobre Campañas Publicitarias y Marketing">
+                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+        <!-- Aplicación 3: Programas de Fidelización de Clientes -->
+        <div class="col-md-6 mb-4">
+            <div class="card application-card h-100">
+                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Programas de Fidelización de Clientes</h5>
+                    <p class="card-text">Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
+                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                    <div class="mt-auto d-flex justify-content-end">
+                        <a href="{{ url_for('contact', message='Quiero obtener información sobre programas de fidelización de clientes con tecnología NFC.') }}" 
+                           class="contact-icon" 
+                           aria-label="Contactar sobre Programas de Fidelización de Clientes" 
+                           title="Contactar sobre Programas de Fidelización de Clientes">
+                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Aplicación 4: Integración de Sistemas -->
+        <div class="col-md-6 mb-4">
+            <div class="card application-card h-100">
+                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">Integración de Sistemas</h5>
+                    <p class="card-text">Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
+                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
+                    <div class="mt-auto d-flex justify-content-end">
+                        <a href="{{ url_for('contact', message='Estoy interesado en la integración de sistemas NFC con mis procesos actuales.') }}" 
+                           class="contact-icon" 
+                           aria-label="Contactar sobre Integración de Sistemas" 
+                           title="Contactar sobre Integración de Sistemas">
+                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </div>
 {% endblock %}

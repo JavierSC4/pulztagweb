@@ -304,9 +304,16 @@ def home():
 def about():
     return render_template('about.html')
 
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     form = ContactForm()  # Crear una instancia del formulario
+    
+    # Verificar si hay un mensaje predefinido en los parámetros de la URL
+    prefilled_message = request.args.get('message')
+    if prefilled_message and not form.mensaje.data:
+        form.mensaje.data = prefilled_message  # Prellenar el campo "Mensaje" si está disponible
+    
     if form.validate_on_submit():  # Usar validate_on_submit para verificar el envío
         nombre = form.nombre.data
         email = form.email.data

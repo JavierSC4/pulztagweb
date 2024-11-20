@@ -13,7 +13,7 @@ et-xmlfile==1.1.0
 Flask==3.0.3
 Flask-Admin==1.6.1
 Flask-Bcrypt==1.0.1
-Flask-FontAwesome==0.1.5
+# Flask-FontAwesome==0.1.5
 Flask-Login==0.6.3
 Flask-Mail==0.10.0
 Flask-Migrate==4.0.7
