@@ -29,14 +29,14 @@ from forms import (
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
 
-load_dotenv()
+load_dotenv()  # Carga las variables de entorno desde el archivo .env
 
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Configuración de la Base de Datos
 db_path = os.path.join(app.instance_path, 'site_new.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -91,6 +91,25 @@ def send_verification_email(user):
     msg = Message('Código de verificación', recipients=[user.email])
     msg.body = f'Tu código de verificación es: {verification_code}'
     mail.send(msg)
+
+@app.route('/users')
+def list_users():
+    users = User.query.all()
+    return render_template('users.html', users=users)
+
+@app.route('/add_user')
+def add_user():
+    user = User(
+        username='example_user',
+        email='example@example.com',
+        password='hashed_password',
+        is_admin=False,
+        is_verified=True,
+        must_change_password=False
+    )
+    db.session.add(user)
+    db.session.commit()
+    return "Usuario creado exitosamente"
 
 @login_manager.user_loader
 def load_user(user_id):

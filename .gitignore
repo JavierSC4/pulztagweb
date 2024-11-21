@@ -10,6 +10,8 @@ __pycache__/
 # Archivos de bases de datos
 *.sqlite3
 *.db
+.pgdata/
+pg_log/
 
 # Directorios de subida
 uploads/
@@ -17,6 +19,7 @@ vcards/
 
 # Archivos de configuración local
 *.env
+.env.*
 
 # Archivos de respaldo
 respaldo.txt
@@ -48,3 +51,13 @@ instance/site_new.db
 script_crear_admin.py
 script_reset_database.py
 script_corregir_admins.py
+
+# Reportes de pruebas
+.coverage
+.cache/
+htmlcov/
+pytest_cache/
+
+# Archivos de Docker
+docker-compose.yml
+Dockerfile
