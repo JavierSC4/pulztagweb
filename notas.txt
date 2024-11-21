@@ -1,3 +1,8 @@
+git status
+git add .
+git commit -m "Texto cambios"
+git push origin main
+
 git add <ruta/al/archivo> "Dirección relativa del archivo a añadir"
 git add . (para añadir todos los archivos modificados)
 git commit -m "Mensaje descriptivo de los cambios"

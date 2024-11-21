@@ -97,20 +97,6 @@ def list_users():
     users = User.query.all()
     return render_template('users.html', users=users)
 
-@app.route('/add_user')
-def add_user():
-    user = User(
-        username='example_user',
-        email='example@example.com',
-        password='hashed_password',
-        is_admin=False,
-        is_verified=True,
-        must_change_password=False
-    )
-    db.session.add(user)
-    db.session.commit()
-    return "Usuario creado exitosamente"
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
