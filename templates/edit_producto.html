@@ -1,0 +1,32 @@
+<!-- templates/edit_producto.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Editar Producto - {{ producto.nombre }}</h1>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.nombre.label(class="form-label") }}
+        {{ form.nombre(class="form-control") }}
+        {% if form.nombre.errors %}
+          <div class="text-danger">
+            {% for error in form.nombre.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        {{ form.descripcion.label(class="form-label") }}
+        {{ form.descripcion(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.cantidad.label(class="form-label") }}
+        {{ form.cantidad(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a href="{{ url_for('product_detail', uuid_producto=producto.uuid) }}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

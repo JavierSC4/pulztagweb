@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Productos en la Caja: {{ caja.nombre }}</h1>
+
+<a href="{{ url_for('create_producto', uuid_caja=caja.uuid) }}" class="btn btn-primary mb-3">Agregar Producto</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Producto</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.id_producto }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.descripcion }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td>
+                <a href="{{ url_for('product_detail', uuid_producto=producto.uuid) }}" class="btn btn-sm btn-info">Detalles</a>
+                <a href="{{ url_for('edit_producto', uuid_producto=producto.uuid) }}" class="btn btn-sm btn-warning">Editar</a>
+                <form method="POST" action="{{ url_for('delete_producto', uuid_producto=producto.uuid) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este producto?');">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{{ url_for('caja_detail', uuid_caja=caja.uuid) }}" class="btn btn-secondary

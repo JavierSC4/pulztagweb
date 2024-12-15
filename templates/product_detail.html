@@ -1,0 +1,41 @@
+<!-- templates/product_detail.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Detalles del Producto: {{ producto.nombre }}</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h2>{{ producto.nombre }}</h2>
+    </div>
+    <div class="card-body">
+        <p><strong>ID Producto:</strong> {{ producto.id_producto }}</p>
+        <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+        <p><strong>Subcategoría:</strong> {{ producto.subcategoria }}</p>
+        <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+        <p><strong>Cantidad:</strong> {{ producto.cantidad }}</p>
+        <p><strong>Fecha de Creación:</strong> {{ producto.fecha_creacion.strftime('%d/%m/%Y') }}</p>
+        <p><strong>Notas:</strong> {{ producto.notas }}</p>
+        <p><strong>Caja:</strong> <a href="{{ url_for('view_caja', uuid_caja=producto.caja.uuid) }}">{{ producto.caja.nombre }}</a></p>
+    </div>
+</div>
+
+<div class="mb-3">
+    <!-- Botón Código QR -->
+    <a href="{{ url_for('producto_qrcode', uuid_producto=producto.uuid) }}" class="btn btn-outline-secondary" title="Ver Código QR">
+        <i class="fas fa-qrcode"></i> Código QR
+    </a>
+    <!-- Botón Editar -->
+    <a href="{{ url_for('edit_producto', uuid_producto=producto.uuid) }}" class="btn btn-warning">Editar</a>
+    <!-- Botón Eliminar -->
+    <form method="POST" action="{{ url_for('delete_producto', uuid_producto=producto.uuid) }}" style="display: inline;">
+        {{ delete_producto_form.hidden_tag() }}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Seguro que deseas eliminar este producto?');">
+            Eliminar
+        </button>
+    </form>
+</div>
+
+<a href="{{ url_for('view_caja', uuid_caja=producto.caja.uuid) }}" class="btn btn-secondary">Regresar a la Caja</a>
+{% endblock %}

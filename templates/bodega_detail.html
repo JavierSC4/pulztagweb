@@ -1,0 +1,117 @@
+<!-- templates/bodega_detail.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Detalles de la Bodega</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h2>{{ bodega.nombre }}</h2>
+    </div>
+    <div class="card-body">
+        <p><strong>ID Bodega:</strong> {{ bodega.id_bodega }}</p>
+        <p><strong>Fecha de Creación:</strong> {{ bodega.fecha_creacion.strftime('%d/%m/%Y') }}</p>
+        <p><strong>Ubicación:</strong> {{ bodega.ubicacion }}</p>
+        <p><strong>Notas:</strong> {{ bodega.notas }}</p>
+    </div>
+</div>
+
+<!-- Modal para agregar Caja -->
+<div class="modal fade" id="addCajaModal" tabindex="-1" aria-labelledby="addCajaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="modal-header">
+          <h5 class="modal-title">{{ bodega.nombre }} - Añadir Caja</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Campo Nombre -->
+          <div class="mb-3">
+            {{ form.nombre.label(class="form-label") }}
+            {{ form.nombre(class="form-control") }}
+            {% if form.nombre.errors %}
+              <div class="text-danger">
+                {% for error in form.nombre.errors %}
+                  <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <!-- Campo Categoría -->
+          <div class="mb-3">
+            {{ form.categoria.label(class="form-label") }}
+            {{ form.categoria(class="form-control") }}
+          </div>
+          <!-- Campo Notas -->
+          <div class="mb-3">
+            {{ form.notas.label(class="form-label") }}
+            {{ form.notas(class="form-control") }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          {{ form.submit(class="btn btn-primary") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla de Cajas -->
+<h2>Cajas</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID Caja</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Fecha de Creación</th>
+            <th>URL</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for caja in bodega.cajas %}
+        <tr>
+            <td><a href="{{ url_for('view_caja', uuid_caja=caja.uuid) }}">{{ caja.id_caja }}</a></td>
+            <td>{{ caja.nombre }}</td>
+            <td>{{ caja.categoria }}</td>
+            <td>{{ caja.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+            <td>
+              {% set caja_url = url_for('view_caja', uuid_caja=caja.uuid, _external=True) %}
+              <a href="{{ caja_url }}" target="_blank">
+                  {{ caja_url[:35] }}{% if caja_url|length > 35 %}...{% endif %}
+              </a>
+          </td>
+            <td>
+                <!-- Botón QR Code -->
+                <a href="{{ url_for('caja_qrcode', uuid_caja=caja.uuid) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                    <i class="fas fa-qrcode"></i>
+                </a>
+                <!-- Botón Editar -->
+                <a href="{{ url_for('edit_caja', uuid_caja=caja.uuid) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+                <form action="{{ url_for('delete_caja', uuid_caja=caja.uuid) }}" method="POST" style="display:inline;">
+                    {{ delete_caja_forms[caja.uuid].hidden_tag() }}
+                    <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
+                        <i class="fa-regular fa-eraser" style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">No hay cajas en esta bodega.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Botón para agregar nueva Caja -->
+<button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addCajaModal">
+    Añadir Caja
+</button>
+
+{% endblock %}

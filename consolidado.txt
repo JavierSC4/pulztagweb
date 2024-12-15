@@ -54,6 +54,8 @@ datefmt = %H:%M:%S
 ----- Fin de migrations/alembic.ini -----
 
 ----- Inicio de migrations/env.py -----
+# migrations/env.py
+
 import logging
 from logging.config import fileConfig
 
@@ -88,23 +90,17 @@ def get_engine_url():
         return str(get_engine().url).replace('%', '%%')
 
 
+# Importa todos tus modelos aquí para que Alembic los detecte
+from models import User, Pulzcard, Tag, Bodega, Caja, Producto
+
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-config.set_main_option('sqlalchemy.url', get_engine_url())
-target_db = current_app.extensions['migrate'].db
+target_metadata = current_app.extensions['migrate'].db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-
-
-def get_metadata():
-    if hasattr(target_db, 'metadatas'):
-        return target_db.metadatas[None]
-    return target_db.metadata
 
 
 def run_migrations_offline():
@@ -121,7 +117,7 @@ def run_migrations_offline():
     """
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url, target_metadata=get_metadata(), literal_binds=True
+        url=url, target_metadata=target_metadata, literal_binds=True
     )
 
     with context.begin_transaction():
@@ -155,7 +151,7 @@ def run_migrations_online():
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
-            target_metadata=get_metadata(),
+            target_metadata=target_metadata,
             **conf_args
         )
 
@@ -167,7 +163,6 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
-
 
 ----- Fin de migrations/env.py -----
 
@@ -995,27 +990,164 @@ h3 {
     transform: scale(1.2); /* Aumentar ligeramente el tamaño */
 }
 
+/* Sidebar */
+#sidebar {
+    width: 160px;
+    margin-left: -50px; /* Ajuste manual para mover a la izquierda */
+    padding: 0;
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+    transition: width 0.3s ease;
+}
+
+/* Sidebar colapsado */
+#sidebar.collapsed {
+    width: 70px; /* Ancho reducido */
+    overflow: hidden; /* Ocultar contenido fuera del ancho */
+    transition: width 0.5s ease;
+}
+
+/* Ocultar el nombre del usuario cuando está colapsado */
+#sidebar.collapsed .user-fullname {
+    display: none;
+}
+
+#sidebar.collapsed .text-label {
+    display: none;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 10px;
+    gap: 10px;
+}
+
+.sidebar-header .user-display {
+    flex: 1;
+}
+
+.sidebar-header .btn {
+    flex-shrink: 0;
+}
+
+/* Centrar el botón de colapso */
+#sidebar.collapsed .sidebar-header {
+    justify-content: center;
+}
+
+/* Asegurar que el botón de colapso no se reduzca */
+#sidebar.collapsed .sidebar-header .btn {
+    margin-left: 0;
+    display: block;
+}
+
+#sidebar.collapsed .user-display {
+    display: none;
+}
+
+#sidebar.collapsed .btn {
+    margin-left: 0;
+}
+
+/* Estilos para centrar los íconos en el sidebar colapsado */
+#sidebar.collapsed .nav-link.sidebar-link {
+    justify-content: center; /* Centra horizontalmente */
+    padding: 1rem 0; /* Ajusta el espacio alrededor del ícono */
+    transition: padding 0.3s ease, justify-content 0.5s ease;
+}
+
+#sidebar.collapsed .nav-link.sidebar-link i {
+    margin: 0; /* Elimina márgenes adicionales */
+    font-size: 1rem; /* Aumenta el tamaño del ícono si es necesario */
+}
+
+/* Centrar los sub-botones cuando el sidebar está colapsado */
+#sidebar.collapsed .sub-link {
+    justify-content: center; /* Centra horizontalmente */
+    padding: 0.3rem 0; /* Ajusta el espacio alrededor del ícono */
+}
+
+#sidebar.collapsed .sub-link i {
+    margin: 0; /* Elimina márgenes adicionales */
+    font-size: 1rem; /* Ajusta el tamaño del ícono si es necesario */
+}
+
+#sidebar.collapsed .sub-link span {
+    display: none; /* Oculta el texto de los sub-botones */
+}
+
+#sidebar.collapsed .collapse.show .sub-link {
+    display: flex; /* Asegura que los sub-botones sean visibles */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    padding: 0.5rem 0; /* Ajusta el espacio */
+}
+
+.nav-link.sidebar-link {
+    display: flex;
+    align-items: center;
+    color: #555;
+    text-decoration: none;
+    position: relative;
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #ffffff;
+}
+
+.nav-link.sidebar-link:hover {
+    background-color: rgba(3, 192, 255, 0.1);
+    color: #03c0ff;
+}
+
+/* Submenús */
+.collapse.show .sub-link {
+    background-color: #c1fff7;
+}
+
+.sub-link {
+    margin: 2px; /* Agrega 1px de margen en todos los lados */
+    padding: 10px 15px; /* Espaciado interno para aumentar el área clicable */
+    border-radius: 5px; /* Opcional: bordes redondeados */
+    transition: background-color 0.3s ease;
+}
+
+.sub-link:hover {
+    background-color: rgba(3, 192, 255, 0.1); /* Color de fondo al pasar el cursor */
+}
+
+/* Tablas */
+.custom-table thead th {
+    background-color: #03c0ff;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+}
+.custom-table td,
+.custom-table th {
+    text-align: center;
+    vertical-align: middle;
+    padding: 8px;
+}
+.custom-table tbody tr:hover {
+    background-color: #e6f7ff;
+}
+
 ----- Fin de static/css/style.css -----
 
 ----- Inicio de static/js/script.js -----
-/* static/js/script.js */
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Logo Upload Elements
+    // ** LOGO UPLOAD **
     const logoUpload = document.getElementById('logoUpload');
     const logoList = document.getElementById('logoList');
     const logoError = document.getElementById('logoError');
     let selectedLogos = [];
 
-    // Excel Upload Elements
-    const excelUpload = document.getElementById('excelUpload');
-    const excelList = document.getElementById('excelList');
-    const excelError = document.getElementById('excelError');
-    let selectedExcel = null;
-
     // Manejar la selección de logos
     logoUpload.addEventListener('change', function (e) {
         const files = Array.from(e.target.files);
+
         for (let file of files) {
             if (selectedLogos.length >= 10) {
                 logoError.style.display = 'block';
@@ -1026,8 +1158,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 displayLogo(file);
             }
         }
-        // No restablezcas el valor del input
-        // logoUpload.value = ''; // Comentado para permitir que los archivos se envíen
     });
 
     // Mostrar un logo en la lista
@@ -1041,12 +1171,9 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'btn btn-danger btn-sm';
         removeBtn.textContent = 'Eliminar';
         removeBtn.addEventListener('click', function () {
-            // Eliminar el archivo de selectedLogos
             selectedLogos = selectedLogos.filter((f) => f !== file);
             logoList.removeChild(li);
             logoError.style.display = 'none';
-
-            // Actualizar el input de archivos
             updateLogoInput();
         });
 
@@ -1054,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', function () {
         logoList.appendChild(li);
     }
 
-    // Actualizar el input de archivos para reflejar los archivos seleccionados
+    // Actualizar el input de archivos para reflejar los logos seleccionados
     function updateLogoInput() {
         const dataTransfer = new DataTransfer();
         selectedLogos.forEach((file) => {
@@ -1063,13 +1190,18 @@ document.addEventListener('DOMContentLoaded', function () {
         logoUpload.files = dataTransfer.files;
     }
 
+    // ** EXCEL UPLOAD **
+    const excelUpload = document.getElementById('excelUpload');
+    const excelList = document.getElementById('excelList');
+    const excelError = document.getElementById('excelError');
+    let selectedExcel = null;
+
     // Manejar la selección de Excel
     excelUpload.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (selectedExcel) {
             excelError.style.display = 'block';
-            // Restablece el input para evitar múltiples archivos
-            excelUpload.value = '';
+            excelUpload.value = ''; // Restablecer el input
             return;
         }
         if (file && ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(file.type)) {
@@ -1098,6 +1230,32 @@ document.addEventListener('DOMContentLoaded', function () {
         li.appendChild(removeBtn);
         excelList.appendChild(li);
     }
+
+    // ** SIDEBAR TOGGLE **
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    toggleBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed'); // Alterna la clase 'collapsed'
+        if (sidebar.classList.contains('collapsed')) {
+            this.innerHTML = '<i class="bi bi-chevron-right"></i>'; // Cambia el ícono al colapsar
+        } else {
+            this.innerHTML = '<i class="bi bi-chevron-left"></i>'; // Cambia el ícono al expandir
+        }
+    });
+});
+
+// ** DATATABLES CONFIGURACIÓN **
+$(document).ready(function () {
+    $('.custom-datatable').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json", // Español
+        },
+        pageLength: 10,
+        lengthChange: true,
+        ordering: true,
+        searching: true,
+    });
 });
 
 ----- Fin de static/js/script.js -----
@@ -1549,8 +1707,6 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Fin de templates/about.html -----
 
 ----- Inicio de templates/account.html -----
-<!-- templates/account.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
@@ -1569,14 +1725,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 {% endfor %}
             </div>
             <div class="mb-3">
-                {{ form.email.label(class="form-label") }}
-                {{ form.email(class="form-control", placeholder="Correo Electrónico") }}
-                {% for error in form.email.errors %}
+                <label class="form-label">Correo Electrónico</label>
+                <p class="form-control-plaintext">{{ current_user.email }}</p>
+            </div>
+            <hr>
+            <h5>Verificación de Seguridad</h5>
+            <p>Por favor, ingresa tu contraseña actual para confirmar que eres el dueño de la cuenta.</p>
+            <div class="mb-3">
+                {{ form.current_password.label(class="form-label") }}
+                {{ form.current_password(class="form-control", placeholder="Contraseña Actual") }}
+                {% for error in form.current_password.errors %}
                     <div class="text-danger">{{ error }}</div>
                 {% endfor %}
             </div>
             <hr>
-            <h5>Cambiar Contraseña</h5>
+            <h5>Cambiar Contraseña (Opcional)</h5>
             <div class="mb-3">
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control", placeholder="Nueva Contraseña") }}
@@ -1597,169 +1760,168 @@ document.addEventListener('DOMContentLoaded', function () {
 </div>
 {% endblock %}
 
-
 ----- Fin de templates/account.html -----
 
 ----- Inicio de templates/base.html -----
-<!-- templates/base.html -->
+    <!-- templates/base.html -->
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <script>
-        document.addEventListener('scroll', () => {
-            const scrollPosition = window.scrollY; // Obtiene la posición del scroll
-            document.body.style.backgroundPosition = `center ${50 + scrollPosition * 0.05}%`; // Ajusta posición vertical con un desplazamiento sutil
-        });
-    </script>
-    <!-- Google Tag Manager -->
-    <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-        var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';j.async=true;
-        j.src='https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-NC88XS28');
-    </script>
-    <!-- End Google Tag Manager -->
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <script>
+            document.addEventListener('scroll', () => {
+                const scrollPosition = window.scrollY; // Obtiene la posición del scroll
+                document.body.style.backgroundPosition = `center ${50 + scrollPosition * 0.05}%`; // Ajusta posición vertical con un desplazamiento sutil
+            });
+        </script>
+        <!-- Google Tag Manager -->
+        <script>
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+            var f=d.getElementsByTagName(s)[0], j=d.createElement(s), dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+            j.src='https://www.googletagmanager.com/gtm.js?id=GTM-NC88XS28'+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-NC88XS28');
+        </script>
+        <!-- End Google Tag Manager -->
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Pulztag{% endblock %}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Pulztag{% endblock %}</title>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <!-- Bootstrap Icons -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-    <!-- CSS Personalizado con Parámetro de Versión para Evitar Caché -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.0">
-    
-    {% block head %}{% endblock %}
-</head>
+        <!-- CSS Personalizado con Parámetro de Versión para Evitar Caché -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.0">
+        
+        {% block head %}{% endblock %}
+    </head>
 
-<body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC88XS28"
-        height="0" width="0" style="display:none;visibility:hidden"></iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    
-    <!-- Barra Superior -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand text-primary fw-bold d-flex align-items-center" href="/">
-                <img src="{{ url_for('static', filename='images/logobasev4.png') }}" alt="Pulztag Logo" height="40" class="me-2">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/services' %} active{% endif %}" href="{{ url_for('services') }}">Servicios</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path.startswith('/create_item') %} active{% endif %}" href="{{ url_for('create_item') }}">Crear Item</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca de</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a></li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                    <!-- Menú Desplegable para Usuarios Autenticados -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ current_user.username }}
-                            <i class="bi bi-person-circle ms-1"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('profile') }}">Perfil</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
-                        </ul>
-                    </li>
-                    {% else %}
-                    <!-- Botón "Iniciar Sesión" para Usuarios No Autenticados -->
-                    <li class="nav-item">
-                        <a href="{{ url_for('login') }}" class="btn btn-primary">
-                            <i class="fa-solid fa-right-to-bracket me-2"></i> Iniciar Sesión
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Espacio para evitar que el contenido quede oculto bajo la barra de navegación -->
-    <div style="margin-top: 90px;"></div>
-
-    <!-- Contenido Principal -->
-    <div class="container mt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NC88XS28"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+        
+        <!-- Barra Superior -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand text-primary fw-bold d-flex align-items-center" href="/">
+                    <img src="{{ url_for('static', filename='images/logobasev4.png') }}" alt="Pulztag Logo" height="40" class="me-2">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/' %} active{% endif %}" href="/">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/products' %} active{% endif %}" href="{{ url_for('products') }}">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/services' %} active{% endif %}" href="{{ url_for('services') }}">Servicios</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path.startswith('/create_item') %} active{% endif %}" href="{{ url_for('create_item') }}">Crear Item</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/order' %} active{% endif %}" href="/order">Pedido</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/about' %} active{% endif %}" href="/about">Acerca de</a></li>
+                        <li class="nav-item"><a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a></li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        {% if current_user.is_authenticated %}
+                        <!-- Menú Desplegable para Usuarios Autenticados -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ current_user.username }}
+                                <i class="bi bi-person-circle ms-1"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('profile') }}">Perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <!-- Botón "Iniciar Sesión" para Usuarios No Autenticados -->
+                        <li class="nav-item">
+                            <a href="{{ url_for('login') }}" class="btn btn-primary">
+                                <i class="fa-solid fa-right-to-bracket me-2"></i> Iniciar Sesión
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
                 </div>
-                {% endfor %}
             </div>
+        </nav>
+
+        <!-- Espacio para evitar que el contenido quede oculto bajo la barra de navegación -->
+        <div style="margin-top: 90px;"></div>
+
+        <!-- Contenido Principal -->
+        <div class="container mt-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
         </div>
-        {% endif %}
-        {% endwith %}
 
-        {% block content %}{% endblock %}
-    </div>
+        <!-- Footer -->
+        {% include 'footer.html' %}
 
-    <!-- Footer -->
-    {% include 'footer.html' %}
+        <!-- Bootstrap JS y dependencias -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap JS y dependencias -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- JS Personalizado -->
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
-    <!-- JS Personalizado -->
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const videos = [
+                    "{{ url_for('static', filename='videos/longvideo.mp4') }}"
+                ];
+                let videoIndex = 0;
+                const videoElement = document.getElementById('hero-video');
+                const sourceElement = videoElement ? videoElement.getElementsByTagName('source')[0] : null;
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const videos = [
-                "{{ url_for('static', filename='videos/longvideo.mp4') }}"
-            ];
-            let videoIndex = 0;
-            const videoElement = document.getElementById('hero-video');
-            const sourceElement = videoElement ? videoElement.getElementsByTagName('source')[0] : null;
-
-            function playNextVideo() {
-                if (sourceElement) {
-                    sourceElement.src = videos[videoIndex];
-                    videoElement.load(); // Recargar el video con la nueva fuente
-                    videoElement.play(); // Intentar reproducir el video
-                    videoIndex = (videoIndex + 1) % videos.length;
+                function playNextVideo() {
+                    if (sourceElement) {
+                        sourceElement.src = videos[videoIndex];
+                        videoElement.load(); // Recargar el video con la nueva fuente
+                        videoElement.play(); // Intentar reproducir el video
+                        videoIndex = (videoIndex + 1) % videos.length;
+                    }
                 }
-            }
 
-            if (videoElement && sourceElement) { // Verifica si el elemento existe
-                videoElement.addEventListener('ended', function () {
-                    playNextVideo();
-                });
-            }
-        });
-    </script>
-    
-    {% block scripts %}{% endblock %}
-</body>
-</html>
+                if (videoElement && sourceElement) { // Verifica si el elemento existe
+                    videoElement.addEventListener('ended', function () {
+                        playNextVideo();
+                    });
+                }
+            });
+        </script>
+        
+        {% block scripts %}{% endblock %}
+    </body>
+    </html>
 
 ----- Fin de templates/base.html -----
 
@@ -2324,7 +2486,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
                     <h4 class="card-title text-primary">Etiquetas NFC</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/etiquetas_nfc.jpeg') }}" class="card-img-top" alt="Etiquetas NFC" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/etiquetas_nfc.png') }}" class="card-img-top" alt="Etiquetas NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <p class="card-text">Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
                         <ul class="list-unstyled mb-4">
@@ -2347,7 +2509,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
                     <h4 class="card-title text-primary">Tarjetas NFC Personalizadas</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/tarjetas_nfc.jpeg') }}" class="card-img-top" alt="Tarjetas NFC Personalizadas" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/tarjetas_nfc.png') }}" class="card-img-top" alt="Tarjetas NFC Personalizadas" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <p class="card-text">Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
                         <ul class="list-unstyled mb-4">
@@ -2370,7 +2532,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
                     <h4 class="card-title text-primary">Stickers NFC</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/stickers_nfc.jpg') }}" class="card-img-top" alt="Stickers NFC" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/stickers_nfc.png') }}" class="card-img-top" alt="Stickers NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <p class="card-text">Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
                         <ul class="list-unstyled mb-4">
@@ -2393,39 +2555,180 @@ document.addEventListener('DOMContentLoaded', function () {
 ----- Fin de templates/products.html -----
 
 ----- Inicio de templates/profile.html -----
-
-<!-- templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+{% endblock %}
+
 {% block content %}
-<h2 class="text-center mb-4">Mi Perfil</h2>
+<div class="container-fluid p-0">
+    <div class="row g-0">
 
-<!-- Información del Usuario -->
-<div class="container-fluid mb-5">
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Información Personal</h4>
-            <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
-            <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-auto bg-white border-end sidebar-transition d-none d-md-flex flex-column collapsed">
+            <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
+                <!-- Nombre de Usuario -->
+                <div class="user-display">
+                    <span class="user-fullname">{{ current_user.username }}</span>
+                </div>
+                <!-- Botón para expandir/contraer -->
+                <button id="sidebarToggle" class="btn btn-light btn-sm" title="Expandir/Contraer Sidebar">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+            </div>
+
+            <ul class="nav flex-column pt-2" id="sidebarMenu">
+                <!-- Pulzcards -->
+                <li class="nav-item mt-2">
+                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+                        data-bs-target="#pulzcardSubmenu" aria-expanded="false" title="Pulzcards">
+                        <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
+                    </a>
+                    <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenu">
+                        <li>
+                            <a href="{{ url_for('pulzcard') }}" class="nav-link sub-link">
+                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#pulzcardsSection" class="nav-link sub-link">
+                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Etiquetas -->
+                <li class="nav-item mt-2">
+                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+                        data-bs-target="#etiquetasSubmenu" aria-expanded="false" title="Etiquetas">
+                        <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
+                    </a>
+                    <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenu">
+                        <li>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
+                                class="nav-link sub-link">
+                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#etiquetasSection" class="nav-link sub-link">
+                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Bodegas -->
+                <li class="nav-item mt-2">
+                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenu"
+                        aria-expanded="false" title="Bodegas">
+                        <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
+                    </a>
+                    <ul class="collapse list-unstyled ps-0" id="bodegasSubmenu">
+                        <li>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
+                                class="nav-link sub-link">
+                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#bodegasSection" class="nav-link sub-link">
+                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todas</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Sección Mi Perfil -->
+                <li class="nav-item">
+                    <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
+                        <i class="bi bi-person-lines-fill"></i><span class="text-label ms-2">Mi Perfil</span>
+                    </a>
+                </li>
+            </ul>
         </div>
-        <div class="col-md-6 text-end">
-            <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
-        </div>
-    </div>
-</div>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+        <!-- Navbar superior para pantallas pequeñas -->
+        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='images/logobasev4.png') }}"
+                        height="40"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbarMenu"
+                    aria-controls="topbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="topbarMenu">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <!-- Pulzcards -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="pulzcardDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Pulzcards</a>
+                            <ul class="dropdown-menu" aria-labelledby="pulzcardDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('pulzcard') }}">Crear Nuevo</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showSection('pulzcards')">Ver Todos</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Etiquetas -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="etiquetasDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Etiquetas</a>
+                            <ul class="dropdown-menu" aria-labelledby="etiquetasDropdown">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#agregarEtiquetaModal">Crear Nuevo</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showSection('etiquetas')">Ver Todos</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Bodegas -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="bodegasDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">Bodegas</a>
+                            <ul class="dropdown-menu" aria-labelledby="bodegasDropdown">
+                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                        data-bs-target="#agregarBodegaModal">Crear Nueva</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showSection('bodegas')">Ver Todas</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Mi Perfil -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSection('miPerfil')">Mi Perfil</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-<!-- Lista de Pulzcards -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h4>Tus Pulzcards</h4>
-            {% if pulzcards %}
+        <!-- Contenido Principal -->
+        <div class="col" id="mainContent" style="padding:20px;">
+
+            <!-- Sección Mi Perfil (Información Personal) -->
+            <div id="miPerfilSection">
+                <h2 class="text-center mb-4">Mi Perfil</h2>
+                <!-- Información del Usuario -->
+                <div class="container-fluid mb-5">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Información Personal</h4>
+                            <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
+                            <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-5">
+            </div>
+
+            <!-- Sección Pulzcards -->
+            <div id="pulzcardsSection" style="display:none;">
+                <h4>Tus Pulzcards</h4>
+                {% if pulzcards %}
                 <div class="table-responsive">
                     <table class="table table-hover custom-table">
                         <thead>
@@ -2449,35 +2752,54 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td>
                                     <!-- Botones de acción para pantallas medianas y grandes -->
                                     <div class="d-none d-md-flex gap-2">
-                                        <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
-                                        <a href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-                                        <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                        <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                            class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
+                                        <a href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"
+                                            class="btn btn-outline-secondary btn-sm">Editar</a>
+                                        <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                            class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
                                             <i class="fa-solid fa-qrcode"></i>
                                         </a>
-                                        <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
+                                            method="POST" style="display:inline;">
                                             {{ delete_forms[card.id].hidden_tag() }}
-                                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
-                                                <i class="fa-regular fa-eraser" style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                                style="background:none; border:none; padding:0; cursor:pointer;">
+                                                <i class="fa-regular fa-eraser"
+                                                    style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
                                             </button>
                                         </form>
                                     </div>
-                                    
+
                                     <!-- Dropdown para pantallas pequeñas -->
                                     <div class="d-md-none">
                                         <div class="dropdown">
-                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton{{ card.card_id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                type="button" id="dropdownMenuButton{{ card.card_id }}"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 Acciones
                                             </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ card.card_id }}">
-                                                <li><a class="dropdown-item" href="{{ url_for('pulzcard_card', card_id=card.card_id) }}" target="_blank"><i class="fas fa-eye me-2"></i>Ver
-                                                <li><a class="dropdown-item" href="{{ url_for('edit_pulzcard', card_id=card.card_id) }}"><i class="fas fa-edit me-2"></i>Editar
-                                                <li><a class="dropdown-item" href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}" title="Ver Código QR"><i class="fas fa-qrcode me-2"></i>Ver QR</a></li>
+                                            <ul class="dropdown-menu"
+                                                aria-labelledby="dropdownMenuButton{{ card.card_id }}">
+                                                <li><a class="dropdown-item"
+                                                        href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                                        target="_blank"><i class="fas fa-eye me-2"></i>Ver</a></li>
+                                                <li><a class="dropdown-item"
+                                                        href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"><i
+                                                            class="fas fa-edit me-2"></i>Editar</a></li>
+                                                <li><a class="dropdown-item"
+                                                        href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                                        title="Ver Código QR"><i class="fas fa-qrcode me-2"></i>Ver
+                                                        QR</a></li>
                                                 <li>
-                                                    <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
+                                                    <form
+                                                        action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
+                                                        method="POST" style="display:inline;">
                                                         {{ delete_forms[card.id].hidden_tag() }}
-                                                        <button type="submit" 
-                                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
-                                                                class="dropdown-item bg-danger text-white">
+                                                        <button type="submit"
+                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                                            class="dropdown-item bg-danger text-white">
                                                             <i class="fa-regular fa-eraser me-2"></i>Eliminar
                                                         </button>
                                                     </form>
@@ -2491,29 +2813,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         </tbody>
                     </table>
                 </div>
-            {% else %}
+                {% else %}
                 <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
-            {% endif %}
-            
-            <!-- Hipervínculo para Crear una Nueva Pulzcard -->
-            <div class="mt-3">
-                <a href="{{ url_for('pulzcard') }}" class="btn btn-secondary">
-                    <i class="fas fa-user-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>Añadir
-                </a>
+                {% endif %}
+
+                <!-- Botón para Crear una Nueva Pulzcard -->
+                <div class="mt-3">
+                    <a href="{{ url_for('pulzcard') }}" class="btn btn-secondary">
+                        <i class="fas fa-user-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i> Añadir
+                    </a>
+                </div>
+                <hr class="my-5">
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Lista de Etiquetas -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12 mt-5">
-            <h4>Tus Etiquetas y QR Code</h4>
-            {% if tags %}
+            <!-- Sección Etiquetas -->
+            <div id="etiquetasSection" style="display:none;">
+                <h4>Tus Etiquetas y QR Code</h4>
+                {% if tags %}
                 <div class="table-responsive">
                     <table class="table table-hover custom-table">
                         <thead>
@@ -2521,6 +2837,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <th>Nombre Etiqueta</th>
                                 <th>URL destino</th>
                                 <th>URL enlace</th>
+                                <th>Vistas</th> <!-- Nueva columna para Vistas -->
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -2529,58 +2846,76 @@ document.addEventListener('DOMContentLoaded', function () {
                             <tr>
                                 <td>{{ tag.tag_name }}</td>
                                 <td>
-                                    {% set redirect_url_display = tag.redirect_url[:30] + '...' if tag.redirect_url|length > 30 else tag.redirect_url %}
+                                    {% set redirect_url_display = tag.redirect_url[:30] + '...' if
+                                    tag.redirect_url|length > 30 else tag.redirect_url %}
                                     <a href="{{ tag.redirect_url }}" target="_blank">{{ redirect_url_display }}</a>
                                 </td>
                                 <td>
                                     {% set generated_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True) %}
-                                    {% set shortened_url = generated_url[:30] + '...' if generated_url|length > 30 else generated_url %}
+                                    {% set shortened_url = generated_url[:30] + '...' if generated_url|length > 30 else
+                                    generated_url %}
                                     <a href="{{ generated_url }}" target="_blank">{{ shortened_url }}</a>
                                 </td>
+                                <td>{{ tag.vistas }}</td> <!-- Muestra el contador de vistas -->
                                 <td>
                                     <!-- Botones de acción para pantallas medianas y grandes -->
                                     <div class="d-none d-md-flex gap-2">
-                                        <button class="btn btn-outline-secondary btn-sm" onclick="copyURL('{{ generated_url }}')">Copiar</button>
-                                        <a href="{{ url_for('edit_tag', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-                                        <a href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                        <button class="btn btn-outline-secondary btn-sm"
+                                            onclick="copyURL('{{ generated_url }}')">Copiar</button>
+                                        <a href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetas') }}"
+                                            class="btn btn-outline-secondary btn-sm">Editar</a>
+                                        <a href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}"
+                                            class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
                                             <i class="fas fa-qrcode"></i>
                                         </a>
-                                        <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST"
+                                            style="display:inline;">
                                             {{ delete_tag_forms[tag.id].hidden_tag() }}
-                                            <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')" style="background:none; border:none; padding:0; cursor:pointer;">
-                                                <i class="fa-regular fa-eraser" style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
+                                                style="background:none; border:none; padding:0; cursor:pointer;">
+                                                <i class="fa-regular fa-eraser"
+                                                    style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
                                             </button>
                                         </form>
                                     </div>
-                                    
+
                                     <!-- Dropdown para pantallas pequeñas -->
                                     <div class="d-md-none">
                                         <div class="dropdown">
-                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButtonTag{{ tag.tag_id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                type="button" id="dropdownMenuButtonTag{{ tag.tag_id }}"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
                                                 Acciones
                                             </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTag{{ tag.tag_id }}">
+                                            <ul class="dropdown-menu"
+                                                aria-labelledby="dropdownMenuButtonTag{{ tag.tag_id }}">
                                                 <li>
-                                                    <a href="#" class="dropdown-item" onclick="copyURL('{{ generated_url }}'); return false;">
+                                                    <a href="#" class="dropdown-item"
+                                                        onclick="copyURL('{{ generated_url }}'); return false;">
                                                         <i class="fas fa-copy me-2"></i>Copiar URL
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" href="{{ url_for('edit_tag', tag_id=tag.tag_id) }}">
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetas') }}">
                                                         <i class="fas fa-edit me-2"></i>Editar
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <a class="dropdown-item" href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" title="Ver Código QR">
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}"
+                                                        title="Ver Código QR">
                                                         <i class="fas fa-qrcode me-2"></i>Ver QR
                                                     </a>
                                                 </li>
                                                 <li>
-                                                    <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
+                                                    <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}"
+                                                        method="POST" style="display:inline;">
                                                         {{ delete_tag_forms[tag.id].hidden_tag() }}
-                                                        <button type="submit" 
-                                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
-                                                                class="dropdown-item bg-danger text-white">
+                                                        <button type="submit"
+                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
+                                                            class="dropdown-item bg-danger text-white">
                                                             <i class="fa-regular fa-eraser me-2"></i>Eliminar
                                                         </button>
                                                     </form>
@@ -2594,89 +2929,307 @@ document.addEventListener('DOMContentLoaded', function () {
                         </tbody>
                     </table>
                 </div>
-            {% else %}
-                <p>No has creado ninguna etiqueta aún. <a href="#" class="text-decoration-underline" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">Crear una Etiqueta</a>.</p>        
-            {% endif %}
-            
-            <!-- Botón para Agregar una Nueva Etiqueta -->
-            <div class="mt-3">
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">
-                    <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i> Añadir
-                </button>
+                {% else %}
+                <p>No has creado ninguna etiqueta aún. <a href="#" class="text-decoration-underline"
+                        data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">Crear una Etiqueta</a>.</p>
+                {% endif %}
+
+                <!-- Botón para Agregar una Nueva Etiqueta -->
+                <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#agregarEtiquetaModal">
+                        <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
+                        Añadir
+                    </button>
+                </div>
+                <hr class="my-5">
             </div>
+
+            <!-- Modal para agregar una nueva Etiqueta -->
+            <div class="modal fade" id="agregarEtiquetaModal" tabindex="-1" aria-labelledby="agregarEtiquetaModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ url_for('create_tag') }}">
+                            {{ tag_form.hidden_tag() }}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="agregarEtiquetaModalLabel">Agregar Nueva Etiqueta</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    {{ tag_form.tag_name.label(class="form-label") }}
+                                    {{ tag_form.tag_name(class="form-control", placeholder="Nombre de la Etiqueta") }}
+                                    {% for error in tag_form.tag_name.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ tag_form.redirect_url.label(class="form-label") }}
+                                    {{ tag_form.redirect_url(class="form-control", placeholder="URL de Redirección") }}
+                                    {% for error in tag_form.redirect_url.errors %}
+                                        <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                {{ tag_form.submit(class="btn btn-success") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Sección Bodegas -->
+            <div id="bodegasSection" style="display:none;">
+                <h4>Bodegas</h4>
+                {% if bodegas %}
+                <div class="table-responsive">
+                    <table class="table table-hover custom-table">
+                        <thead>
+                            <tr>
+                                <th>ID Bodega</th>
+                                <th>Nombre</th>
+                                <th>Fecha de Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bodega in bodegas %}
+                            <tr>
+                                <td><a href="{{ url_for('view_bodega', uuid_bodega=bodega.uuid) }}">{{ bodega.id_bodega
+                                        }}</a></td>
+                                <td>{{ bodega.nombre }}</td>
+                                <td>{{ bodega.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    <!-- Botones de acción para pantallas medianas y grandes -->
+                                    <div class="d-none d-md-flex gap-2">
+                                        <a href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}"
+                                            class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                            <i class="fas fa-qrcode"></i>
+                                        </a>
+                                        <a href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegas') }}"
+                                            class="btn btn-outline-secondary btn-sm">Editar</a>
+                                        <form action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}"
+                                            method="POST" style="display:inline;">
+                                            {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
+                                                style="background:none; border:none; padding:0; cursor:pointer;">
+                                                <i class="fa-regular fa-eraser"
+                                                    style="color: rgb(252, 127, 156); font-size: 2.0em;"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <!-- Dropdown para pantallas pequeñas -->
+                                    <div class="d-md-none">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                type="button" id="dropdownMenuButtonBodega{{ bodega.uuid }}"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu"
+                                                aria-labelledby="dropdownMenuButtonBodega{{ bodega.uuid }}">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}"
+                                                        title="Ver Código QR">
+                                                        <i class="fas fa-qrcode me-2"></i>Ver QR
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                        href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegas') }}">
+                                                        <i class="fas fa-edit me-2"></i>Editar
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form
+                                                        action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}"
+                                                        method="POST" style="display:inline;">
+                                                        {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
+                                                        <button type="submit"
+                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
+                                                            class="dropdown-item bg-danger text-white">
+                                                            <i class="fa-regular fa-eraser me-2"></i>Eliminar
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p>No has creado ninguna bodega aún. <a href="#" class="text-decoration-underline"
+                        data-bs-toggle="modal" data-bs-target="#agregarBodegaModal">Crear una Bodega</a>.</p>
+                {% endif %}
+
+                <!-- Botón para Agregar una Nueva Bodega -->
+                <div class="mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                        data-bs-target="#agregarBodegaModal">
+                        <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
+                        Añadir
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal para agregar una nueva Bodega -->
+            <div class="modal fade" id="agregarBodegaModal" tabindex="-1" aria-labelledby="agregarBodegaModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST" action="{{ url_for('create_bodega') }}">
+                            {{ bodega_form.hidden_tag() }}
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="agregarBodegaModalLabel">Agregar Nueva Bodega</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    {{ bodega_form.nombre.label(class="form-label") }}
+                                    {{ bodega_form.nombre(class="form-control", placeholder="Nombre de la Bodega") }}
+                                    {% for error in bodega_form.nombre.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ bodega_form.ubicacion.label(class="form-label") }}
+                                    {{ bodega_form.ubicacion(class="form-control", placeholder="Ubicación") }}
+                                    {% for error in bodega_form.ubicacion.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                                <div class="mb-3">
+                                    {{ bodega_form.notas.label(class="form-label") }}
+                                    {{ bodega_form.notas(class="form-control", placeholder="Notas") }}
+                                    {% for error in bodega_form.notas.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                {{ bodega_form.submit(class="btn btn-success") }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% if bodega_form.errors %}
+            <script>
+                var agregarBodegaModal = new bootstrap.Modal(document.getElementById('agregarBodegaModal'));
+                agregarBodegaModal.show();
+            </script>
+            {% endif %}
+
+            {% if tag_form.errors %}
+            <script>
+                var agregarEtiquetaModal = new bootstrap.Modal(document.getElementById('agregarEtiquetaModal'));
+                agregarEtiquetaModal.show();
+            </script>
+            {% endif %}
+
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- Formulario para agregar una nueva Etiqueta dentro de una Modal -->
-<!-- Modal -->
-<div class="modal fade" id="agregarEtiquetaModal" tabindex="-1" aria-labelledby="agregarEtiquetaModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="POST" action="{{ url_for('profile') }}">
-          {{ tag_form.hidden_tag() }}
-          <div class="modal-header">
-            <h5 class="modal-title" id="agregarEtiquetaModalLabel">Agregar Nueva Etiqueta</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-          </div>
-          <div class="modal-body">
-              <div class="mb-3">
-                  {{ tag_form.tag_name.label(class="form-label") }}
-                  {{ tag_form.tag_name(class="form-control", placeholder="Nombre de Tu Etiqueta") }}
-                  {% for error in tag_form.tag_name.errors %}
-                      <div class="text-danger">{{ error }}</div>
-                  {% endfor %}
-              </div>
-              <div class="mb-3">
-                  {{ tag_form.redirect_url.label(class="form-label") }}
-                  {{ tag_form.redirect_url(class="form-control", placeholder="URL a redireccionar") }}
-                  {% for error in tag_form.redirect_url.errors %}
-                      <div class="text-danger">{{ error }}</div>
-                  {% endfor %}
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            {{ tag_form.submit(class="btn btn-success") }}
-          </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Script for copying URL to clipboard -->
 <script>
-    function copyURL(url) {
-        navigator.clipboard.writeText(url).then(() => {
-            showAlert('URL generada copiada al portapapeles!', 'success');
-        }).catch(err => {
-            showAlert('Error al copiar la URL: ' + err, 'danger');
+    $(document).ready(function () {
+        $('.custom-table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            }
+        });
+    });
+
+    // Función para mostrar la sección basada en el ID
+    function showSection(section) {
+        const sections = ['miPerfilSection', 'pulzcardsSection', 'etiquetasSection', 'bodegasSection'];
+        sections.forEach(sec => {
+            document.getElementById(sec).style.display = (sec === section) ? 'block' : 'none';
         });
     }
 
-    function showAlert(message, type) {
-        const alertPlaceholder = document.createElement('div');
-        alertPlaceholder.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-        document.body.appendChild(alertPlaceholder);
-        setTimeout(() => {
-            alertPlaceholder.remove();
-        }, 3000);
+    // Función para manejar el hash y mostrar la sección correspondiente
+    function handleHash() {
+        const hash = window.location.hash.substring(1); // Eliminar el '#'
+        switch(hash) {
+            case 'pulzcardsSection':
+                showSection('pulzcardsSection');
+                break;
+            case 'etiquetasSection':
+                showSection('etiquetasSection');
+                break;
+            case 'bodegasSection':
+                showSection('bodegasSection');
+                break;
+            case 'miPerfilSection':
+            default:
+                showSection('miPerfilSection');
+                break;
+        }
     }
 
-    // Opcional: Abrir la modal automáticamente si hay errores en el formulario
-    {% if tag_form.errors %}
-        var agregarEtiquetaModal = new bootstrap.Modal(document.getElementById('agregarEtiquetaModal'));
-        agregarEtiquetaModal.show();
-    {% endif %}
+    // Escuchar cambios en el hash
+    window.addEventListener('hashchange', handleHash, false);
+
+    // Mostrar la sección correcta al cargar la página
+    window.addEventListener('load', handleHash, false);
+
+    // Actualizar el hash al hacer clic en enlaces internos
+    document.querySelectorAll('a.nav-link.sub-link').forEach(function(link) {
+        const href = link.getAttribute('href');
+        if (href.startsWith('#')) { // Solo interceptar enlaces internos
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+                const hash = this.getAttribute('href').substring(1); // Obtener el hash sin '#'
+                window.location.hash = hash; // Actualizar el hash en la URL
+                showSection(hash);
+            });
+        }
+        // Si no empieza con '#', dejar que el navegador maneje la navegación
+    });
+
+    function copyURL(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert('URL copiada al portapapeles!');
+        }).catch(err => {
+            alert('Error al copiar la URL: ' + err);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                this.innerHTML = '<i class="bi bi-chevron-right"></i>';
+            } else {
+                this.innerHTML = '<i class="bi bi-chevron-left"></i>';
+            }
+        });
+    });
 </script>
+
 {% endblock %}
 
 ----- Fin de templates/profile.html -----
@@ -2865,6 +3418,8 @@ __pycache__/
 # Archivos de bases de datos
 *.sqlite3
 *.db
+.pgdata/
+pg_log/
 
 # Directorios de subida
 uploads/
@@ -2872,6 +3427,7 @@ vcards/
 
 # Archivos de configuración local
 *.env
+.env.*
 
 # Archivos de respaldo
 respaldo.txt
@@ -2904,6 +3460,16 @@ script_crear_admin.py
 script_reset_database.py
 script_corregir_admins.py
 
+# Reportes de pruebas
+.coverage
+.cache/
+htmlcov/
+pytest_cache/
+
+# Archivos de Docker
+docker-compose.yml
+Dockerfile
+
 ----- Fin de .gitignore -----
 
 ----- Inicio de app.py -----
@@ -2911,29 +3477,37 @@ script_corregir_admins.py
 
 import os
 import uuid
-from urllib.parse import urlparse
-import qrcode
 from io import BytesIO
-import base64
-from flask import Flask, render_template, request, flash, redirect, url_for, send_from_directory, send_file, abort
+from random import randint
+from urllib.parse import urlparse
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import exists
+from sqlalchemy.orm import joinedload  # Asegúrate de importar esto al inicio del archivo
+from flask import (
+    Flask, render_template, request, flash, redirect, url_for,
+    send_from_directory, send_file, abort
+)
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
-from random import randint
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import pandas as pd
+import qrcode
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+
 from extensions import mail, db, migrate, bcrypt, login_manager, oauth
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import User, Pulzcard, Tag, SecureModelView
+from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
-    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm, VerificationForm  # Importa el nuevo formulario de contacto
+    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
+    BodegaForm, EditBodegaForm, DeleteBodegaForm,
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm,
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime
@@ -2944,7 +3518,6 @@ app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 
 # Configuración de la Base de Datos
-db_path = os.path.join(app.instance_path, 'site_new.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -2973,7 +3546,10 @@ admin = Admin(app, name='Panel de Administración', template_mode='bootstrap4')
 # Agregar vistas con la clase SecureModelView al panel de administración
 admin.add_view(SecureModelView(User, db.session))
 admin.add_view(SecureModelView(Pulzcard, db.session))
-admin.add_view(SecureModelView(Tag, db.session))
+admin.add_view(SecureModelView(Tag, db.session))  # Asegúrate de incluir Tag
+admin.add_view(SecureModelView(Bodega, db.session))
+admin.add_view(SecureModelView(Caja, db.session))
+admin.add_view(SecureModelView(Producto, db.session))  # Si deseas ver Productos en admin
 
 # Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -2992,37 +3568,11 @@ csrf = CSRFProtect(app)
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'warning'
 
-def send_verification_email(user):
-    verification_code = str(randint(100000, 999999))  # Genera un código de 6 dígitos
-    user.verification_code = verification_code
-    db.session.commit()
-
-    msg = Message('Código de verificación', recipients=[user.email])
-    msg.body = f'Tu código de verificación es: {verification_code}'
-    mail.send(msg)
-
-@app.route('/users')
-def list_users():
-    users = User.query.all()
-    return render_template('users.html', users=users)
-
-@app.route('/add_user')
-def add_user():
-    user = User(
-        username='example_user',
-        email='example@example.com',
-        password='hashed_password',
-        is_admin=False,
-        is_verified=True,
-        must_change_password=False
-    )
-    db.session.add(user)
-    db.session.commit()
-    return "Usuario creado exitosamente"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
+
 
 # Directorio para guardar las vCards
 VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
@@ -3033,55 +3583,47 @@ UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Extensiones permitidas (si las usas)
+# Extensiones permitidas
 ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
 ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
+
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
+
 # Configurar el serializador
 s = URLSafeTimedSerializer(app.secret_key)
 
-@app.route('/verify', methods=['GET', 'POST'])
-def verify():
-    form = VerificationForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.verification_code == form.code.data:
-            user.is_verified = True
-            user.verification_code = None  # Limpia el código
-            db.session.commit()
-            flash('Cuenta creada. Revisa tu correo para establecer tu contraseña.', 'success')
-            return render_template('login.html', title='Iniciar Sesión', form=LoginForm())
-        else:
-            flash('Código de verificación incorrecto.', 'danger')
-    return render_template('verify.html', form=form)
+# Función para generar el ID de Bodega
+def generar_id_bodega():
+    # Obtener la última bodega creada
+    ultima_bodega = Bodega.query.order_by(Bodega.id.desc()).first()
+    if ultima_bodega:
+        ultimo_numero = int(ultima_bodega.id_bodega[3:])  # Asumiendo formato 'BOD001'
+        nuevo_numero = ultimo_numero + 1
+    else:
+        nuevo_numero = 1  # Primera bodega
 
-@app.route('/login/google')
-def google_login():
-    redirect_uri = url_for('google_authorize', _external=True)
-    return oauth.google.authorize_redirect(redirect_uri)
+    # Generar el nuevo ID con prefijo y ceros a la izquierda
+    nuevo_id = f"BOD{str(nuevo_numero).zfill(3)}"
+    return nuevo_id
 
-@app.route('/authorize/google')
-def google_authorize():
-    token = oauth.google.authorize_access_token()
-    user_info = oauth.google.get('userinfo').json()
 
-    user = User.query.filter_by(email=user_info['email']).first()
-    if not user:
-        user = User(
-            username=user_info['name'],
-            email=user_info['email'],
-            is_verified=True  # Marcar automáticamente como verificado
-        )
-        db.session.add(user)
-        db.session.commit()
+def generar_id_caja():
+    # Obtener la última caja creada
+    ultima_caja = Caja.query.order_by(Caja.id.desc()).first()
+    if ultima_caja:
+        ultimo_numero = int(ultima_caja.id_caja[3:])  # Asumiendo formato 'CAJ001'
+        nuevo_numero = ultimo_numero + 1
+    else:
+        nuevo_numero = 1  # Primera caja
 
-    login_user(user)
-    flash('Inicio de sesión exitoso con Google.', 'success')
-    return redirect(url_for('home'))
+    # Generar el nuevo ID con prefijo y ceros a la izquierda
+    nuevo_id = f"CAJ{str(nuevo_numero).zfill(3)}"
+    return nuevo_id
+
 
 # Rutas de Autenticación
 @app.route('/register', methods=['GET', 'POST'])
@@ -3126,6 +3668,7 @@ Equipo de PulztagWeb
         return redirect(url_for('login'))
     return render_template('register.html', title='Registrar', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -3145,6 +3688,7 @@ def login():
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
 
+
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -3158,29 +3702,43 @@ def change_password():
         return redirect(url_for('home'))
     return render_template('change_password.html', title='Cambiar Contraseña', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     flash('Has cerrado sesión.', 'info')
     return redirect(url_for('home'))
 
+
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
+        # Verificar que la contraseña actual coincida
+        if not bcrypt.check_password_hash(current_user.password, form.current_password.data):
+            flash('La contraseña actual es incorrecta.', 'danger')
+            # Precargar datos de nuevo, ya que se falló la validación
+            form.username.data = current_user.username
+            return render_template('account.html', title='Perfil de Usuario', form=form)
+        
+        # Si la contraseña actual es correcta, proceder con la actualización
         current_user.username = form.username.data
-        current_user.email = form.email.data
-        if form.password.data:
+
+        if form.password.data:  
+            # Las validaciones del formulario asegurarán que la nueva contraseña cumpla con los criterios
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             current_user.password = hashed_password
+
         db.session.commit()
         flash('Tu cuenta ha sido actualizada.', 'success')
-        return redirect(url_for('account'))
-    elif request.method == 'GET':
+        return redirect(url_for('profile'))
+    else:
+        # Precargar los datos existentes
         form.username.data = current_user.username
-        form.email.data = current_user.email
-    return render_template('account.html', title='Perfil de Usuario', form=form)
+
+    return render_template('account.html', title='Perfil de Usuario', form=form, email=current_user.email)
+
 
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
@@ -3204,6 +3762,7 @@ Si no solicitaste un restablecimiento de contraseña, por favor ignora este mens
             return redirect(url_for('login'))
     return render_template('reset_request.html', title='Recuperar Contraseña', form=form)
 
+
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_token(token):
     if current_user.is_authenticated:
@@ -3223,10 +3782,12 @@ def reset_token(token):
         return redirect(url_for('login'))
     return render_template('reset_token.html', title='Establecer Contraseña', form=form, token=token)
 
+
 # Rutas Existentes
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/about')
 def about():
@@ -3235,14 +3796,12 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    form = ContactForm()  # Crear una instancia del formulario
-    
-    # Verificar si hay un mensaje predefinido en los parámetros de la URL
+    form = ContactForm()
     prefilled_message = request.args.get('message')
     if prefilled_message and not form.mensaje.data:
-        form.mensaje.data = prefilled_message  # Prellenar el campo "Mensaje" si está disponible
-    
-    if form.validate_on_submit():  # Usar validate_on_submit para verificar el envío
+        form.mensaje.data = prefilled_message
+
+    if form.validate_on_submit():
         nombre = form.nombre.data
         email = form.email.data
         mensaje = form.mensaje.data
@@ -3261,28 +3820,29 @@ def contact():
             flash('Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('contact'))
 
-    return render_template('contact.html', form=form)  # Pasar el formulario al template
+    return render_template('contact.html', form=form)
+
 
 @app.route('/products')
 def products():
     return render_template('products.html')
 
+
 @app.route('/services')
 def services():
     return render_template('services.html')
 
+
 @app.route('/order', methods=['GET', 'POST'])
 @login_required
 def order():
-    form = OrderForm()  # Crear una instancia del formulario
+    form = OrderForm()
     if form.validate_on_submit():
-        # Procesa el pedido
         nombre = form.nombre.data
         email = form.email.data
         dispositivo = form.dispositivo.data
         mensaje = form.mensaje.data
 
-        # Validaciones básicas
         if not nombre or not email or not dispositivo or not mensaje:
             flash('Por favor, completa todos los campos.', 'danger')
             return redirect(url_for('order'))
@@ -3408,11 +3968,21 @@ def order():
             flash('Hubo un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.', 'danger')
             return redirect(url_for('order'))
 
-    return render_template('order.html', form=form)  # Pasar el formulario al template
+    return render_template('order.html', form=form)
+
 
 @app.route('/create_item')
 def create_item():
     return render_template('create_item.html')
+
+def redirect_back(default='profile'):
+    next_page = request.args.get('next')
+    if next_page:
+        return redirect(url_for(next_page))
+    elif request.referrer:
+        return redirect(request.referrer)
+    else:
+        return redirect(url_for(default))
 
 # Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -3445,7 +4015,7 @@ def pulzcard():
             address=form.address.data,
             image_file=unique_filename,
             user_id=current_user.id,
-            template=form.template.data  # Añadir esta línea
+            template=form.template.data
         )
 
         # Añadir a la sesión y hacer flush para obtener card_id
@@ -3497,18 +4067,20 @@ END:VCARD"""
         return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
     else:
         print("Formulario no validado. Errores:", form.errors)
-    
+
     return render_template('pulzcard/index.html', form=form)
+
+
 @app.route('/pulzcard/card/<card_id>')
 def pulzcard_card(card_id):
     pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('home'))
-    
+
     # Obtener el template desde los parámetros de la URL
     selected_template = request.args.get('template')
-    valid_templates = ['template1', 'template2', 'template3']  # Añade todos tus templates aquí
+    valid_templates = ['template1', 'template2', 'template3']
 
     # Validar el template seleccionado
     if selected_template and selected_template in valid_templates:
@@ -3516,7 +4088,7 @@ def pulzcard_card(card_id):
     else:
         # Usar el template predeterminado de la Pulzcard o 'template1' si no está definido
         template_name = f"pulzcard/{pulzcard.template if pulzcard.template in valid_templates else 'template1'}.html"
-    
+
     contact_info = {
         "full_name": f"{pulzcard.first_name} {pulzcard.last_name}",
         "organization": pulzcard.organization,
@@ -3530,9 +4102,11 @@ def pulzcard_card(card_id):
 
     return render_template(template_name, contact=contact_info, card_id=card_id)
 
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 @app.route('/pulzcard/vcards/<filename>')
 def pulzcard_download_vcard(filename):
@@ -3543,19 +4117,23 @@ def pulzcard_download_vcard(filename):
         return redirect(url_for('home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
-# Nueva Ruta: Perfil de Usuario
+
+# Ruta: Perfil de Usuario
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
     tags = Tag.query.filter_by(user_id=current_user.id).order_by(Tag.created_at.desc()).all()
+    bodegas = Bodega.query.filter_by(user_id=current_user.id).order_by(Bodega.fecha_creacion.desc()).all()
     tag_form = TagForm()
+    bodega_form = BodegaForm()
 
-    # Initialize delete forms for each Pulzcard and Tag
+    # Inicializar formularios de eliminación
     delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
     delete_tag_forms = {tag.id: DeleteTagForm(prefix=str(tag.tag_id)) for tag in tags}
+    delete_bodega_forms = {bodega.uuid: DeleteBodegaForm(prefix=str(bodega.uuid)) for bodega in bodegas}
 
-    if tag_form.validate_on_submit():
+    if tag_form.validate_on_submit() and tag_form.submit.data:
         new_tag = Tag(
             tag_name=tag_form.tag_name.data,
             redirect_url=tag_form.redirect_url.data,
@@ -3566,25 +4144,50 @@ def profile():
         flash('Tu etiqueta ha sido creada exitosamente.', 'success')
         return redirect(url_for('profile'))
 
+    if bodega_form.validate_on_submit() and bodega_form.submit.data:
+        new_bodega = Bodega(
+            nombre=bodega_form.nombre.data,
+            ubicacion=bodega_form.ubicacion.data,
+            notas=bodega_form.notas.data,
+            user_id=current_user.id
+        )
+        new_bodega.id_bodega = generar_id_bodega()
+        db.session.add(new_bodega)
+        db.session.commit()
+        flash('Tu bodega ha sido creada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+
     return render_template(
-        'profile.html', 
-        title='Perfil de Usuario', 
-        pulzcards=pulzcards, 
-        tags=tags, 
-        tag_form=tag_form, 
-        delete_forms=delete_forms,  # Pulzcard delete forms
-        delete_tag_forms=delete_tag_forms  # Tag delete forms
+        'profile.html',
+        title='Perfil de Usuario',
+        pulzcards=pulzcards,
+        tags=tags,
+        bodegas=bodegas,
+        tag_form=tag_form,
+        bodega_form=bodega_form,
+        delete_forms=delete_forms,
+        delete_tag_forms=delete_tag_forms,
+        delete_bodega_forms=delete_bodega_forms
     )
+
 
 @app.route('/r/<tag_id>')
 def redirect_tag(tag_id):
-    # Busca la etiqueta usando tag_id en lugar de id
     tag = Tag.query.filter_by(tag_id=tag_id).first()
     if tag:
+        tag.vistas += 1  # Incrementa el contador de vistas
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al incrementar vistas para la etiqueta {tag_id}: {e}")
+            flash('Hubo un error al procesar tu solicitud.', 'danger')
+            return redirect(url_for('profile'))
         return redirect(tag.redirect_url)
     else:
         flash('La etiqueta no existe o fue eliminada.', 'danger')
         return redirect(url_for('profile'))
+
 
 @app.route('/tag/delete/<tag_id>', methods=['POST'])
 @login_required
@@ -3605,7 +4208,8 @@ def delete_tag(tag_id):
 
     return redirect(url_for('profile'))
 
-# Nueva Ruta: Editar Pulzcard
+
+# Ruta: Editar Pulzcard
 @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
 @login_required
 def edit_pulzcard(card_id):
@@ -3632,7 +4236,7 @@ def edit_pulzcard(card_id):
             unique_filename = f"{uuid.uuid4().hex}_{filename}"
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
             image_file.save(image_path)
-            
+
             # Actualizar el campo image_file en la base de datos
             pulzcard.image_file = unique_filename
 
@@ -3669,7 +4273,8 @@ END:VCARD"""
 
     return render_template('edit_pulzcard.html', title='Editar Pulzcard', form=form, pulzcard=pulzcard)
 
-# Nueva Ruta: Eliminar Pulzcard
+
+# Ruta: Eliminar Pulzcard
 @app.route('/pulzcard/delete/<card_id>', methods=['POST'])
 @login_required
 def delete_pulzcard(card_id):
@@ -3695,6 +4300,7 @@ def delete_pulzcard(card_id):
 
     return redirect(url_for('profile'))
 
+
 @app.route('/create_tag', methods=['GET', 'POST'])
 @login_required
 def create_tag():
@@ -3710,6 +4316,7 @@ def create_tag():
         flash('Tu etiqueta ha sido creada exitosamente.', 'success')
         return redirect(url_for('profile'))
     return render_template('create_tag.html', title='Crear Etiqueta', form=form)
+
 
 @app.route('/tag/edit/<tag_id>', methods=['GET', 'POST'])
 @login_required
@@ -3729,6 +4336,7 @@ def edit_tag(tag_id):
 
     return render_template('edit_tag.html', title='Editar Etiqueta', form=form, tag=tag)
 
+
 @app.route('/tag/qrcode_image/<tag_id>')
 @login_required
 def tag_qrcode_image(tag_id):
@@ -3741,18 +4349,154 @@ def tag_qrcode_image(tag_id):
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
+
 @app.route('/tag/qrcode/<tag_id>')
 @login_required
 def tag_qrcode(tag_id):
     tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
     qr_image_url = url_for('tag_qrcode_image', tag_id=tag.tag_id)
-    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Etiqueta', tag_id=tag_id)
+    share_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True)
+    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Etiqueta', tag_id=tag_id, share_url=share_url)
+
 
 @app.route('/pulzcard/qrcode_image/<card_id>')
 @login_required
 def pulzcard_qrcode_image(card_id):
     pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
-    url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)
+    url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)  # Confirmar uso de 'pulzcard_card'
+    qr_img = qrcode.make(url)
+    img_io = BytesIO()
+    qr_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
+
+
+@app.route('/pulzcard/qrcode/<card_id>')
+@login_required
+def pulzcard_qrcode(card_id):
+    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
+    qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id)
+    share_url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)
+    return render_template(
+        'qrcode_card.html',
+        qr_url=qr_image_url,
+        entity_type='Pulzcard',
+        tag_id=card_id,
+        share_url=share_url
+    )
+
+
+# Nuevas rutas para Bodega y Caja con UUID y códigos QR
+@app.route('/bodega/new', methods=['GET', 'POST'])
+@login_required
+def create_bodega():
+    form = BodegaForm()
+    if form.validate_on_submit():
+        new_bodega = Bodega(
+            nombre=form.nombre.data,
+            ubicacion=form.ubicacion.data,
+            notas=form.notas.data,
+            user_id=current_user.id
+        )
+        new_bodega.id_bodega = generar_id_bodega()
+        db.session.add(new_bodega)
+        db.session.commit()
+        flash('Tu bodega ha sido creada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    return render_template('create_bodega.html', title='Crear Bodega', form=form)
+
+
+@app.route('/bodega/<uuid_bodega>', methods=['GET', 'POST'])
+@login_required
+def view_bodega(uuid_bodega):
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    form = CajaForm()
+    delete_caja_forms = {caja.uuid: DeleteCajaForm(prefix=str(caja.uuid)) for caja in bodega.cajas}
+
+    if form.validate_on_submit():
+        nueva_caja = Caja(
+            nombre=form.nombre.data,
+            categoria=form.categoria.data,
+            notas=form.notas.data,
+            bodega_id=bodega.id
+        )
+        nueva_caja.id_caja = generar_id_caja()
+        db.session.add(nueva_caja)
+        db.session.commit()
+        flash('Caja agregada exitosamente.', 'success')
+        return redirect(url_for('view_bodega', uuid_bodega=uuid_bodega))
+
+    return render_template(
+        'bodega_detail.html',
+        bodega=bodega,
+        form=form,
+        delete_caja_forms=delete_caja_forms
+    )
+
+@app.route('/bodega/<uuid_bodega>/caja/new', methods=['GET', 'POST'])
+@login_required
+def create_caja(uuid_bodega):
+    # Verifica si la bodega existe
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+
+    form = CajaForm()
+    if form.validate_on_submit():
+        nueva_caja = Caja(
+            id_caja=generar_id_caja(),
+            nombre=form.nombre.data,
+            categoria=form.categoria.data,
+            notas=form.notas.data,
+            bodega_id=bodega.id  # Relaciona la caja con la bodega
+        )
+        try:
+            db.session.add(nueva_caja)
+            db.session.commit()
+            flash('Caja creada exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al crear la caja: {str(e)}', 'danger')
+        return redirect(url_for('view_bodega', uuid_bodega=uuid_bodega))
+
+    return render_template('create_caja.html', form=form, bodega=bodega)
+
+@app.route('/bodega/edit/<uuid_bodega>', methods=['GET', 'POST'])
+@login_required
+def edit_bodega(uuid_bodega):
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    form = EditBodegaForm()
+    if form.validate_on_submit():
+        bodega.nombre = form.nombre.data
+        bodega.ubicacion = form.ubicacion.data
+        bodega.notas = form.notas.data
+        db.session.commit()
+        flash('Bodega actualizada exitosamente.', 'success')
+        return redirect(url_for('profile'))
+    elif request.method == 'GET':
+        form.nombre.data = bodega.nombre
+        form.ubicacion.data = bodega.ubicacion
+        form.notas.data = bodega.notas
+    return render_template('edit_bodega.html', title='Editar Bodega', form=form, bodega=bodega)
+
+
+@app.route('/bodega/delete/<uuid_bodega>', methods=['POST'])
+@login_required
+def delete_bodega(uuid_bodega):
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    form = DeleteBodegaForm()
+    if form.validate_on_submit():
+        db.session.delete(bodega)
+        db.session.commit()
+        flash('Bodega eliminada exitosamente.', 'success')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+    return redirect(url_for('profile'))
+
+
+@app.route('/bodega/qrcode_image/<uuid_bodega>')
+@login_required
+def bodega_qrcode_image(uuid_bodega):
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    url = url_for('view_bodega', uuid_bodega=bodega.uuid, _external=True)
     # Generar el código QR
     qr_img = qrcode.make(url)
     img_io = BytesIO()
@@ -3760,49 +4504,284 @@ def pulzcard_qrcode_image(card_id):
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
-@app.route('/pulzcard/qrcode/<card_id>')
+
+@app.route('/bodega/qrcode/<uuid_bodega>')
 @login_required
-def pulzcard_qrcode(card_id):
-    pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
-    qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id)
-    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Pulzcard', tag_id=card_id)
+def bodega_qrcode(uuid_bodega):
+    bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    qr_image_url = url_for('bodega_qrcode_image', uuid_bodega=bodega.uuid)
+    share_url = url_for('view_bodega', uuid_bodega=bodega.uuid, _external=True)
+    return render_template(
+        'qrcode_card.html',
+        qr_url=qr_image_url,
+        entity_type='Bodega',
+        tag_id=uuid_bodega,
+        share_url=share_url
+    )
 
-@app.route('/test_video')
-def test_video():
-    return render_template('test_video.html')
+@app.route('/caja/<uuid_caja>', methods=['GET'])
+@login_required
+def view_caja(uuid_caja):
+    # Realizar un join entre Caja y Bodega para filtrar por user_id
+    caja = Caja.query.join(Bodega).filter(
+        Caja.uuid == uuid_caja,
+        Bodega.user_id == current_user.id
+    ).first_or_404(description='Caja no encontrada.')
+    
+    # Crear una instancia de DeleteProductoForm para manejar la eliminación de productos
+    delete_producto_form = DeleteProductoForm()
+    
+    return render_template('caja_detail.html', caja=caja, delete_producto_form=delete_producto_form)
 
-# Ruta de Prueba para Crear una vCard Manualmente
-@app.route('/test_vcard')
-def test_vcard():
-    test_vcard_content = """BEGIN:VCARD
-VERSION:3.0
-FN:Prueba Nombre
-ORG:Prueba Organización
-TITLE:Prueba Cargo
-TEL;TYPE=WORK,VOICE:123456789
-EMAIL:prueba@example.com
-URL:https://www.prueba.com
-ADR;TYPE=WORK:;;Calle Falsa 123
-END:VCARD"""
 
-    test_vcard_path = os.path.join(VCARD_FOLDER, 'test.vcf')
-    try:
-        with open(test_vcard_path, 'w') as f:
-            f.write(test_vcard_content)
-        return "Archivo de prueba vCard creado exitosamente."
-    except Exception as e:
-        return f"Error al crear el archivo de prueba vCard: {e}"
+@app.route('/caja/edit/<uuid_caja>', methods=['GET', 'POST'])
+@login_required
+def edit_caja(uuid_caja):
+    caja = Caja.query.join(Bodega).filter(
+        Caja.uuid == uuid_caja,
+        Bodega.user_id == current_user.id
+    ).first_or_404(description='Caja no encontrada.')
+    
+    form = EditCajaForm()
+    if form.validate_on_submit():
+        caja.nombre = form.nombre.data
+        caja.categoria = form.categoria.data
+        caja.notas = form.notas.data
+        nueva_bodega_id = form.bodega_id.data
+
+        # Verificar si la bodega existe antes de asignar
+        nueva_bodega = Bodega.query.filter_by(id=nueva_bodega_id).first()
+        if not nueva_bodega:
+            flash('La bodega seleccionada no existe.', 'danger')
+            return redirect(url_for('edit_caja', uuid_caja=uuid_caja))
+
+        caja.bodega_id = nueva_bodega.id
+        db.session.commit()
+        flash('Caja actualizada exitosamente.', 'success')
+        return redirect(url_for('view_bodega', uuid_bodega=nueva_bodega.uuid))
+    else:
+        if request.method == 'GET':
+            form.nombre.data = caja.nombre
+            form.categoria.data = caja.categoria
+            form.notas.data = caja.notas
+            form.bodega_id.choices = [(b.id, b.nombre) for b in Bodega.query.filter_by(user_id=current_user.id).all()]
+    
+    return render_template('edit_caja.html', form=form, caja=caja)
+
+
+@app.route('/caja/delete/<uuid_caja>', methods=['POST'])
+@login_required
+def delete_caja(uuid_caja):
+    caja = Caja.query.filter_by(uuid=uuid_caja).join(Bodega).filter(Bodega.user_id == current_user.id).first_or_404()
+    form = DeleteCajaForm()
+    bodega_uuid = caja.bodega.uuid
+
+    if form.validate_on_submit():
+        db.session.delete(caja)
+        db.session.commit()
+        flash('Caja eliminada exitosamente.', 'success')
+    else:
+        flash('Error al eliminar la caja.', 'danger')
+    return redirect(url_for('view_bodega', uuid_bodega=bodega_uuid))
+
+
+@app.route('/caja/qrcode_image/<uuid_caja>')
+@login_required
+def caja_qrcode_image(uuid_caja):
+    caja = Caja.query.filter_by(uuid=uuid_caja).join(Bodega).filter(Bodega.user_id == current_user.id).first_or_404()
+    url = url_for('view_caja', uuid_caja=caja.uuid, _external=True)
+    # Generar el código QR
+    qr_img = qrcode.make(url)
+    img_io = BytesIO()
+    qr_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
+
+
+@app.route('/caja/qrcode/<uuid_caja>')
+@login_required
+def caja_qrcode(uuid_caja):
+    caja = Caja.query.filter_by(uuid=uuid_caja).join(Bodega).filter(Bodega.user_id == current_user.id).first_or_404()
+    qr_image_url = url_for('caja_qrcode_image', uuid_caja=caja.uuid)
+    share_url = url_for('view_caja', uuid_caja=caja.uuid, _external=True)
+    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Caja', tag_id=uuid_caja, share_url=share_url)
+
+@app.route('/productos/<uuid_producto>', endpoint='product_detail')
+@login_required
+def product_detail(uuid_producto):
+    """
+    Vista para mostrar los detalles de un producto específico.
+
+    Args:
+        uuid_producto (str): UUID del producto.
+
+    Returns:
+        Renderiza la plantilla 'product_detail.html' con los detalles del producto.
+    """
+    producto = Producto.query.join(Caja).join(Bodega).filter(
+        Producto.uuid == uuid_producto,
+        Bodega.user_id == current_user.id
+    ).first_or_404(description='Producto no encontrado.')
+    
+    delete_producto_form = DeleteProductoForm()
+    return render_template('product_detail.html', producto=producto, delete_producto_form=delete_producto_form)
+
+@app.route('/cajas/<uuid_caja>/productos/nuevo', methods=['GET', 'POST'])
+@login_required
+def create_producto(uuid_caja):
+    # Verificar que la caja exista usando el uuid proporcionado
+    caja = Caja.query.filter_by(uuid=uuid_caja).first_or_404(description='Caja no encontrada.')
+
+    form = ProductoForm()
+    form.caja_id = caja.id  # Asigna el ID de la caja al formulario si es necesario
+
+    if form.validate_on_submit():
+        # Verificar si ya existe un producto con el mismo ID en esta caja usando exists
+        producto_existente = db.session.query(exists().where(
+            Producto.id_producto == form.id_producto.data,
+            Producto.caja_id == caja.id
+        )).scalar()
+
+        if producto_existente:
+            flash('Ya existe un producto con este ID en la caja.', 'danger')
+            return redirect(url_for('create_producto', uuid_caja=uuid_caja))
+
+        try:
+            # Crear un nuevo producto
+            nuevo_producto = Producto(
+                id_producto=form.id_producto.data,
+                nombre=form.nombre.data,
+                descripcion=form.descripcion.data,
+                cantidad=form.cantidad.data,
+                categoria=form.categoria.data,
+                subcategoria=form.subcategoria.data,
+                caja_id=caja.id,
+                notas=form.notas.data
+            )
+            db.session.add(nuevo_producto)
+            db.session.commit()
+            flash('Producto añadido correctamente.', 'success')
+            return redirect(url_for('view_caja', uuid_caja=caja.uuid))
+        except IntegrityError:
+            db.session.rollback()
+            flash('El ID del producto ya existe en esta caja.', 'danger')
+            return redirect(url_for('create_producto', uuid_caja=uuid_caja))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al guardar producto: {e}")
+            flash('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('create_producto', uuid_caja=uuid_caja))
+
+    # Mostrar errores de validación si los hay
+    if form.errors:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error en {field}: {error}", 'danger')
+
+    return render_template('create_producto.html', form=form, caja=caja)
+
+@app.route('/productos/<uuid_producto>/edit', methods=['GET', 'POST'], endpoint='edit_producto')
+@login_required
+def edit_producto(uuid_producto):
+    """
+    Vista para editar un producto específico.
+
+    Args:
+        uuid_producto (str): UUID del producto a editar.
+
+    Returns:
+        Renderiza la plantilla 'edit_producto.html' con el formulario de edición o redirige al detalle del producto.
+    """
+    producto = Producto.query.filter_by(uuid=uuid_producto).first_or_404()
+    form = EditProductoForm(original_id_producto=producto.id_producto, obj=producto)  # Utiliza EditProductoForm
+
+    if form.validate_on_submit():
+        # Actualizar los campos del producto
+        producto.id_producto = form.id_producto.data
+        producto.nombre = form.nombre.data
+        producto.descripcion = form.descripcion.data
+        producto.cantidad = form.cantidad.data
+        producto.categoria = form.categoria.data
+        producto.subcategoria = form.subcategoria.data
+        producto.notas = form.notas.data
+
+        try:
+            db.session.commit()
+            flash('Producto actualizado exitosamente.', 'success')
+            return redirect(url_for('product_detail', uuid_producto=producto.uuid))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al actualizar el producto: {e}")
+            flash('Hubo un error al actualizar el producto. Por favor, intenta de nuevo.', 'danger')
+
+    return render_template('edit_producto.html', form=form, producto=producto)
+
+@app.route('/productos/<uuid_producto>/delete', methods=['POST'], endpoint='delete_producto')
+@login_required
+def delete_producto(uuid_producto):
+    """
+    Vista para eliminar un producto específico.
+
+    Args:
+        uuid_producto (str): UUID del producto a eliminar.
+
+    Returns:
+        Redirige a la vista de la caja correspondiente con un mensaje de éxito o error.
+    """
+    producto = Producto.query.filter_by(uuid=uuid_producto).first_or_404()
+
+    form = DeleteProductoForm()  # Asegúrate de tener un formulario CSRF para la eliminación
+    if form.validate_on_submit():
+        try:
+            db.session.delete(producto)
+            db.session.commit()
+            flash('Producto eliminado exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            print(f"Error al eliminar el producto: {e}")
+            flash('Hubo un error al eliminar el producto. Por favor, intenta de nuevo.', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+
+    return redirect(url_for('view_caja', uuid_caja=producto.caja.uuid))
+
+# app.py
+
+@app.route('/productos/<uuid_producto>/qrcode_image', methods=['GET'])
+@login_required
+def producto_qrcode_image(uuid_producto):
+    producto = Producto.query.filter_by(uuid=uuid_producto, caja_id=Producto.caja_id).first_or_404()
+    url = url_for('product_detail', uuid_producto=producto.uuid, _external=True)
+    # Generar el código QR
+    qr_img = qrcode.make(url)
+    img_io = BytesIO()
+    qr_img.save(img_io, 'PNG')
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/png')
+
+@app.route('/productos/qrcode/<uuid_producto>', methods=['GET'])
+@login_required
+def producto_qrcode(uuid_producto):
+    # Asegurarse de que el producto pertenece a una caja del usuario actual
+    producto = Producto.query.join(Caja).join(Bodega).filter(
+        Producto.uuid == uuid_producto,
+        Bodega.user_id == current_user.id
+    ).first_or_404()
+    
+    qr_image_url = url_for('producto_qrcode_image', uuid_producto=producto.uuid)
+    share_url = url_for('product_detail', uuid_producto=producto.uuid, _external=True)
+    
+    return render_template(
+        'qrcode_card.html',
+        qr_url=qr_image_url,
+        entity_type='Producto',
+        tag_id=uuid_producto,
+        share_url=share_url
+    )
 
 # Crear las tablas de la base de datos
 with app.app_context():
-    db.create_all()  # Asegura que la base de datos y las tablas se creen
-
-#with app.app_context():
-#    try:
-#        result = User.query.first()  # Consulta básica para probar la conexión
-#        print("Conexión exitosa. Primer usuario encontrado:", result)
-#    except Exception as e:
-#        print("Error al conectar con la base de datos:", e)
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True)
@@ -3830,60 +4809,52 @@ oauth = OAuth()
 ----- Fin de extensions.py -----
 
 ----- Inicio de forms.py -----
-# models.py
+# forms.py
 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, EmailField, URLField, SelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError, Optional
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, TextAreaField, SelectField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional, Regexp
+from flask_wtf.file import FileAllowed
 from models import User
-from flask_login import current_user
-
 
 class VerificationForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    code = StringField('Código de Verificación', validators=[DataRequired(), Length(6, 6)])
+    verification_code = StringField('Código de Verificación', validators=[DataRequired(), Length(min=6, max=6)])
     submit = SubmitField('Verificar')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    submit = SubmitField('Crear Cuenta')
+    password = PasswordField('Contraseña', validators=[
+        DataRequired(),
+        Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
+    submit = SubmitField('Registrarse')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
+            raise ValidationError('Ese nombre de usuario ya está tomado. Por favor, elige otro.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+            raise ValidationError('Ese correo electrónico ya está en uso. Por favor, elige otro.')
 
 class LoginForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
-    remember = BooleanField('Recordarme')
+    remember = BooleanField('Recuérdame')
     submit = SubmitField('Iniciar Sesión')
 
 class UpdateAccountForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
-    confirm_password = PasswordField('Confirmar Nueva Contraseña', validators=[EqualTo('password')])
-    submit = SubmitField('Actualizar Perfil')
-
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
-            if user:
-                raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
-
-    def validate_email(self, email):
-        if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
-            if user:
-                raise ValidationError('Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+    current_password = PasswordField('Contraseña Actual', validators=[DataRequired()])
+    password = PasswordField('Nueva Contraseña', validators=[
+        Optional(),
+        Length(min=8, message='La nueva contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La nueva contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
+    confirm_password = PasswordField('Confirmar Nueva Contraseña', validators=[Optional(), EqualTo('password', message='Las contraseñas deben coincidir')])
+    submit = SubmitField('Actualizar')
 
 class RequestResetForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
@@ -3892,81 +4863,125 @@ class RequestResetForm(FlaskForm):
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError('No hay una cuenta asociada a este correo electrónico.')
+            raise ValidationError('No hay una cuenta con ese correo electrónico. Debes registrarte primero.')
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Contraseña', validators=[
+        DataRequired(),
+        Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
     confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Restablecer Contraseña')
 
 class PulzcardForm(FlaskForm):
-    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
+    card_name = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
     first_name = StringField('Nombre', validators=[DataRequired()])
     last_name = StringField('Apellido', validators=[DataRequired()])
-    organization = StringField('Nombre Organización', validators=[DataRequired()])
+    organization = StringField('Organización', validators=[DataRequired()])
     position = StringField('Cargo', validators=[DataRequired()])
-    phone = StringField('Número Telefónico', validators=[DataRequired()])
+    phone = StringField('Teléfono', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    website = StringField('Página Web', validators=[DataRequired(), URL()])
+    website = StringField('Sitio Web', validators=[DataRequired()])
     address = StringField('Dirección', validators=[DataRequired()])
-    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
+    image_file = FileField('Imagen de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    template = SelectField('Plantilla', choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')], validators=[DataRequired()])
     submit = SubmitField('Crear Tarjeta')
-    template = SelectField('Selecciona una Plantilla', choices=[
-        ('template1', 'Plantilla 1'),
-        ('template2', 'Plantilla 2'),
-        ('template3', 'Plantilla 3')
-    ], default='template1')
 
 class EditPulzcardForm(FlaskForm):
-    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired(), Length(max=100)])
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=50)])
-    organization = StringField('Nombre Organización', validators=[DataRequired(), Length(max=100)])
-    position = StringField('Cargo', validators=[DataRequired(), Length(max=100)])
-    phone = StringField('Número Telefónico', validators=[DataRequired(), Length(max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
-    website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
-    address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
-    template = SelectField('Selecciona una Plantilla', choices=[
-        ('template1', 'Plantilla 1'),
-        ('template2', 'Plantilla 2'),
-        ('template3', 'Plantilla 3')
-    ], default='template1')
-    
-    # Campo para la imagen de perfil
-    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
-
-    submit = SubmitField('Actualizar Pulzcard')
+    card_name = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
+    first_name = StringField('Nombre', validators=[DataRequired()])
+    last_name = StringField('Apellido', validators=[DataRequired()])
+    organization = StringField('Organización', validators=[DataRequired()])
+    position = StringField('Cargo', validators=[DataRequired()])
+    phone = StringField('Teléfono', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    website = StringField('Sitio Web', validators=[DataRequired()])
+    address = StringField('Dirección', validators=[DataRequired()])
+    image_file = FileField('Actualizar Imagen de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    template = SelectField('Plantilla', choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')], validators=[DataRequired()])
+    submit = SubmitField('Actualizar Tarjeta')
 
 class DeletePulzcardForm(FlaskForm):
     submit = SubmitField('Eliminar')
 
+class ContactForm(FlaskForm):
+    nombre = StringField('Nombre', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
+
 class OrderForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    dispositivo = StringField('Dispositivo', validators=[DataRequired()])
-    mensaje = TextAreaField('¿Qué necesitas?', validators=[DataRequired()])
-    logos = FileField('Subir Logos', validators=[Optional()])
-    excel = FileField('Subir Archivo Excel', validators=[Optional()])
-    submit = SubmitField('Enviar solicitud')
-
-class ContactForm(FlaskForm):  # Nuevo formulario de contacto
-    nombre = StringField('Nombre', validators=[DataRequired()])
-    email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
+    dispositivo = SelectField('Seleccione el Dispositivo', choices=[('Tag', 'Tag'), ('Pulzcard', 'Pulzcard')], validators=[DataRequired()])
     mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
     submit = SubmitField('Enviar')
 
 class TagForm(FlaskForm):
-    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired(), Length(min=2, max=50)])
-    redirect_url = StringField('URL a Redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
+    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired()])
+    redirect_url = StringField('URL de Redirección', validators=[DataRequired()])
     submit = SubmitField('Crear Etiqueta')
 
 class EditTagForm(FlaskForm):
-    tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
-    redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
-    submit = SubmitField('Actualizar')
+    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired()])
+    redirect_url = StringField('URL de Redirección', validators=[DataRequired()])
+    submit = SubmitField('Actualizar Etiqueta')
 
 class DeleteTagForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class BodegaForm(FlaskForm):
+    nombre = StringField('Nombre de la Bodega', validators=[DataRequired()])
+    ubicacion = StringField('Ubicación', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Crear Bodega')
+
+class EditBodegaForm(FlaskForm):
+    nombre = StringField('Nombre de la Bodega', validators=[DataRequired()])
+    ubicacion = StringField('Ubicación', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Actualizar Bodega')
+
+class DeleteBodegaForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class CajaForm(FlaskForm):
+    nombre = StringField('Nombre de la Caja', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Guardar')
+
+class EditCajaForm(FlaskForm):
+    nombre = StringField('Nombre de la Caja', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    bodega_id = SelectField('Bodega', coerce=int, validators=[DataRequired()])  # Añadido para seleccionar la bodega
+    submit = SubmitField('Actualizar')
+
+class DeleteCajaForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class ProductoForm(FlaskForm):
+    id_producto = StringField('ID Producto', validators=[DataRequired(), Length(max=10)])
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(max=255)])
+    descripcion = TextAreaField('Descripción', validators=[Optional()])
+    cantidad = IntegerField('Cantidad', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional(), Length(max=100)])  # Nuevo campo
+    subcategoria = StringField('Subcategoría', validators=[Optional(), Length(max=100)])  # Nuevo campo
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Guardar Producto')
+
+class EditProductoForm(FlaskForm):
+    id_producto = StringField('ID Producto', validators=[DataRequired(), Length(max=10)])
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(max=255)])
+    descripcion = TextAreaField('Descripción', validators=[Optional()])
+    cantidad = IntegerField('Cantidad', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional(), Length(max=100)])
+    subcategoria = StringField('Subcategoría', validators=[Optional(), Length(max=100)])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Actualizar Producto')
+
+class DeleteProductoForm(FlaskForm):
     submit = SubmitField('Eliminar')
 
 ----- Fin de forms.py -----
@@ -4026,6 +5041,11 @@ class User(db.Model, UserMixin):
     verification_code = db.Column(db.String(6), nullable=True)
     must_change_password = db.Column(db.Boolean, default=True)
 
+    # Relaciones con otros modelos
+    pulzcards = db.relationship('Pulzcard', backref='user', lazy=True)
+    tags = db.relationship('Tag', backref='user', lazy=True)
+    bodegas = db.relationship('Bodega', backref='user', lazy=True)
+
     def get_reset_token(self, expires_sec=3600):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
         return s.dumps(self.email, salt='password-reset-salt')
@@ -4037,9 +5057,12 @@ class User(db.Model, UserMixin):
             email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
         except SignatureExpired:
             return None
-        except:
+        except Exception:
             return None
         return User.query.filter_by(email=email).first()
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
 
 class Pulzcard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -4054,27 +5077,85 @@ class Pulzcard(db.Model):
     address = db.Column(db.String(200), nullable=False)
     card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
     template = db.Column(db.String(20), nullable=False, default='template1')
 
-    # Definir la relación con User
-    owner = db.relationship('User', backref=db.backref('pulzcards', lazy=True))
+    # Clave foránea hacia User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"
-    
+
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tag_name = db.Column(db.String(100), nullable=False)
     redirect_url = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    
+    vistas = db.Column(db.Integer, default=0, nullable=False)  # Nueva columna para vistas
+
+    # Clave foránea hacia User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     def __repr__(self):
-        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}')"
+        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}', Vistas: {self.vistas})"
+
+class Bodega(db.Model):
+    __tablename__ = 'bodega'  # Asegúrate de que el nombre de la tabla es consistente
     
+    id = db.Column(db.Integer, primary_key=True)
+    id_bodega = db.Column(db.String(10), unique=True, nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    ubicacion = db.Column(db.String(255), nullable=True)
+    notas = db.Column(db.Text, nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Relación con Caja
+    cajas = db.relationship('Caja', backref='bodega', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Bodega(id_bodega='{self.id_bodega}', nombre='{self.nombre}')>"
+
+class Caja(db.Model):
+    __tablename__ = 'caja'  # Asegúrate de que el nombre de la tabla es consistente
+    
+    id = db.Column(db.Integer, primary_key=True)
+    id_caja = db.Column(db.String(10), unique=True, nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    categoria = db.Column(db.String(255), nullable=True)
+    notas = db.Column(db.Text, nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    bodega_id = db.Column(db.Integer, db.ForeignKey('bodega.id', ondelete='CASCADE'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Relación con Producto
+    productos = db.relationship('Producto', backref='caja', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Caja(id_caja='{self.id_caja}', nombre='{self.nombre}')>"
+
+class Producto(db.Model):
+    __tablename__ = 'productos'
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_producto = db.Column(db.String(10), nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(db.Text, nullable=True)
+    cantidad = db.Column(db.Integer, nullable=False, default=0)
+    categoria = db.Column(db.String(100), nullable=True)
+    subcategoria = db.Column(db.String(100), nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    caja_id = db.Column(db.Integer, db.ForeignKey('caja.id', ondelete='CASCADE'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Agregar el campo 'notas'
+    notas = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f"<Producto(id_producto='{self.id_producto}', nombre='{self.nombre}', cantidad={self.cantidad})>"
+
 class SecureModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin  # Verifica si el usuario es admin

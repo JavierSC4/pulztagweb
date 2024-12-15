@@ -1,21 +1,14 @@
-/* static/js/script.js */
-
 document.addEventListener('DOMContentLoaded', function () {
-    // Logo Upload Elements
+    // ** LOGO UPLOAD **
     const logoUpload = document.getElementById('logoUpload');
     const logoList = document.getElementById('logoList');
     const logoError = document.getElementById('logoError');
     let selectedLogos = [];
 
-    // Excel Upload Elements
-    const excelUpload = document.getElementById('excelUpload');
-    const excelList = document.getElementById('excelList');
-    const excelError = document.getElementById('excelError');
-    let selectedExcel = null;
-
     // Manejar la selección de logos
     logoUpload.addEventListener('change', function (e) {
         const files = Array.from(e.target.files);
+
         for (let file of files) {
             if (selectedLogos.length >= 10) {
                 logoError.style.display = 'block';
@@ -26,8 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 displayLogo(file);
             }
         }
-        // No restablezcas el valor del input
-        // logoUpload.value = ''; // Comentado para permitir que los archivos se envíen
     });
 
     // Mostrar un logo en la lista
@@ -41,12 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
         removeBtn.className = 'btn btn-danger btn-sm';
         removeBtn.textContent = 'Eliminar';
         removeBtn.addEventListener('click', function () {
-            // Eliminar el archivo de selectedLogos
             selectedLogos = selectedLogos.filter((f) => f !== file);
             logoList.removeChild(li);
             logoError.style.display = 'none';
-
-            // Actualizar el input de archivos
             updateLogoInput();
         });
 
@@ -54,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
         logoList.appendChild(li);
     }
 
-    // Actualizar el input de archivos para reflejar los archivos seleccionados
+    // Actualizar el input de archivos para reflejar los logos seleccionados
     function updateLogoInput() {
         const dataTransfer = new DataTransfer();
         selectedLogos.forEach((file) => {
@@ -63,13 +51,18 @@ document.addEventListener('DOMContentLoaded', function () {
         logoUpload.files = dataTransfer.files;
     }
 
+    // ** EXCEL UPLOAD **
+    const excelUpload = document.getElementById('excelUpload');
+    const excelList = document.getElementById('excelList');
+    const excelError = document.getElementById('excelError');
+    let selectedExcel = null;
+
     // Manejar la selección de Excel
     excelUpload.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (selectedExcel) {
             excelError.style.display = 'block';
-            // Restablece el input para evitar múltiples archivos
-            excelUpload.value = '';
+            excelUpload.value = ''; // Restablecer el input
             return;
         }
         if (file && ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'].includes(file.type)) {
@@ -98,4 +91,30 @@ document.addEventListener('DOMContentLoaded', function () {
         li.appendChild(removeBtn);
         excelList.appendChild(li);
     }
+
+    // ** SIDEBAR TOGGLE **
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    toggleBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed'); // Alterna la clase 'collapsed'
+        if (sidebar.classList.contains('collapsed')) {
+            this.innerHTML = '<i class="bi bi-chevron-right"></i>'; // Cambia el ícono al colapsar
+        } else {
+            this.innerHTML = '<i class="bi bi-chevron-left"></i>'; // Cambia el ícono al expandir
+        }
+    });
+});
+
+// ** DATATABLES CONFIGURACIÓN **
+$(document).ready(function () {
+    $('.custom-datatable').DataTable({
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json", // Español
+        },
+        pageLength: 10,
+        lengthChange: true,
+        ordering: true,
+        searching: true,
+    });
 });

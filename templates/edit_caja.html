@@ -1,0 +1,36 @@
+<!-- templates/edit_caja.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Editar Caja - {{ caja.nombre }}</h1>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <!-- Campo Nombre -->
+    <div class="mb-3">
+        {{ form.nombre.label(class="form-label") }}
+        {{ form.nombre(class="form-control") }}
+        {% if form.nombre.errors %}
+          <div class="text-danger">
+            {% for error in form.nombre.errors %}
+              <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+    </div>
+    <!-- Campo Categoría -->
+    <div class="mb-3">
+        {{ form.categoria.label(class="form-label") }}
+        {{ form.categoria(class="form-control") }}
+    </div>
+    <!-- Campo Notas -->
+    <div class="mb-3">
+        {{ form.notas.label(class="form-label") }}
+        {{ form.notas(class="form-control") }}
+    </div>
+    <!-- Botón de Envío -->
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+{% endblock %}

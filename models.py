@@ -18,6 +18,11 @@ class User(db.Model, UserMixin):
     verification_code = db.Column(db.String(6), nullable=True)
     must_change_password = db.Column(db.Boolean, default=True)
 
+    # Relaciones con otros modelos
+    pulzcards = db.relationship('Pulzcard', backref='user', lazy=True)
+    tags = db.relationship('Tag', backref='user', lazy=True)
+    bodegas = db.relationship('Bodega', backref='user', lazy=True)
+
     def get_reset_token(self, expires_sec=3600):
         s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
         return s.dumps(self.email, salt='password-reset-salt')
@@ -29,9 +34,12 @@ class User(db.Model, UserMixin):
             email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
         except SignatureExpired:
             return None
-        except:
+        except Exception:
             return None
         return User.query.filter_by(email=email).first()
+
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}')"
 
 class Pulzcard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -46,27 +54,85 @@ class Pulzcard(db.Model):
     address = db.Column(db.String(200), nullable=False)
     card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
     template = db.Column(db.String(20), nullable=False, default='template1')
 
-    # Definir la relación con User
-    owner = db.relationship('User', backref=db.backref('pulzcards', lazy=True))
+    # Clave foránea hacia User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"
-    
+
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tag_name = db.Column(db.String(100), nullable=False)
     redirect_url = db.Column(db.String(200), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    
+    vistas = db.Column(db.Integer, default=0, nullable=False)  # Nueva columna para vistas
+
+    # Clave foránea hacia User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     def __repr__(self):
-        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}')"
+        return f"Tag('{self.tag_name}', '{self.redirect_url}', '{self.tag_id}', Vistas: {self.vistas})"
+
+class Bodega(db.Model):
+    __tablename__ = 'bodega'  # Asegúrate de que el nombre de la tabla es consistente
     
+    id = db.Column(db.Integer, primary_key=True)
+    id_bodega = db.Column(db.String(10), unique=True, nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    ubicacion = db.Column(db.String(255), nullable=True)
+    notas = db.Column(db.Text, nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Relación con Caja
+    cajas = db.relationship('Caja', backref='bodega', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Bodega(id_bodega='{self.id_bodega}', nombre='{self.nombre}')>"
+
+class Caja(db.Model):
+    __tablename__ = 'caja'  # Asegúrate de que el nombre de la tabla es consistente
+    
+    id = db.Column(db.Integer, primary_key=True)
+    id_caja = db.Column(db.String(10), unique=True, nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    categoria = db.Column(db.String(255), nullable=True)
+    notas = db.Column(db.Text, nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    bodega_id = db.Column(db.Integer, db.ForeignKey('bodega.id', ondelete='CASCADE'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Relación con Producto
+    productos = db.relationship('Producto', backref='caja', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Caja(id_caja='{self.id_caja}', nombre='{self.nombre}')>"
+
+class Producto(db.Model):
+    __tablename__ = 'productos'
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_producto = db.Column(db.String(10), nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(db.Text, nullable=True)
+    cantidad = db.Column(db.Integer, nullable=False, default=0)
+    categoria = db.Column(db.String(100), nullable=True)
+    subcategoria = db.Column(db.String(100), nullable=True)
+    fecha_creacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    caja_id = db.Column(db.Integer, db.ForeignKey('caja.id', ondelete='CASCADE'), nullable=False)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    
+    # Agregar el campo 'notas'
+    notas = db.Column(db.Text, nullable=True)
+
+    def __repr__(self):
+        return f"<Producto(id_producto='{self.id_producto}', nombre='{self.nombre}', cantidad={self.cantidad})>"
+
 class SecureModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin  # Verifica si el usuario es admin

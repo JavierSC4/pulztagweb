@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Añadir Producto{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Añadir Producto a {{ caja.nombre }}</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            {{ form.id_producto.label(class="form-label") }}
+            {{ form.id_producto(class="form-control", placeholder="ID del Producto") }}
+            {% for error in form.id_producto.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.nombre.label(class="form-label") }}
+            {{ form.nombre(class="form-control", placeholder="Nombre del Producto") }}
+            {% for error in form.nombre.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.categoria.label(class="form-label") }}
+            {{ form.categoria(class="form-control", placeholder="Categoría del Producto") }}
+            {% for error in form.categoria.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.subcategoria.label(class="form-label") }}
+            {{ form.subcategoria(class="form-control", placeholder="Subcategoría del Producto") }}
+            {% for error in form.subcategoria.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.cantidad.label(class="form-label") }}
+            {{ form.cantidad(class="form-control", type="number", placeholder="Cantidad inicial del Producto") }}
+            {% for error in form.cantidad.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-3">
+            {{ form.notas.label(class="form-label") }}
+            {{ form.notas(class="form-control", placeholder="Notas del Producto (opcional)") }}
+            {% for error in form.notas.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        
+        {{ form.submit(class="btn btn-success") }}
+        <a href="{{ url_for('view_caja', uuid_caja=caja.uuid) }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

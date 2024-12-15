@@ -1,0 +1,37 @@
+<!-- templates/create_caja.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Crear Nueva Caja{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Crear Nueva Caja</h2>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.nombre.label(class="form-label") }}
+            {{ form.nombre(class="form-control", placeholder="Nombre de la Caja") }}
+            {% for error in form.nombre.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.categoria.label(class="form-label") }}
+            {{ form.categoria(class="form-control", placeholder="Categoría de la Caja") }}
+            {% for error in form.categoria.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="mb-3">
+            {{ form.notas.label(class="form-label") }}
+            {{ form.notas(class="form-control", placeholder="Notas (opcional)") }}
+            {% for error in form.notas.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-success">Crear Caja</button>
+        <a href="{{ url_for('view_bodega', uuid_bodega=bodega.uuid) }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,57 +1,49 @@
-# models.py
+# forms.py
 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, EmailField, URLField, SelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, URL, ValidationError, Optional
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, TextAreaField, SelectField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional, Regexp
+from flask_wtf.file import FileAllowed
 from models import User
-from flask_login import current_user
-
 
 class VerificationForm(FlaskForm):
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    code = StringField('Código de Verificación', validators=[DataRequired(), Length(6, 6)])
+    verification_code = StringField('Código de Verificación', validators=[DataRequired(), Length(min=6, max=6)])
     submit = SubmitField('Verificar')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    submit = SubmitField('Crear Cuenta')
+    password = PasswordField('Contraseña', validators=[
+        DataRequired(),
+        Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
+    submit = SubmitField('Registrarse')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
+            raise ValidationError('Ese nombre de usuario ya está tomado. Por favor, elige otro.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('Este correo electrónico ya está registrado. Por favor, inicia sesión o usa otro correo.')
+            raise ValidationError('Ese correo electrónico ya está en uso. Por favor, elige otro.')
 
 class LoginForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
     password = PasswordField('Contraseña', validators=[DataRequired()])
-    remember = BooleanField('Recordarme')
+    remember = BooleanField('Recuérdame')
     submit = SubmitField('Iniciar Sesión')
 
 class UpdateAccountForm(FlaskForm):
     username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    password = PasswordField('Nueva Contraseña', validators=[Length(min=6)])
-    confirm_password = PasswordField('Confirmar Nueva Contraseña', validators=[EqualTo('password')])
-    submit = SubmitField('Actualizar Perfil')
-
-    def validate_username(self, username):
-        if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
-            if user:
-                raise ValidationError('Este nombre de usuario ya está en uso. Por favor, elige otro.')
-
-    def validate_email(self, email):
-        if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
-            if user:
-                raise ValidationError('Este correo electrónico ya está registrado. Por favor, usa otro correo.')
+    current_password = PasswordField('Contraseña Actual', validators=[DataRequired()])
+    password = PasswordField('Nueva Contraseña', validators=[
+        Optional(),
+        Length(min=8, message='La nueva contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La nueva contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
+    confirm_password = PasswordField('Confirmar Nueva Contraseña', validators=[Optional(), EqualTo('password', message='Las contraseñas deben coincidir')])
+    submit = SubmitField('Actualizar')
 
 class RequestResetForm(FlaskForm):
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
@@ -60,79 +52,133 @@ class RequestResetForm(FlaskForm):
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
-            raise ValidationError('No hay una cuenta asociada a este correo electrónico.')
+            raise ValidationError('No hay una cuenta con ese correo electrónico. Debes registrarte primero.')
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Contraseña', validators=[DataRequired(), Length(min=6)])
+    password = PasswordField('Contraseña', validators=[
+        DataRequired(),
+        Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
     confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Restablecer Contraseña')
 
 class PulzcardForm(FlaskForm):
-    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired()])
+    card_name = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
     first_name = StringField('Nombre', validators=[DataRequired()])
     last_name = StringField('Apellido', validators=[DataRequired()])
-    organization = StringField('Nombre Organización', validators=[DataRequired()])
+    organization = StringField('Organización', validators=[DataRequired()])
     position = StringField('Cargo', validators=[DataRequired()])
-    phone = StringField('Número Telefónico', validators=[DataRequired()])
+    phone = StringField('Teléfono', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    website = StringField('Página Web', validators=[DataRequired(), URL()])
+    website = StringField('Sitio Web', validators=[DataRequired()])
     address = StringField('Dirección', validators=[DataRequired()])
-    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
+    image_file = FileField('Imagen de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    template = SelectField('Plantilla', choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')], validators=[DataRequired()])
     submit = SubmitField('Crear Tarjeta')
-    template = SelectField('Selecciona una Plantilla', choices=[
-        ('template1', 'Plantilla 1'),
-        ('template2', 'Plantilla 2'),
-        ('template3', 'Plantilla 3')
-    ], default='template1')
 
 class EditPulzcardForm(FlaskForm):
-    card_name = StringField('Nombre de Tarjeta', validators=[DataRequired(), Length(max=100)])
-    first_name = StringField('Nombre', validators=[DataRequired(), Length(max=50)])
-    last_name = StringField('Apellido', validators=[DataRequired(), Length(max=50)])
-    organization = StringField('Nombre Organización', validators=[DataRequired(), Length(max=100)])
-    position = StringField('Cargo', validators=[DataRequired(), Length(max=100)])
-    phone = StringField('Número Telefónico', validators=[DataRequired(), Length(max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email(), Length(max=120)])
-    website = StringField('Página Web', validators=[DataRequired(), URL(), Length(max=200)])
-    address = StringField('Dirección', validators=[DataRequired(), Length(max=200)])
-    template = SelectField('Selecciona una Plantilla', choices=[
-        ('template1', 'Plantilla 1'),
-        ('template2', 'Plantilla 2'),
-        ('template3', 'Plantilla 3')
-    ], default='template1')
-    
-    # Campo para la imagen de perfil
-    image_file = FileField('Foto de Perfil', validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Solo se permiten imágenes.')])
-
-    submit = SubmitField('Actualizar Pulzcard')
+    card_name = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
+    first_name = StringField('Nombre', validators=[DataRequired()])
+    last_name = StringField('Apellido', validators=[DataRequired()])
+    organization = StringField('Organización', validators=[DataRequired()])
+    position = StringField('Cargo', validators=[DataRequired()])
+    phone = StringField('Teléfono', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    website = StringField('Sitio Web', validators=[DataRequired()])
+    address = StringField('Dirección', validators=[DataRequired()])
+    image_file = FileField('Actualizar Imagen de Perfil', validators=[FileAllowed(['jpg', 'png'])])
+    template = SelectField('Plantilla', choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')], validators=[DataRequired()])
+    submit = SubmitField('Actualizar Tarjeta')
 
 class DeletePulzcardForm(FlaskForm):
     submit = SubmitField('Eliminar')
 
+class ContactForm(FlaskForm):
+    nombre = StringField('Nombre', validators=[DataRequired()])
+    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
+    mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
+    submit = SubmitField('Enviar')
+
 class OrderForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    dispositivo = StringField('Dispositivo', validators=[DataRequired()])
-    mensaje = TextAreaField('¿Qué necesitas?', validators=[DataRequired()])
-    logos = FileField('Subir Logos', validators=[Optional()])
-    excel = FileField('Subir Archivo Excel', validators=[Optional()])
-    submit = SubmitField('Enviar solicitud')
-
-class ContactForm(FlaskForm):  # Nuevo formulario de contacto
-    nombre = StringField('Nombre', validators=[DataRequired()])
-    email = EmailField('Correo Electrónico', validators=[DataRequired(), Email()])
+    dispositivo = SelectField('Seleccione el Dispositivo', choices=[('Tag', 'Tag'), ('Pulzcard', 'Pulzcard')], validators=[DataRequired()])
     mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
     submit = SubmitField('Enviar')
 
 class TagForm(FlaskForm):
-    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired(), Length(min=2, max=50)])
-    redirect_url = StringField('URL a Redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
+    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired()])
+    redirect_url = StringField('URL de Redirección', validators=[DataRequired()])
     submit = SubmitField('Crear Etiqueta')
 
 class EditTagForm(FlaskForm):
-    tag_name = StringField('Nombre de Tu Etiqueta', validators=[DataRequired(), Length(max=100)])
-    redirect_url = StringField('URL a redireccionar', validators=[DataRequired(), URL(), Length(max=200)])
-    submit = SubmitField('Actualizar')
+    tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired()])
+    redirect_url = StringField('URL de Redirección', validators=[DataRequired()])
+    submit = SubmitField('Actualizar Etiqueta')
 
 class DeleteTagForm(FlaskForm):
     submit = SubmitField('Eliminar')
+
+class ImportTagsForm(FlaskForm):
+    excelFile = FileField('Archivo Excel', validators=[
+        DataRequired(message='Por favor, selecciona un archivo Excel.'),
+        FileAllowed(['xlsx', 'xls'], 'Solo se permiten archivos de Excel (.xlsx, .xls).')
+    ])
+    submit = SubmitField('Importar Etiquetas')
+
+class BodegaForm(FlaskForm):
+    nombre = StringField('Nombre de la Bodega', validators=[DataRequired()])
+    ubicacion = StringField('Ubicación', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Crear Bodega')
+
+class EditBodegaForm(FlaskForm):
+    nombre = StringField('Nombre de la Bodega', validators=[DataRequired()])
+    ubicacion = StringField('Ubicación', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Actualizar Bodega')
+
+class DeleteBodegaForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class CajaForm(FlaskForm):
+    nombre = StringField('Nombre de la Caja', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Guardar')
+
+class EditCajaForm(FlaskForm):
+    nombre = StringField('Nombre de la Caja', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional()])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    bodega_id = SelectField('Bodega', coerce=int, validators=[DataRequired()])  # Añadido para seleccionar la bodega
+    submit = SubmitField('Actualizar')
+
+class DeleteCajaForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class ProductoForm(FlaskForm):
+    id_producto = StringField('ID Producto', validators=[DataRequired(), Length(max=10)])
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(max=255)])
+    descripcion = TextAreaField('Descripción', validators=[Optional()])
+    cantidad = IntegerField('Cantidad', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional(), Length(max=100)])  # Nuevo campo
+    subcategoria = StringField('Subcategoría', validators=[Optional(), Length(max=100)])  # Nuevo campo
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Guardar Producto')
+
+class EditProductoForm(FlaskForm):
+    id_producto = StringField('ID Producto', validators=[DataRequired(), Length(max=10)])
+    nombre = StringField('Nombre', validators=[DataRequired(), Length(max=255)])
+    descripcion = TextAreaField('Descripción', validators=[Optional()])
+    cantidad = IntegerField('Cantidad', validators=[DataRequired()])
+    categoria = StringField('Categoría', validators=[Optional(), Length(max=100)])
+    subcategoria = StringField('Subcategoría', validators=[Optional(), Length(max=100)])
+    notas = TextAreaField('Notas', validators=[Optional()])
+    submit = SubmitField('Actualizar Producto')
+
+class DeleteProductoForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+
+class BulkDeleteTagForm(FlaskForm):
+    submit = SubmitField('Eliminar Selección')
