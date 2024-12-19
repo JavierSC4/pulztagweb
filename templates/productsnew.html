@@ -1,0 +1,111 @@
+<!-- templates/products.html -->
+
+{% extends 'base.html' %}
+
+{% block title %}Nuestros Productos - PulztagWeb{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Nuestros Productos</h2>
+        <p class="text-center mb-5">Con nuestras Etiquetas NFC, actualiza la información de tus campañas sin necesidad de reimprimir materiales, ahorrando tiempo y recursos.</p>
+
+        <!-- Grid de Productos -->
+        <div class="row gy-5">
+            <!-- Producto 1: Soporte de Menú con Código QR y NFC de Acrílico Plástico Personalizado 13.56MHz Resistente al Agua -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='soporte-menu-nfc') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/soporte_menu_nfc.png') }}" class="card-img-top" alt="Soporte de Menú con Código QR y NFC" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Soporte de Menú NFC</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 2: Etiqueta de Pegatina de Redes Sociales NFC Epoxy Antimetal Personalizada 13.56MHz -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='etiqueta-pegatina-nfc') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/etiqueta_pegatina_nfc.png') }}" class="card-img-top" alt="Etiqueta de Pegatina de Redes Sociales NFC" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Etiqueta Pegatina NFC</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 3: Tarjeta Redonda de PVC Duro Personalizada Impresa al por Mayor con Etiquetas NFC NTAG215 -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='tarjeta-redonda-pvc') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/tarjeta_redonda_pvc.png') }}" class="card-img-top" alt="Tarjeta Redonda de PVC Duro Personalizada" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Tarjeta Redonda PVC</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 4: Fabricante de Tarjetas PVC Inteligentes NFC Pasivas Personalizables Imprimibles 13.56MHz NTAG213 -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='tarjetas-pvc-inteligentes') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/tarjetas_pvc_inteligentes.png') }}" class="card-img-top" alt="Tarjetas PVC Inteligentes NFC" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Tarjetas PVC Inteligentes</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 5: Fábrica de Pulseras Tejidas RFID Descartables Personalizables Imprimibles 13.56MHz -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='pulseras-tejidas-rfid') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/pulseras_tejidas_rfid.png') }}" class="card-img-top" alt="Pulseras Tejidas RFID Descartables" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Pulseras Tejidas RFID</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 6: Etiqueta NFC de Redes Sociales NTAG213 Epoxy Resistente al Agua Antimetal Personalizable Imprimible 13.56MHz -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='etiqueta-nfc-redes-sociales') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/etiqueta_nfc_redes_sociales.png') }}" class="card-img-top" alt="Etiqueta NFC de Redes Sociales" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Etiqueta NFC Redes Sociales</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 7: Fabricante de Tarjetas de Madera NFC Empresariales Personalizadas Impresas 13.56MHz NTAG213 NTAG215 NTAG216 -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='tarjetas-madera-nfc') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/tarjetas_madera_nfc.png') }}" class="card-img-top" alt="Tarjetas de Madera NFC Empresariales" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Tarjetas de Madera NFC</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Producto 8: Tarjeta PVC NTAG216 Reescribible Blanca de Inyección Térmica Personalizable Imprimible NFC 13.56MHz -->
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 service-background" style="max-width: 100%; margin: auto;">
+                    <a href="{{ url_for('product_template', product_slug='tarjeta-pvc-ntag216') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='images/tarjeta_pvc_ntag216.png') }}" class="card-img-top" alt="Tarjeta PVC NTAG216 Reescribible" style="object-fit: cover; height: 200px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Tarjeta PVC NTAG216</h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

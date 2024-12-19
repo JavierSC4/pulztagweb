@@ -1,0 +1,31 @@
+<!-- modal_agregar_item.html -->
+<div class="modal fade" id="agregarItemModal" tabindex="-1" aria-labelledby="agregarItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="agregarItemForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarItemModalLabel">Agregar Nuevo Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="itemNameInput" class="form-label">Nombre de Item</label>
+                        <input type="text" class="form-control" id="itemNameInput" placeholder="Ingrese el nombre del Item">
+                    </div>
+                    <div class="mb-3">
+                        <label for="itemTypeSelect" class="form-label">Tipo de Item</label>
+                        <select class="form-select" id="itemTypeSelect">
+                            <option value="" disabled selected>Selecciona una opción</option>
+                            <option value="Evaluación de Clientes">Evaluación de Clientes</option>
+                            <option value="Visualizaciones diarias">Visualizaciones diarias</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Aceptar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

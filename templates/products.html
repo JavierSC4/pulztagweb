@@ -3,81 +3,328 @@
 {% extends 'base.html' %}
 
 {% block title %}Nuestros Productos - PulztagWeb{% endblock %}
-
 {% block content %}
-    <div class="container my-5">
-        <h2 class="text-center mb-4">Nuestros Productos</h2>
-        <p class="text-center mb-5">Con nuestras Etiquetas NFC, actualiza la información de tus campañas sin necesidad de reimprimir materiales, ahorrando tiempo y recursos.</p>
+<div class="text-center mb-5">
+        <h2 class="titulo-seccion">
+            Una Herramienta Única para Experiencias Interactivas
+        </h2>
+    <p class="lead mb-5">
+            Con nuestras Etiquetas NFC, actualiza la información de tus campañas sin necesidad de reimprimir materiales, ahorrando tiempo y recursos.
+        </p>
 
         <!-- Grid de Productos -->
         <div class="row gy-5">
-            <!-- Producto 1: Etiquetas NFC -->
+            <!-- Producto 1 -->
             <div class="col-lg-4">
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Etiquetas NFC</h4>
+                    <h4 class="card-title">Etiqueta de Sticker de RR.SS. NFC Antimetal.</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/etiquetas_nfc.png') }}" class="card-img-top" alt="Etiquetas NFC" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/productos/etiqueta_redes_sociales_nfc.png') }}" class="card-img-top" alt="Etiqueta Redes Sociales NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <p class="card-text">Tokens de plástico con tecnología NFC, ideales para campañas de marketing, eventos, y fidelización.</p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Dimensiones: 30.0 mm diámetro x 0.9 mm</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC y metálico.</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Resistentes al agua.</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Diferentes opciones de adhesivo.</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse1">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Sticker personalizadas con tecnología NFC, recubiertas con epoxy antimetal para una mayor durabilidad y resistencia al agua.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 20/25/30/35 mm, etc.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Holograma + capa de Epoxy + capa Antimetal</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir información de URL y redes sociales, tarjeta de presentación digital, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
                                 Desde <span class="fw-bold">$2.990</span> (IVA inc.)
                             </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Producto 2: Tarjetas NFC Personalizadas -->
+            <!-- Producto 2 -->
             <div class="col-lg-4">
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Tarjetas NFC Personalizadas</h4>
+                    <h4 class="card-title">Tarjetas PVC Inteligentes NFC.</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/tarjetas_nfc.png') }}" class="card-img-top" alt="Tarjetas NFC Personalizadas" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/productos/tarjetas_pvc_inteligentes_nfc.png') }}" class="card-img-top" alt="Tarjetas PVC Inteligentes NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <p class="card-text">Tarjetas de PVC rígido con impresión de alta calidad por ambas caras, ideales para contacto instantáneo, vCards, y campañas publicitarias.</p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Dimensiones: 85.60 mm x 53.98 mm x 0.76 mm</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Colores: Blanco y Negro</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Material: PVC</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Contacto instantáneo, enlaces a vCards, apertura de apps, campañas publicitarias.</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse2">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Tarjetas PVC Inteligentes NFC Pasivas Personalizables Imprimibles 13.56MHz NTAG213.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/ABS/Metal/Papel, etc.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir URL & conexión a redes sociales, identificación, pago sin efectivo, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Producto 3 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Soporte de Menú de Acrílico con Código QR y NFC.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/soporte_menu_qr_nfc.jpg') }}" class="card-img-top" alt="Soporte de Menú QR NFC" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse3">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Soporte de Menú con Código QR y NFC de Acrílico Plástico Personalizado 13.56MHz Resistente al Agua
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 105 * 70 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Acrílico plástico + inserto NFC</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: URL de menú NFC, guía de la ciudad, promoción en redes sociales, pago sin efectivo, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$5.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Producto 4 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Pulseras Tejidas NFC Personalizables.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/pulseras_tejidas_nfc.jpg') }}" class="card-img-top" alt="Pulseras Tejidas RFID" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse4">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary">
+                                    Pulseras Tejidas NFC personalizables.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 15 * 350 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Tela/tejido/madera ecológica</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Festivales, eventos, conciertos, fiestas, conferencias, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
                                 Desde <span class="fw-bold">$4.990</span> (IVA inc.)
                             </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Producto 3: Stickers NFC -->
+            <!-- Producto 5 -->
             <div class="col-lg-4">
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Stickers NFC</h4>
+                    <h4 class="card-title">Pulsera NFC de silicona ecológica.</h4>
                     <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/stickers_nfc.png') }}" class="card-img-top" alt="Stickers NFC" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/productos/pulsera_silicona.png') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <p class="card-text">Stickers personalizables con tecnología NFC, disponibles en diseños predefinidos o completamente personalizados con el branding de tu empresa.</p>
-                        <ul class="list-unstyled mb-4">
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Impresión: Una o dos caras</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Material: PVC o adhesivo fuerte</li>
-                            <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Branding, marketing interactivo, logística.</li>
-                        </ul>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary w-100">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse5">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Tarjeta PVC Reescribible Blanca o Negra Personalizable.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56 MHz.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 240*15*3 mm, 8 agujeros.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Silicona ecológica.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir en redes sociales, parques acuáticos, pueblos vacacionales, carnavales, gimnasios, bares, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
                                 Desde <span class="fw-bold">$2.990</span> (IVA inc.)
                             </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>   
+            <!-- Producto 6 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Etiqueta NFC de Redes Sociales Epoxy.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/etiqueta_nfc_redes_sociales.png') }}" class="card-img-top" alt="Etiqueta NFC Redes Sociales" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse6">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Etiqueta NFC de Redes Sociales Epoxy Resistente al Agua Antimetal Personalizable.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 20/25/30/35 mm, etc.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Epoxy recubierto/Papel/PVC/PET/Holograma</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir información de URL & redes sociales, pago sin efectivo, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Producto 7 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Tarjetas de Madera NFC Empresariales Personalizables.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/tarjetas_madera_nfc.png') }}" class="card-img-top" alt="Tarjetas de Madera NFC" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse7">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Tarjetas de Madera NFC Empresariales Personalizables.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/Papel, etc.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Tarjeta de presentación, compartir en redes sociales, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$5.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <!-- Producto 8 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Tarjeta PVC Reescribible Blanca o Negra Personalizable.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/tarjeta_pvc.jpg') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse8">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Tarjeta PVC Reescribible Blanca o Negra Personalizable.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/Papel, etc.</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Tarjeta de presentación, compartir en redes sociales, etc.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>        
+            <!-- Producto 9 -->
+            <div class="col-lg-4">
+                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
+                    <h4 class="card-title">Tarjetas Redondas NFC de PVC Duro NTAG personalizables.</h4>
+                    <div style="margin: 10px;"></div>
+                    <img src="{{ url_for('static', filename='images/productos/tarjeta_redonda_pvc_nfc.png') }}" class="card-img-top" alt="Tarjeta Redonda PVC NFC" style="object-fit: cover; height: 200px;">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Sección Colapsable -->
+                        <div class="collapse" id="collapse9">
+                            <ul class="list-unstyled mb-4">
+                                <h6 class="card-title text-primary mb-4">
+                                    Tarjetas redondas de PVC duro con etiquetas NFC integradas, ideales para juegos, tarjetas de presentación digitales y conexiones a redes sociales.
+                                </h6>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 25 mm o personalizado</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC duro</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
+                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Juegos, tarjeta de presentación digital, URL & conexión a redes sociales, identificación.</li>
+                            </ul>
+                        </div>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
+                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
+                            </a>
+                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <style>
+        .titulo-seccion {
+            margin-top: 130px; /* Añade espacio superior */
+        }
+    </style>
+    <!-- Estilos CSS para el Chevron -->
+    <style>
+        /* Estilo para hacer el chevron más grande y celeste */
+        .square-caret-down-icon {
+            font-size: 1.5rem; /* Aumenta el tamaño del ícono */
+            color: #03c0ff; /* Color celeste (Bootstrap's text-info) */
+            transition: transform 0.3s ease;
+        }
+    </style>
 {% endblock %}

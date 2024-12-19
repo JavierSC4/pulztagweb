@@ -99,12 +99,24 @@ class ContactForm(FlaskForm):
     mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
     submit = SubmitField('Enviar')
 
+
 class OrderForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    dispositivo = SelectField('Seleccione el Dispositivo', choices=[('Tag', 'Tag'), ('Pulzcard', 'Pulzcard')], validators=[DataRequired()])
-    mensaje = TextAreaField('Mensaje', validators=[DataRequired()])
-    submit = SubmitField('Enviar')
+    dispositivo = SelectField('Selecciona un Dispositivo', choices=[
+        ('', 'Selecciona producto'),
+        ('Etiqueta de Sticker de RR.SS. NFC Antimetal.', 'Etiqueta de Sticker de RR.SS. NFC Antimetal.'),
+        ('Tarjetas PVC Inteligentes NFC.', 'Tarjetas PVC Inteligentes NFC.'),
+        ('Soporte de Menú de Acrílico con Código QR y NFC.', 'Soporte de Menú de Acrílico con Código QR y NFC.'),
+        ('Pulseras Tejidas NFC Personalizables.', 'Pulseras Tejidas NFC Personalizables.'),
+        ('Pulsera NFC de silicona ecológica.', 'Pulsera NFC de silicona ecológica.'),
+        ('Etiqueta NFC de Redes Sociales Epoxy.', 'Etiqueta NFC de Redes Sociales Epoxy.'),
+        ('Tarjetas de Madera NFC Empresariales Personalizables', 'Tarjetas de Madera NFC Empresariales Personalizables'),
+        ('Tarjeta PVC Reescribible Blanca o Negra Personalizable.', 'Tarjeta PVC Reescribible Blanca o Negra Personalizable.'),
+        ('Tarjetas Redondas NFC de PVC Duro NTAG personalizables', 'Tarjetas Redondas NFC de PVC Duro NTAG personalizables')
+    ], validators=[DataRequired(message="Por favor, selecciona un dispositivo.")])
+    mensaje = TextAreaField('¿Qué necesitas?', validators=[DataRequired()])
+    submit = SubmitField('Enviar solicitud')
 
 class TagForm(FlaskForm):
     tag_name = StringField('Nombre de la Etiqueta', validators=[DataRequired()])

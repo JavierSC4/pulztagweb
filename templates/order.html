@@ -1,20 +1,20 @@
 <!-- templates/order.html -->
 
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
-    <!-- End Google Tag Manager -->
-
 {% extends 'base.html' %}
 
 {% block title %}Pedido - PulztagWeb{% endblock %}
 
 {% block content %}
     
-<h2 class="text-center mb-4">Realiza tu Pedido</h2>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
+<!-- End Google Tag Manager -->
+
+<h2 class="titulo-seccion">Realiza tu Pedido</h2>
 <p class="text-center mb-5">Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.</p>
 
 <div class="row justify-content-center">
@@ -22,28 +22,40 @@
         <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">
             {{ form.hidden_tag() }} <!-- CSRF token -->
 
-            <!-- Campos del formulario -->
+            <!-- Campo Nombre -->
             <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                {{ form.nombre.label(class="form-label") }}
+                {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+                {% for error in form.nombre.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
+
+            <!-- Campo Correo Electrónico -->
             <div class="mb-3">
-                <label for="email" class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control", placeholder="nombre@ejemplo.com") }}
+                {% for error in form.email.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
+
+            <!-- Campo Selección de Dispositivo -->
             <div class="mb-3">
-                <label for="dispositivo" class="form-label">Selecciona un Dispositivo</label>
-                <select class="form-select" id="dispositivo" name="dispositivo" required>
-                    <option value="" disabled selected>Elige una opción</option>
-                    <option value="NFC Token de PVC (30 mm)">NFC Token de PVC (30 mm)</option>
-                    <option value="NFC Sticker (25 mm)">NFC Sticker (25 mm)</option>
-                    <option value="NFC Cards">NFC Cards</option>
-                    <!-- Agrega más opciones según sea necesario -->
-                </select>
+                {{ form.dispositivo.label(class="form-label") }}
+                {{ form.dispositivo(class="form-select") }}
+                {% for error in form.dispositivo.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
+
+            <!-- Campo Mensaje -->
             <div class="mb-3">
-                <label for="mensaje" class="form-label">¿Qué necesitas?</label>
-                <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Escribe tu mensaje aquí" required></textarea>
+                {{ form.mensaje.label(class="form-label") }}
+                {{ form.mensaje(class="form-control", rows="3", placeholder="Escribe tu mensaje aquí") }}
+                {% for error in form.mensaje.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <!-- Sección para subir Logos -->
@@ -63,7 +75,9 @@
                 <div id="excelError" class="text-danger mt-2" style="display: none;">Solo puedes subir un archivo Excel.</div>
                 <p class="text-muted mt-2">(*) Cada dispositivo puede tener una configuración única. Para pedidos de gran volumen, por favor proporciona los detalles en un archivo Excel.</p>
             </div>
-            <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+
+            <!-- Botón de Envío -->
+            {{ form.submit(class="btn btn-primary") }}
         </form>
     </div>
 </div>
@@ -74,7 +88,7 @@
 <!-- Información Bancaria Section -->
 <div class="row justify-content-center mt-5">
     <div class="col-md-8">
-        <div class="custom-solutions-section text-center p-5 rounded shadow">
+        <div class="custom-solutions-section text-center p-5">
             <h4 class="text-white">Datos para Transferencia</h4>
             <ul class="list-unstyled">
                 <li><strong>Banco:</strong> Banco de Chile</li>
@@ -92,4 +106,104 @@
 <!-- Línea de Separación -->
 <hr class="my-5">
 
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Configuración de DataTables (si es necesario)
+        $('.custom-table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            }
+        });
+
+        // Función para mostrar la sección basada en el ID (si aplicable)
+        function showSection(section) {
+            const sections = ['miPerfilSection', 'pulzcardsSection', 'etiquetasSection', 'bodegasSection'];
+            sections.forEach(sec => {
+                document.getElementById(sec).style.display = (sec === section) ? 'block' : 'none';
+            });
+        }
+
+        // Función para manejar el hash y mostrar la sección correspondiente (si aplicable)
+        function handleHash() {
+            const hash = window.location.hash.substring(1); // Eliminar el '#'
+            if (hash) {
+                showSection(hash);
+            } else {
+                showSection('miPerfilSection'); // Sección predeterminada
+            }
+        }
+
+        // Mostrar la sección correcta al cargar la página (si aplicable)
+        window.addEventListener('load', handleHash, false);
+
+        // Escuchar cambios en el hash (si aplicable)
+        window.addEventListener('hashchange', handleHash, false);
+
+        // Actualizar el hash al hacer clic en enlaces internos (si aplicable)
+        document.querySelectorAll('a.nav-link.sub-link').forEach(function(link) {
+            const href = link.getAttribute('href');
+            if (href.startsWith('#')) { // Solo interceptar enlaces internos
+                link.addEventListener('click', function(e) {
+                    e.preventDefault(); // Evita el comportamiento predeterminado del enlace
+                    const hash = this.getAttribute('href').substring(1); // Obtener el hash sin '#'
+                    window.location.hash = hash; // Actualizar el hash en la URL
+                    showSection(hash);
+                });
+            }
+            // Si no empieza con '#', dejar que el navegador maneje la navegación
+        });
+
+        // Función para copiar la URL al portapapeles
+        window.copyURL = function(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL copiada al portapapeles!');
+            }).catch(err => {
+                alert('Error al copiar la URL: ' + err);
+            });
+        }
+
+        // Sidebar Toggle (si aplicable)
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        toggleBtn.addEventListener('click', function () {
+            sidebar.classList.toggle('collapsed'); // Alterna la clase 'collapsed'
+            if (sidebar.classList.contains('collapsed')) {
+                this.innerHTML = '<i class="bi bi-chevron-right"></i>'; // Cambia el ícono al colapsar
+            } else {
+                this.innerHTML = '<i class="bi bi-chevron-left"></i>'; // Cambia el ícono al expandir
+            }
+        });
+
+        // Manejar el checkbox "Seleccionar Todo" (si aplicable)
+        $('#select_all').click(function(){
+            $('input[name="selected_tags"]').prop('checked', this.checked);
+        });
+
+        // Manejar el botón de confirmación de eliminación masiva (si aplicable)
+        $('#confirmDeleteBulkBtn').click(function(){
+            $('#bulkDeleteForm').submit();
+        });
+    });
+</script>
+<style>
+    .titulo-seccion {
+        margin-top: 130px; /* Añade espacio superior */
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
 {% endblock %}

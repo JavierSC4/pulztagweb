@@ -10,102 +10,135 @@
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
-
-    <!-- Hero Section -->
+<!-- AOS CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
 <!-- Hero Section -->
 <section class="hero-section position-relative overflow-hidden">
-    <!-- Contenedor para el video -->
-    <div class="video-container">
-        <video id="hero-video" autoplay muted playsinline preload="auto" class="hero-video-bg">
+    <!-- Video de Fondo -->
+    <div class="video-container position-absolute top-0 start-0 w-100 h-100">
+        <video id="hero-video" autoplay muted loop playsinline preload="auto" class="w-100 h-100 object-fit-cover">
             <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
-    <!-- Overlay para mejorar la legibilidad del texto -->
-    <div class="overlay"></div>
+
+    <!-- Overlay (oscurece el video) -->
+    <div class="overlay position-absolute top-0 start-0 w-100 h-100" 
+         style="background: rgba(18, 37, 51, 0.527); z-index: 2;">
+    </div>
+
     <!-- Contenido -->
-    <div class="container-fluid position-relative z-index-2 px-0">
-        <div class="row align-items-center min-vh-100 mx-0">
-            <div class="col-lg-7 col-md-8 text-center text-lg-start">
-                <div class="content-wrapper px-4 px-md-5">
-                    <h1 class="display-2 fw-bold mb-4 text-white" data-aos="fade-up">
-                        Reduce tus costos con <span class="text-highlight">Tecnología NFC</span>
-                    </h1>
-                    <p class="lead mb-5 text-white" data-aos="fade-up" data-aos-delay="400">
-                        Elimina gastos innecesarios en impresiones y actualiza tu contenido en tiempo real.
-                    </p>
-                    <div class="btn-stack d-flex flex-wrap">
-                        <a href="{{ url_for('create_item') }}" class="btn btn-lg fw-bold me-3 mb-3" data-aos="fade-up" data-aos-delay="400" style="background-color: #ffd700; color: #333333; border: none;">
-                            Obtén tu Pulztag Gratis
-                        </a>
-                        <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg fw-bold mb-3" data-aos="fade-up" data-aos-delay="600">
-                            Contáctanos
-                        </a>
-                    </div>
+    <div class="container position-relative z-3">
+        <div class="row align-items-center min-vh-100 text-center text-lg-start">
+            <div class="col-lg-8 col-md-7 mx-auto mx-lg-3 px-3">
+                <h1 class="title display-4 fw-bold mb-2">
+                    Revoluciona la Experiencia de tus Clientes
+                    <span class="text-highlight d-block">con Tecnología Interactiva</span>
+                </h1>
+                <p class="subtitle lead text-white mb-4">
+                    Gestiona, optimiza y personaliza todas las interacciones con tus clientes en una única plataforma integral.
+                </p>
+                <div class="btn-stack d-flex justify-content-center justify-content-lg-start flex-wrap gap-2">
+                    <a href="{{ url_for('create_item') }}" 
+                       class="btn btn-lg fw-bold text-dark" 
+                       style="background-color: #ffd700;">
+                       Comienza ahora Gratis
+                    </a>
+                    <a href="{{ url_for('contact') }}" 
+                       class="btn btn-outline-light btn-lg fw-bold">
+                        Contáctanos
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Overlay para mejorar la legibilidad del texto -->
-    <div class="overlay"></div>
 </section>
 
-<!-- Nueva Sección Informativa -->
-<section class="about-section py-5">
+<section id="propuesta-valor" style="padding: 60px 20px; background-color: #f9f9f9; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <h2 class="titulo-seccion">
+            Una Herramienta Única para Experiencias Interactivas
+        </h2>
+        <p style="font-size: 1.2em; color: #555; line-height: 1.6; margin-bottom: 40px;">
+            Fusionamos tecnologías innovadoras como <strong>NFC, códigos QR, RFID y biometría</strong> 
+            en una sola plataforma, creando soluciones personalizadas que conectan a las personas 
+            con experiencias únicas y resultados medibles.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <!-- Beneficio 1 -->
+            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
+                <i class="fa-solid fa-network-wired" style="font-size: 3rem; color: #ff5957; margin-bottom: 25px;"></i>
+                <h3 style="font-size: 1.2em; color: #333333; margin-bottom: 10px;">Tecnología Avanzada</h3>
+                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+                    Integración fluida de NFC, QR y más, con el respaldo de IA y AIDC.
+                </p>
+            </div>
+            <!-- Beneficio 2 -->
+            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
+                <i class="fa-solid fa-face-smile-wink" style="font-size: 3rem; color: #41db30; margin-bottom: 25px;"></i>
+                <h3 style="font-size: 1.2em; color: #333; margin-bottom: 10px;">Personalización Real</h3>
+                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+                    Experiencias interactivas adaptadas a cada cliente, sector y necesidad.
+                </p>
+            </div>
+            <!-- Beneficio 3 -->
+            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
+                <i class="fa-solid fa-chart-line" style="font-size: 3rem; color: #57a0ff; margin-bottom: 25px;"></i>
+                <h3 style="font-size: 1.2em; color: #333; margin-bottom: 10px;">Resultados Medibles</h3>
+                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+                    Optimiza procesos y obtén métricas claras para decisiones estratégicas.
+                </p>
+            </div>
+        </div>
+        <div style="margin-top: 40px;">
+            <a href="#contacto" style="text-decoration: none; background-color: #1c579b; color: #fff; padding: 15px 30px; font-size: 1.1em; border-radius: 5px;">
+                Descubre cómo funciona
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Sección Informativa sobre CEM -->
+<section class="advantages-section py-5 bg-light mt-4">
     <div class="container">
-        <h2 class="text-center mb-4">¿Qué Ofrecemos?</h2>
+        <h2 class="titulo-seccion">¿Qué es la Plataforma CEM?</h2>
         <p class="lead text-center mb-5">
-            En Pulztag, transformamos la manera en que interactúas con tus clientes a través de tecnología NFC innovadora y personalizada.
+            Nuestra Plataforma Integral de Gestión de la Experiencia del Cliente (CEM) centraliza todas las herramientas necesarias para gestionar y mejorar cada interacción con tus clientes.
         </p>
         <div class="row">
-            <!-- Card 1: Pulzcard (vCard) -->
-            <div class="col-md-4 mb-4">
+            <!-- Card 1 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/card_index.jpeg') }}" class="card-img-top" alt="Pulzcard (vCard)" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/administracion_urls.png') }}" class="card-img-top" alt="Administración de URLs" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-primary">Pulzcard (vCard)</h5>
+                        <h5 class="card-title">Administración de URLs</h5>
                         <p class="card-text">
-                            Comparte tu información de contacto de forma instantánea con una tarjeta NFC personalizada.
+                            Gestiona URLs dedicadas para atención al cliente, acceso a productos y evaluación de servicios.
                         </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('pulzcard') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
-                                Crear Tu Pulzcard
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Card 2: Administración de Tags NFC y Códigos QR Personalizados -->
-            <div class="col-md-4 mb-4">
+            <!-- Card 2 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/tag_index.jpg') }}" class="card-img-top" alt="Administración de Tags NFC y Códigos QR" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/pulzcard_dashboard.png') }}" class="card-img-top" alt="Gestión de Pulzcards" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-primary">Administración de Tags NFC y Códigos QR</h5>
+                        <h5 class="card-title">Gestión de Pulzcards</h5>
                         <p class="card-text">
-                            Desde Pulztag.com, crea y administra fácilmente tus etiquetas NFC y códigos QR personalizados. Redirige a tus clientes a contenido específico y potencia tus campañas de marketing interactivo.
+                            Crea y administra tarjetas virtuales con información de contacto y códigos QR personalizados.
                         </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('create_tag') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
-                                Gestionar Tus Tags
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Card 3: Soluciones a Medida -->
-            <div class="col-md-4 mb-4">
+            <!-- Card 3 -->
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/apps_index.jpg') }}" class="card-img-top" alt="Soluciones a Medida" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/apps_index.jpg') }}" class="card-img-top" alt="Gestión de Etiquetas" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title text-primary">Soluciones a Medida</h5>
+                        <h5 class="card-title">Gestión de Etiquetas</h5>
                         <p class="card-text">
-                            Desarrollamos aplicaciones NFC personalizadas para diversas industrias y necesidades.
+                            Administra etiquetas NFC y códigos QR personalizados, con importación y exportación avanzadas.
                         </p>
-                        <div class="mt-auto">
-                            <a href="{{ url_for('services') }}" class="btn btn-lg fw-bold w-100" style="background-color: #00cad1; color: #ffffff; border: none;">
-                                Ver Servicios
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -113,20 +146,113 @@
     </div>
 </section>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <!-- Sección de Ventajas de CEM -->
+    <section class="advantages-section py-5 bg-light mt-4"> <!-- mt-0 es opcional si no quieres margen superior adicional -->
+        <div class="container">
+            <h2 class="titulo-seccion">Ventajas de Nuestra Plataforma CEM</h2>
+            <div class="row">
+                <!-- Ventaja 1: Centralización de la Información -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-database fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Centralización de la Información</h5>
+                            <p>
+                                Consolidamos todos los datos e interacciones con tus clientes en una única plataforma, facilitando el acceso y la gestión eficiente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ventaja 2: Personalización y Omnicanalidad -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-magic fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Personalización y Omnicanalidad</h5>
+                            <p>
+                                Ofrece experiencias personalizadas a través de múltiples canales de comunicación, asegurando coherencia en cada punto de contacto.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ventaja 3: Mejora de la Satisfacción y Fidelidad del Cliente -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-smile fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Mejora de la Satisfacción y Fidelidad del Cliente</h5>
+                            <p>
+                                Optimiza cada interacción y responde de manera eficiente a las necesidades de tus clientes, incrementando su satisfacción y lealtad.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ventaja 4: Eficiencia Operativa -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-cogs fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Eficiencia Operativa</h5>
+                            <p>
+                                Automatiza procesos y gestiona recursos de manera eficiente, reduciendo costos y tiempo operativo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ventaja 5: Toma de Decisiones Informadas -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-chart-line fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Toma de Decisiones Informadas</h5>
+                            <p>
+                                Utiliza herramientas de análisis avanzado para identificar tendencias, prever comportamientos y tomar decisiones estratégicas basadas en datos reales.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ventaja 6: Seguridad y Protección de Datos -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-flex">
+                        <i class="fas fa-shield-alt fa-3x text-primary me-3"></i>
+                        <div>
+                            <h5>Seguridad y Protección de Datos</h5>
+                            <p>
+                                Protegemos la información de tus clientes con estándares de seguridad avanzados, garantizando la privacidad y la integridad de tus datos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Sección de Llamado a la Acción -->
-<section class="cta-section bg-primary text-white py-5">
-    <div class="container text-center">
-        <h2 class="mb-4">¿Listo para Innovar con NFC?</h2>
-        <p class="lead mb-4">
-            Contáctanos hoy y descubre cómo podemos impulsar tu negocio con soluciones NFC personalizadas.
-        </p>
-        <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">Contáctanos</a>
-    </div>
-</section>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <!-- Sección de Llamado a la Acción -->
+    <section class="cta-section bg-primary text-white py-5 mt-4">
+        <div class="container text-center">
+            <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
+            <p class="lead mb-4">
+                Únete a las empresas que ya están optimizando sus interacciones con clientes gracias a nuestra Plataforma CEM.
+            </p>
+            <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">Contáctanos</a>
+        </div>
+    </section>
+    <style>
+        .icono-beneficio {
+            font-size: 0.5rem; /* Ajusta el tamaño según necesites */
+            color: #03c0ff; /* Opcional: ajusta el color */
+            margin-bottom: 40px; /* Espaciado inferior */
+        }
+    </style>
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800, /* Duración del efecto */
+            easing: 'ease-out', /* Tipo de animación */
+            once: true /* Ejecutar solo una vez */
+        });
+    </script>
+    <!-- Línea de Separación -->
+    <hr class="my-5">
 {% endblock %}

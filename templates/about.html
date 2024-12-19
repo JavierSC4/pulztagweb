@@ -1,122 +1,152 @@
-<!-- templates/about.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Acerca de - Pulztag{% endblock %}
 
 {% block content %}
+<div class="container my-5">
 
-<!-- Sección Acerca de con Fondo de Degradado -->
-<section class="jumbotron text-center mb-5">
-    <div class="container">
-        <h1 class="display-4">Acerca de Pulztag</h1>
-        <p class="lead">Reinventando la interacción entre empresas y clientes con soluciones NFC innovadoras.</p>
+    <!-- Sección de Encabezado -->
+    <div class="text-center mb-5">
+        <h2 class="titulo-seccion">Acerca de Pulztag</h2>
+        <p class="lead">Reinventando la interacción entre empresas y clientes con <strong>soluciones NFC innovadoras</strong>.</p>
     </div>
-    <div class="container">
-        <div class="row align-items-center mt-4">
-            <!-- Texto Descriptivo -->
-            <div class="col-md-6">
-                <p>En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes con soluciones
-                    NFC personalizadas y servicios a medida que impulsan el crecimiento y la fidelidad. Nuestra pasión por la
-                    innovación nos posicionan como socios estratégicos en la era digital.</p>
-                <p>Nos especializamos en diseñar dispositivos NFC adaptados a las necesidades específicas de cada negocio y proyecto.</p>
-                <div class="text-center">
-                    <a href="/contact" class="btn btn-primary mt-3 mb-4">Contáctanos</a>
-                </div>
-            </div>
-            <!-- Imagen Representativa -->  
-            <div class="col-md-6">
-                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" class="img-fluid rounded shadow"
-                    alt="Pulztag Innovación NFC">
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Nuestra Misión y Visión -->
-<section class="mt-5">
-    <div class="row">
-        <!-- Misión -->
-        <div class="col-md-6 mb-4">
-            <div class="card text-center service-background h-100">
-                <div class="card-body">
-                    <i class="bi bi-flag" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Misión</h5>
-                    <p class="card-text">Nuestra misión es transformar la manera en que las empresas interactúan con sus
-                        clientes mediante soluciones NFC innovadoras y personalizadas que mejoran la eficiencia
-                        operativa y fomentan la lealtad del cliente.</p>
-                </div>
+    <!-- Sección de Introducción -->
+    <section class="introduction-section mb-5">
+        <div class="row align-items-center">
+            <!-- Texto a la Izquierda -->
+            <div class="col-md-6 order-md-1">
+                <h3>Innovación y Tecnología a tu Servicio</h3>
+                <p>
+                    En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes con <strong>soluciones NFC personalizadas</strong>.  
+                    Nos especializamos en <strong>optimizar procesos</strong>, crear conexiones significativas y llevar a nuestros clientes hacia la <strong>transformación digital</strong>.
+                </p>
+                <p>
+                    Nuestra pasión por la <strong>innovación tecnológica</strong> nos posiciona como tu socio estratégico en el mundo digital actual.
+                </p>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg mt-3">Contáctanos</a>
+            </div>
+            <!-- Imagen a la Derecha -->
+            <div class="col-md-6 order-md-2 mt-4 mt-md-0">
+                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" alt="Pulztag Innovación NFC"
+                    class="img-fluid rounded shadow-sm zoom-effect">
             </div>
         </div>
-        <!-- Visión -->
-        <div class="col-md-6 mb-4">
-            <div class="card text-center service-background h-100">
-                <div class="card-body">
-                    <i class="bi bi-eye" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Visión</h5>
-                    <p class="card-text">Nos visualizamos como líderes en el mercado de tecnología NFC, expandiendo
-                        nuestras alianzas estratégicas y ofreciendo servicios de vanguardia que impulsen el crecimiento
-                        y la competitividad de nuestros clientes a nivel global.</p>
+    </section>
+
+    <!-- Línea de Separación -->
+    <hr class="my-5">
+
+    <!-- Sección Misión y Visión -->
+    <section class="services-section mb-5">
+        <h3 class="text-center mb-4">Nuestra Misión y Visión</h3>
+        <div class="row">
+            <!-- Misión -->
+            <div class="col-md-6 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body text-center">
+                        <i class="bi bi-flag fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Misión</h5>
+                        <p class="card-text">
+                            <strong>Transformar</strong> la experiencia de interacción entre empresas y clientes mediante **soluciones NFC personalizadas</strong>  
+                            que <strong>optimicen procesos</strong>, generen <strong>conexiones significativas</strong> y mejoren la <strong>eficiencia operativa</strong>.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- Línea de Separación -->
-<hr class="my-5">
-
-<!-- Nuestros Valores -->
-<section class="mt-5">
-    <h3 class="text-center mb-4">Nuestros Valores</h3>
-    <div class="row">
-        <!-- Valor 1: Innovación -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-center service-background">
-                <div class="card-body">
-                    <i class="bi bi-lightbulb" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Innovación</h5>
-                    <p class="card-text">Nos mantenemos a la vanguardia de la tecnología NFC para ofrecer soluciones
-                        únicas y efectivas.</p>
+            <!-- Visión -->
+            <div class="col-md-6 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body text-center">
+                        <i class="bi bi-eye fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Visión</h5>
+                        <p class="card-text">
+                            Ser la <strong>empresa líder</strong> en <strong>soluciones NFC innovadoras</strong> en <strong>Latinoamérica</strong>,  
+                            facilitando la <strong>transformación digital</strong> y creando un mundo más <strong>interactivo, eficiente y conectado</strong>.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- Valor 2: Calidad -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-center service-background">
-                <div class="card-body">
-                    <i class="bi bi-award" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Calidad</h5>
-                    <p class="card-text">Cada proyecto es ejecutado con altos estándares para garantizar la satisfacción
-                        total de nuestros clientes.</p>
+    </section>
+
+    <!-- Línea de Separación -->
+    <hr class="my-5">
+
+    <!-- Nuestros Valores -->
+    <section class="mt-5">
+        <h3 class="text-center mb-4">Nuestros Valores</h3>
+        <div class="row">
+            <!-- Innovación -->
+            <div class="col-md-4 mb-4">
+                <div class="card text-center service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body">
+                        <i class="bi bi-lightbulb fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Innovación</h5>
+                        <p class="card-text">
+                            Nos mantenemos a la <strong>vanguardia tecnológica</strong>, entregando <strong>soluciones únicas</strong> y efectivas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Calidad -->
+            <div class="col-md-4 mb-4">
+                <div class="card text-center service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body">
+                        <i class="bi bi-award fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Calidad</h5>
+                        <p class="card-text">
+                            Cada proyecto se ejecuta con <strong>altos estándares</strong>, asegurando la <strong>satisfacción</strong> de nuestros clientes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Colaboración -->
+            <div class="col-md-4 mb-4">
+                <div class="card text-center service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Colaboración</h5>
+                        <p class="card-text">
+                            Trabajamos en <strong>estrecha colaboración</strong> con nuestros clientes para <strong>superar sus expectativas<strong>.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- Valor 3: Colaboración -->
-        <div class="col-md-4 mb-4">
-            <div class="card text-center service-background">
-                <div class="card-body">
-                    <i class="bi bi-people-fill" style="font-size: 2rem; color: #03c0ff;"></i>
-                    <h5 class="card-title mt-3">Colaboración</h5>
-                    <p class="card-text">Trabajamos en estrecha colaboración con nuestros clientes para entender y
-                        superar sus expectativas.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <!-- Línea de Separación -->
+    <hr class="my-5">
 
-<!-- Call to Action Section -->
-<section class="text-center mt-5">
-    <h2>¿Listo para Transformar tu Negocio?</h2>
-    <p>Contáctanos hoy mismo y descubre cómo nuestras soluciones NFC pueden impulsar tu empresa.</p>
-    <a class="btn btn-primary btn-lg" href="/contact" role="button">Contactar</a>
-</section>
+    <!-- Call to Action -->
+    <section class="text-center mt-5">
+        <h2>¿Listo para Transformar tu Negocio?</h2>
+        <p class="lead">
+            Contáctanos y descubre cómo nuestras <strong>soluciones NFC personalizadas</strong> pueden <strong>impulsar tu empresa<strong>.
+        </p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('contact') }}" role="button">Contáctanos</a>
+    </section>
+</div>
 
+<!-- Estilos Adicionales -->
+<style>
+    .titulo-seccion {
+        font-size: 2.5em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 110px;
+        margin-bottom: 50px;
+    }
+
+    /* Efecto hover en las tarjetas */
+    .service-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+</style>
 {% endblock %}

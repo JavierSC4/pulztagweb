@@ -2,7 +2,7 @@
 
 /* Tipografía Global */
 body {
-    background-image: url("/static/images/background.jpg"), url("/static/images/backup.jpg");
+    background-image: url("/static/images/background_1.jpg"), url("/static/images/backup.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -15,7 +15,57 @@ h4,
 h5,
 h6 {
     font-family: 'Montserrat', sans-serif;
-    color: #03c0ff;
+    color: #0b396dbd;
+}
+
+.title {
+    font-size: 3.6rem; /* Tamaño del texto principal */
+    font-weight: bold; /* Negrita */
+    color: #ffffff; /* Color opcional */
+    text-align: left; /* Centrado opcional */
+    margin-bottom: 1rem; /* Espaciado inferior */
+}
+
+.subtitle {
+    font-size: 1.5rem; /* Tamaño del texto secundario */
+    font-weight: 400; /* Peso normal */
+    color: #ffffff; /* Color opcional */
+    text-align: left; /* Centrado opcional */
+    line-height: 1.5; /* Espaciado entre líneas */
+    margin-bottom: 2rem; /* Espaciado inferior */
+}
+
+.titulo-seccion {
+    font-size: 2.5em; /* Tamaño del texto */
+    font-weight: bold; /* Peso de la fuente */
+    color: #0872a7ec; /* Color del texto */
+    text-align: center; /* Alineación centrada */
+    margin-top: 25px; /* Añade espacio superior */
+    margin-bottom: 45px; /* Margen inferior aumentado */
+}
+
+.zoom-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Opcional: Ajustes para que se vea más elegante */
+    border-radius: 10px;
+}
+.zoom-effect:hover {
+    transform: scale(1.05); /* Efecto de zoom */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra al pasar el cursor */
+}
+
+/* Efecto de Zoom y Sombra para las Tarjetas de Servicio */
+.service-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-card:hover {
+    transform: scale(1.05); /* Efecto de zoom */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
 }
 
 /* Navbar */
@@ -145,8 +195,8 @@ footer div {
 
 /* Botones Personalizados */
 .btn-primary {
-    background-color: #03c0ff;
-    border-color: #03c0ff;
+    background-color: #0b396dbd;
+    border-color: #0b396dbd;
 }
 
 .btn-primary:hover {
@@ -172,16 +222,13 @@ footer div {
 
 /* Clase para el fondo de las secciones de servicios */
 .service-background {
-    background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
+    background: linear-gradient(135deg, #00000000 0%, #03acfa19 100%);
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     transition: background 0.3s ease;
 }
 
-.service-background:hover {
-    background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
-}
 
 /* Estilo personalizado para el texto de precio */
 .price {
@@ -210,7 +257,7 @@ footer div {
 }
 
 .card-title {
-    color: #03c0ff;
+    color: #103141d3;
 }
 
 /* Links */
@@ -280,7 +327,7 @@ form button:hover {
 }
 
 .card-header-custom {
-    background: linear-gradient(135deg, #ffffff 0%, #ccefff 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
     color: #333333;
 }
 
@@ -302,13 +349,13 @@ form button:hover {
 .btn-outline-primary,
 .btn-outline-secondary,
 .text-primary.text-decoration-none {
-    color: #03c0ff !important;
+    color: #29547a !important;
 }
 
 .text-primary:hover,
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
-    color: #0290b8 !important;
+    color: #57a0ff !important;
 }
 
 /* Estilos para el botón "Agregar Contacto" */
@@ -437,10 +484,10 @@ form h4 {
 
 /* Estilos para la sección de Soluciones Personalizadas */
 .custom-solutions-section {
-    background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    background: linear-gradient(135deg, #2d2f21bd 0%, #1164c2bd 100%);
     color: #fff;
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -512,14 +559,38 @@ form h4 {
     z-index: 1;
 }
 
-.overlay {
+/* Contenedor del video */
+.video-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 187, 255, 0.356);
-    z-index: 2;
+    z-index: 1; /* Video está detrás del overlay */
+    overflow: hidden;
+}
+
+.video-container video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* Overlay para oscurecer el video */
+.overlay {
+    background: rgba(18, 37, 51, 0.527); /* Color oscuro con opacidad */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Sobre el video pero detrás del contenido */
+}
+
+/* Contenido del Hero Section */
+.hero-section .container {
+    position: relative;
+    z-index: 3; /* Sobre el overlay */
 }
 
 .hero-section .container-fluid {
@@ -601,7 +672,7 @@ img.img-fluid {
 
 /* Estilos para la sección de llamada a la acción */
 .cta-section {
-    background-image: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    background-image: linear-gradient(135deg, #21282fbd 0%, #1164c2bd 100%);
     color: #ffffff;
 }
 
@@ -615,7 +686,7 @@ img.img-fluid {
 }
 
 .cta-section .btn-light {
-    color: #03c0ff;
+    color: #0b396dbd;
     background-color: #ffffff;
     border-color: #ffffff;
 }
@@ -676,9 +747,9 @@ img.img-fluid {
     transform: scale(1.1); /* Efecto de agrandamiento para botones */
 }
 
-/* Estilos para las tarjetas de servicio */
+/* Efecto de Zoom y Sombra para las Tarjetas de Servicio */
 .service-card {
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     border: none;
     border-radius: 10px;
     background-color: #ffffff;
@@ -686,12 +757,12 @@ img.img-fluid {
 }
 
 .service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05); /* Efecto de zoom */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
 }
 
 .service-card .card-title {
-    color: #03c0ff;
+    color: #143254;
     font-weight: 600;
 }
 
@@ -734,7 +805,7 @@ img.img-fluid {
 
 /* Fondo y color de la sección personalizada */
 .custom-solutions-section {
-    background: linear-gradient(135deg, #03c0ff 0%, #02a8d1 100%);
+    background: linear-gradient(135deg, #21282f 0%, #1164c2 100%);
     color: #fff;
     border-radius: 15px;
 }
@@ -795,20 +866,24 @@ h3 {
 }
 
 /* Sidebar */
-#sidebar {
-    width: 160px;
-    margin-left: -50px; /* Ajuste manual para mover a la izquierda */
-    padding: 0;
-    height: calc(100vh - 220px);
-    overflow-y: auto;
-    transition: width 0.3s ease;
+.wrapper {
+    display: flex;
+    min-height: calc(100vh - (altura_del_navbar + altura_del_footer));
 }
 
-/* Sidebar colapsado */
+#sidebar {
+    width: 160px;
+    min-height: 100%; /* 100% del wrapper que contiene el mainContent */
+    margin-left: -50px;
+    padding: 0;
+    overflow-y: auto;
+    position: sticky;
+    top: altura_del_navbar; /* Ajusta según sea necesario */
+    background-color: #ffffff0a;
+}
+
 #sidebar.collapsed {
-    width: 70px; /* Ancho reducido */
-    overflow-y: auto; /* Permite el desplazamiento vertical */
-    transition: width 0.5s ease;
+    width: 68px;
 }
 
 /* Ocultar el nombre del usuario cuando está colapsado */
@@ -896,8 +971,8 @@ h3 {
     text-decoration: none;
     position: relative;
     font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-    background-color: #ffffff;
+    padding: 1.1rem 0.75rem;
+    background-color: #ffffff46;
 }
 
 .nav-link.sidebar-link:hover {
@@ -907,7 +982,13 @@ h3 {
 
 /* Submenús */
 .collapse.show .sub-link {
-    background-color: #dcf2fa;
+    background-color: #c7e5f9;
+}
+
+.user-fullname {
+    font-weight: bold;
+    font-size: 1rem; /* Ajusta el tamaño si lo deseas */
+    color: #303334; /* Color opcional, puedes mantener el predeterminado */
 }
 
 .sub-link {
@@ -923,8 +1004,8 @@ h3 {
 
 /* Tablas */
 .custom-table thead th {
-    background-color: #03c0ff;
-    color: #fff;
+    background-color: #c7e5f9;
+    color: #4d4d4e8f;
     text-align: center;
     vertical-align: middle;
 }
@@ -937,7 +1018,6 @@ h3 {
 .custom-table tbody tr:hover {
     background-color: #e6f7ff;
 }
-
 /* Contenedor de la barra de acciones */
 .action-bar-wrapper {
     display: flex;
@@ -949,7 +1029,7 @@ h3 {
 .action-bar {
     display: flex;
     gap: 10px; /* Espacio entre los botones */
-    background-color: #f8f9fa; /* Fondo claro */
+    background-color: #767c822c; /* Fondo claro */
     padding: 10px 15px; /* Espaciado interno */
     border-radius: 10px; /* Bordes redondeados */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
@@ -976,11 +1056,11 @@ h3 {
 
 /* Botones específicos */
 .btn-import {
-    background: linear-gradient(90deg, #909ca0, #909ca0); /* Degradado verde */
+    background: linear-gradient(90deg, #849199, #849199); /* Degradado gris */
 }
 
 .btn-export {
-    background: linear-gradient(90deg, #00bfff, #00bfff); /* Degradado amarillo */
+    background: linear-gradient(90deg, #849199, #849199); /* Degradado celeste */
 }
 
 .btn-delete {

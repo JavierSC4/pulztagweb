@@ -1,0 +1,142 @@
+<!-- templates/encuesta_evaluacion.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Evaluación de Clientes</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .survey-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .survey-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .scale {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .scale label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            flex: 1;
+            padding: 10px;
+            transition: background 0.3s, transform 0.3s;
+            border-radius: 5px;
+            margin: 0 5px;
+            background: #f0f0f0;
+        }
+
+        .scale input[type="radio"] {
+            display: none;
+        }
+
+        .scale label:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .scale input[type="radio"]:checked + span {
+            background: #4CAF50;
+            color: #ffffff;
+        }
+
+        .scale span {
+            display: block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            text-align: center;
+            transition: background 0.3s, color 0.3s;
+            font-weight: bold;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-button:hover {
+            background: #45a049;
+        }
+
+        @media (max-width: 500px) {
+            .scale span {
+                width: 35px;
+                height: 35px;
+                line-height: 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <h2>Evaluación del Servicio</h2>
+        <form action="{{ url_for('submit_survey', item_uuid=item_uuid) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="scale">
+                <label>
+                    <input type="radio" name="evaluation" value="1" required>
+                    <span>1</span>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="2">
+                    <span>2</span>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="3">
+                    <span>3</span>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="4">
+                    <span>4</span>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="5">
+                    <span>5</span>
+                </label>
+            </div>
+            <button type="submit" class="submit-button">Aceptar</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,82 +1,128 @@
-<!-- templates/create_item.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Crear Item - PulztagWeb{% endblock %}
 
 {% block content %}
+<div class="container my-5">
+    <!-- Sección de Encabezado -->
+    <div class="text-center mb-5">
+        <h2 class="titulo-seccion">Crea tu Nuevo Item</h2>
+        <p class="lead">Elige entre nuestras soluciones NFC personalizadas y comienza a compartir información de manera innovadora y eficiente.</p>
+    </div>
 
-<div class="col-lg-8 offset-lg-2 col-md-10 text-center">
-        <h2 class="text-center mb-4">Crear Nuevo Item</h2>
-        <p>Comparte información de manera innovadora y eficiente con Pulztag. Con tarjeta NFC (vCard) personalizadas, o con etiquetas NFC para administrar la información que ven tus usuarios.</p>
-        <hr class="my-4">
-        <div class="row">
+    <!-- Opciones de Creación -->
+    <section class="services-section mb-5">
+        <div class="row justify-content-center">
             <!-- Opción Pulzcard -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-5 col-lg-4 mb-4">
                 <a href="{{ url_for('pulzcard') }}" class="text-decoration-none">
-                    <div class="card h-100 text-center service-background">
-                        <img src="{{ url_for('static', filename='images/pulzcard_form.jpeg') }}" class="card-img-top" alt="Pulzcard">
-                        <div class="card-body">
-                            <h5 class="card-title">Pulzcard (vCard)</h5>
-                            <p class="card-text">Crea una Pulzcard personalizada con tu información de contacto.</p>
+                    <div class="card service-card h-100 border-0" data-aos="fade-up">
+                        <img src="{{ url_for('static', filename='images/pulzcard_form.png') }}" class="card-img-top rounded-top" alt="Pulzcard">
+                        <div class="card-body text-center">
+                            <h6 class="card-title fw-bold">Pulzcard (vCard)</h6>
+                            <p class="card-text mb-4">
+                                Crea una <strong>Pulzcard personalizada</strong> con tu información de contacto, perfecta para networking.
+                            </p>
+                            <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-primary">Crea tu Pulzcard</a>
                         </div>
                     </div>
                 </a>
             </div>
+
             <!-- Opción Etiqueta -->
-            <div class="col-md-6 mb-4">
+            <div class="col-md-5 col-lg-4 mb-4">
                 <a href="{{ url_for('create_tag') }}" class="text-decoration-none">
-                    <div class="card h-100 text-center service-background">
-                        <img src="{{ url_for('static', filename='images/tags_form.jpg') }}" class="card-img-top" alt="Etiqueta">
-                        <div class="card-body">
-                            <h5 class="card-title">Etiqueta</h5>
-                            <p class="card-text">Crea una etiqueta personalizada para redireccionar a una URL específica.</p>
+                    <div class="card service-card h-100 border-0" data-aos="fade-up">
+                        <img src="{{ url_for('static', filename='images/tags_form.png') }}" class="card-img-top rounded-top" alt="Etiqueta">
+                        <div class="card-body text-center">
+                            <h6 class="card-title fw-bold">Etiqueta NFC</h6>
+                            <p class="card-text mb-4">
+                                Diseña una <strong>etiqueta NFC</strong> que redireccione a URLs específicas y potencie tu contenido digital.
+                            </p>
+                            <a href="{{ url_for('create_tag') }}" class="btn btn-outline-primary">Crea tu Etiqueta</a>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Opción Storetag -->
+            <div class="col-md-5 col-lg-4 mb-4">
+                <a href="{{ url_for('create_bodega') }}" class="text-decoration-none">
+                    <div class="card service-card h-100 border-0" data-aos="fade-up">
+                        <img src="{{ url_for('static', filename='images/storetag_form.png') }}" class="card-img-top rounded-top" alt="Storetag">
+                        <div class="card-body text-center">
+                            <h6 class="card-title fw-bold">Storetag</h6>
+                            <p class="card-text mb-4">
+                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas eficientemente.
+                            </p>
+                            <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-primary">Crea tu Storetag</a>
                         </div>
                     </div>
                 </a>
             </div>
         </div>
+    </section>
 </div>
 {% endblock %}
 
 {% block styles %}
 <style>
-    /* Fondo degradado entre blanco y celeste */
-    body {
-        background: linear-gradient(135deg, #ffffff 0%, #e0f7ff 100%);
-        color: #333333;
-        font-family: 'Roboto', sans-serif;
+    /* Título de la sección */
+    .titulo-seccion {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #013445;
+        margin-bottom: 30px;
     }
 
-    /* Estilos específicos para el contenedor de crear item */
-    .create-item-card {
-        background-color: rgba(255, 255, 255, 0.85); /* Semi-transparente */
-        backdrop-filter: blur(5px); /* Efecto de desenfoque */
+    /* Ajuste del tamaño de las tarjetas */
+    .service-card {
+        max-width: 90%;
+        margin: auto;
+        border: 1px solid #e0f7ff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .create-item-card h2 {
-        color: #03c0ff; /* Color del título */
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     }
 
-    /* Ajustar estilos de las tarjetas de servicio */
-    .service-background {
-        background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
-        padding: 2rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        transition: background 0.3s ease;
+    /* Imagen más pequeña */
+    .card-img-top {
+        height: 150px;
+        object-fit: cover;
     }
 
-    .service-background:hover {
-        background: linear-gradient(135deg, #f0f8ff 0%, #d0e8ff 100%);
+    /* Padding reducido en el cuerpo de la tarjeta */
+    .card-body {
+        padding: 1rem;
     }
 
-    /* Responsividad para pantallas pequeñas */
-    @media (max-width: 576px) {
-        .create-item-card {
-            width: 90%;
-            padding: 1.5rem;
-        }
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+    }
+
+    .btn-outline-primary {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
     }
 </style>
+{% endblock %}
+
+{% block scripts %}
+<!-- Librería AOS para Animaciones -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        easing: 'slide',
+        once: true
+    });
+</script>
 {% endblock %}

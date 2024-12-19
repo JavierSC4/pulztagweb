@@ -9,186 +9,306 @@
 
     <!-- Sección de Encabezado -->
     <div class="text-center mb-5">
-        <h2 class="display-4">Nuestros Servicios</h2>
-        <p class="lead">Descubre nuestras soluciones de NFC y RFID personalizadas para diversas industrias.</p>
+        <h2 class="titulo-seccion">Nuestros Servicios</h2>
+        <p class="lead">Descubre cómo nuestra Plataforma CEM puede transformar la experiencia de tus clientes a través de soluciones innovadoras y personalizadas.</p>
     </div>
 
-<!-- Soluciones Personalizadas para Industrias -->
-<section class="mb-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="custom-solutions-section p-5 rounded">
-                <h3 class="mb-4">Soluciones Personalizadas para Industrias</h3>
-                <div class="row">
-                    <!-- Servicio 1: Marketing y Publicidad -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="card service-card h-100 text-center">
-                            <div class="card-body d-flex flex-column">
-                                <i class="fas fa-bullhorn fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Marketing y Publicidad</h5>
-                                <p class="card-text">Campañas interactivas con etiquetas y tarjetas NFC que dirigen a contenido exclusivo.</p>
-                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                                <div class="mt-auto d-flex justify-content-end">
-                                    <a href="{{ url_for('contact', message='Estoy interesado en conocer más sobre las campañas de Marketing y Publicidad con NFC.') }}" 
-                                       class="contact-icon" 
-                                       aria-label="Contactar sobre Marketing y Publicidad" 
-                                       title="Contactar sobre Marketing y Publicidad">
-                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Servicio 2: Eventos -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="card service-card h-100 text-center">
-                            <div class="card-body d-flex flex-column">
-                                <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Eventos</h5>
-                                <p class="card-text">Control de accesos y branding en llaveros que conectan a experiencias digitales.</p>
-                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                                <div class="mt-auto d-flex justify-content-end">
-                                    <a href="{{ url_for('contact', message='Me gustaría saber más sobre el control de accesos y branding en eventos utilizando NFC.') }}" 
-                                       class="contact-icon" 
-                                       aria-label="Contactar sobre Eventos" 
-                                       title="Contactar sobre Eventos">
-                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Servicio 3: Educación -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="card service-card h-100 text-center">
-                            <div class="card-body d-flex flex-column">
-                                <i class="fas fa-graduation-cap fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Educación</h5>
-                                <p class="card-text">Uso de tokens NFC para administrar acceso y participación en cursos.</p>
-                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                                <div class="mt-auto d-flex justify-content-end">
-                                    <a href="{{ url_for('contact', message='Quiero obtener información sobre el uso de tokens NFC en el sector educativo.') }}" 
-                                       class="contact-icon" 
-                                       aria-label="Contactar sobre Educación" 
-                                       title="Contactar sobre Educación">
-                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Servicio 4: Logística -->
-                    <div class="col-md-6 col-lg-3 mb-4">
-                        <div class="card service-card h-100 text-center">
-                            <div class="card-body d-flex flex-column">
-                                <i class="fas fa-truck fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title">Logística</h5>
-                                <p class="card-text">Etiquetas NFC duraderas para el seguimiento de envíos y productos.</p>
-                                <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                                <div class="mt-auto d-flex justify-content-end">
-                                    <a href="{{ url_for('contact', message='Estoy interesado en saber cómo las etiquetas NFC pueden mejorar la logística y el seguimiento de productos.') }}" 
-                                       class="contact-icon" 
-                                       aria-label="Contactar sobre Logística" 
-                                       title="Contactar sobre Logística">
-                                       <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- Sección de Introducción a CEM -->
+    <section class="introduction-section mb-5">
+        <div class="row align-items-center">
+            <!-- Texto a la Izquierda en Desktop -->
+            <div class="col-md-6 order-md-1">
+                <h3 class="titulo-seccion mt-0">Integración Total para una Experiencia Superior</h3>
+                <p>
+                    Nuestra Plataforma Integral de Gestión de la Experiencia del Cliente (CEM) centraliza todas las herramientas necesarias para gestionar, optimizar y personalizar cada interacción con tus clientes. Desde la administración de URLs y Pulzcards hasta el análisis de datos y la fidelización, nuestra solución está diseñada para cubrir todas tus necesidades.
+                </p>
+            </div>
+            <!-- Imagen a la Derecha en Desktop -->
+            <div class="col-md-6 order-md-2 mt-4 mt-md-0">
+                <img src="{{ url_for('static', filename='images/cem_overview.jpg') }}" alt="Plataforma CEM" class="img-fluid rounded shadow-sm zoom-effect">
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
+    <!-- Sección de Servicios por Componentes de CEM -->
+    <section class="services-section">
+        <h2 class="titulo-seccion">Servicios Basados en Nuestra Plataforma CEM</h2>
+        <div class="row">
+            <!-- Servicio 1: Administración de URLs -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-link fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Administración de URLs</h5>
+                        <p class="card-text">
+                            Gestiona URLs dedicadas para atención al cliente, acceso a productos, carrito de compra, evaluación de servicios y más, todo desde una sola plataforma.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Estoy interesado en la Administración de URLs para mi negocio.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Administración de URLs" 
+                               title="Contactar sobre Administración de URLs">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 2: Gestión de Pulzcards -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-id-badge fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Gestión de Pulzcards</h5>
+                        <p class="card-text">
+                            Crea y administra tarjetas virtuales con información de contacto, códigos QR personalizados y control de acceso a espacios físicos.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Quiero saber más sobre la Gestión de Pulzcards.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Gestión de Pulzcards" 
+                               title="Contactar sobre Gestión de Pulzcards">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 3: Gestión de Etiquetas (Tags) -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-tags fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Gestión de Etiquetas (Tags)</h5>
+                        <p class="card-text">
+                            Administra etiquetas NFC y códigos QR personalizados con funcionalidades avanzadas de importación, exportación y eliminación masiva.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Estoy interesado en la Gestión de Etiquetas (Tags).') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Gestión de Etiquetas" 
+                               title="Contactar sobre Gestión de Etiquetas">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 4: Gestión de Inventario -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-warehouse fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Gestión de Inventario</h5>
+                        <p class="card-text">
+                            Organiza y gestiona tus productos y recursos de manera intuitiva, con generación de códigos QR para facilitar el acceso y la administración de bodegas y cajas.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Quiero implementar la Gestión de Inventario en mi empresa.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Gestión de Inventario" 
+                               title="Contactar sobre Gestión de Inventario">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 5: Administración de Productos -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Administración de Productos</h5>
+                        <p class="card-text">
+                            Gestiona detalladamente tus productos, incluyendo categorías, subcategorías, descripciones y stock, con generación de códigos QR para facilitar su seguimiento y gestión.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Estoy interesado en la Administración de Productos.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Administración de Productos" 
+                               title="Contactar sobre Administración de Productos">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 6: Análisis de Datos -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Análisis de Datos</h5>
+                        <p class="card-text">
+                            Utiliza herramientas integradas para analizar el comportamiento y las preferencias de tus clientes, generando informes y estadísticas para tomar decisiones informadas.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Quiero conocer más sobre el Análisis de Datos en CEM.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Análisis de Datos" 
+                               title="Contactar sobre Análisis de Datos">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 7: Fidelización de Clientes -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-heart fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Fidelización de Clientes</h5>
+                        <p class="card-text">
+                            Implementa programas de lealtad efectivos y sigue las interacciones para mantener y aumentar la fidelidad de tus clientes.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Estoy interesado en Programas de Fidelización de Clientes.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Fidelización de Clientes" 
+                               title="Contactar sobre Fidelización de Clientes">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 8: Integración de Sistemas -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Integración de Sistemas</h5>
+                        <p class="card-text">
+                            Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa de tu negocio.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Estoy interesado en la Integración de Sistemas NFC con mis procesos actuales.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Integración de Sistemas" 
+                               title="Contactar sobre Integración de Sistemas">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Servicio 9: Soporte y Mantenimiento -->
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                    <div class="card-body d-flex flex-column">
+                        <i class="fas fa-life-ring fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Soporte y Mantenimiento</h5>
+                        <p class="card-text">
+                            Ofrecemos soporte técnico continuo y servicios de mantenimiento para asegurar que todas tus soluciones CEM funcionen de manera óptima.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-end">
+                            <a href="{{ url_for('contact', message='Necesito soporte y mantenimiento para mis soluciones CEM.') }}" 
+                               class="btn btn-outline-primary btn-sm" 
+                               aria-label="Contactar sobre Soporte y Mantenimiento" 
+                               title="Contactar sobre Soporte y Mantenimiento">
+                               <i class="fa-solid fa-paper-plane me-2"></i> Contactar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<!-- Aplicaciones de Nuestras Soluciones NFC -->
-<section>
-    <div class="text-center mb-5">
-        <h2 class="display-4">Aplicaciones de Nuestras Soluciones NFC</h2>
-        <p class="lead">Explora las diversas aplicaciones de nuestras tecnologías NFC para potenciar tu negocio.</p>
-    </div>
-    <div class="row">
-        <!-- Aplicación 1: Georeferenciación de Etiquetas NFC -->
-        <div class="col-md-6 mb-4">
-            <div class="card application-card h-100">
-                <img src="{{ url_for('static', filename='images/aplicacion_georeferenciacion.jpeg') }}" class="card-img-top" alt="Georeferenciación de Etiquetas NFC">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Georeferenciación de Etiquetas NFC</h5>
-                    <p class="card-text">Desarrollamos aplicaciones que permiten la geolocalización de etiquetas NFC, facilitando el seguimiento y la gestión eficiente de activos.</p>
-                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                    <div class="mt-auto d-flex justify-content-end">
-                        <a href="{{ url_for('contact', message='Estoy interesado en conocer más sobre la georeferenciación de etiquetas NFC para mi negocio.') }}" 
-                           class="contact-icon" 
-                           aria-label="Contactar sobre Georeferenciación de Etiquetas NFC" 
-                           title="Contactar sobre Georeferenciación de Etiquetas NFC">
-                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                        </a>
+    <!-- Sección de Testimonios y Casos de Éxito
+    <section class="testimonials-section py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-4">Lo que Dicen Nuestros Clientes</h2>
+            <div class="row">
+                !-- Testimonio 1 --
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card p-4 shadow-sm rounded">
+                        <p class="mb-3">"La Plataforma CEM de Pulztag ha revolucionado nuestra manera de interactuar con los clientes, mejorando significativamente su satisfacción y lealtad."</p>
+                        <h5 class="text-primary">Ana Martínez</h5>
+                        <small>Gerente de Ventas - Empresa DEF</small>
+                    </div>
+                </div>
+                !-- Testimonio 2 --
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card p-4 shadow-sm rounded">
+                        <p class="mb-3">"Gracias a la gestión de Pulzcards y etiquetas, hemos optimizado nuestros procesos internos y ofrecemos una experiencia de cliente más personalizada."</p>
+                        <h5 class="text-primary">Luis Rodríguez</h5>
+                        <small>Director de Operaciones - Empresa GHI</small>
+                    </div>
+                </div>
+                !-- Testimonio 3 --
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card p-4 shadow-sm rounded">
+                        <p class="mb-3">"El análisis de datos proporcionado por la Plataforma CEM nos ha permitido tomar decisiones estratégicas basadas en información real y actualizada."</p>
+                        <h5 class="text-primary">Carla Fernández</h5>
+                        <small>Analista de Datos - Empresa JKL</small>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Aplicación 2: Campañas Publicitarias y Marketing -->
-        <div class="col-md-6 mb-4">
-            <div class="card application-card h-100">
-                <img src="{{ url_for('static', filename='images/campanas_marketing_nfc.jpeg') }}" class="card-img-top" alt="Campañas de Marketing NFC">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Campañas Publicitarias y Marketing</h5>
-                    <p class="card-text">Utiliza nuestros dispositivos NFC para crear campañas de marketing interactivas que conecten de manera directa con tu audiencia, reduciendo costos de producción gráfica.</p>
-                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                    <div class="mt-auto d-flex justify-content-end">
-                        <a href="{{ url_for('contact', message='Me gustaría saber más sobre las campañas publicitarias y marketing con tecnología NFC.') }}" 
-                           class="contact-icon" 
-                           aria-label="Contactar sobre Campañas Publicitarias y Marketing" 
-                           title="Contactar sobre Campañas Publicitarias y Marketing">
-                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+    </section> -->
+
+    <!-- Sección de Llamado a la Acción Final -->
+    <section class="cta-section bg-primary text-white py-5 mt-4">
+        <div class="container text-center">
+            <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
+            <p class="lead mb-4">
+                Únete a las empresas que ya están optimizando sus interacciones con clientes gracias a nuestra Plataforma CEM.
+            </p>
+            <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">Contáctanos</a>
         </div>
-        <!-- Aplicación 3: Programas de Fidelización de Clientes -->
-        <div class="col-md-6 mb-4">
-            <div class="card application-card h-100">
-                <img src="{{ url_for('static', filename='images/fidelizacion_programas.jpeg') }}" class="card-img-top" alt="Programas de Fidelización de Clientes">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Programas de Fidelización de Clientes</h5>
-                    <p class="card-text">Implementa programas de fidelización efectivos con tecnología NFC que recompensen a tus clientes y fomenten su lealtad.</p>
-                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                    <div class="mt-auto d-flex justify-content-end">
-                        <a href="{{ url_for('contact', message='Quiero obtener información sobre programas de fidelización de clientes con tecnología NFC.') }}" 
-                           class="contact-icon" 
-                           aria-label="Contactar sobre Programas de Fidelización de Clientes" 
-                           title="Contactar sobre Programas de Fidelización de Clientes">
-                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Aplicación 4: Integración de Sistemas -->
-        <div class="col-md-6 mb-4">
-            <div class="card application-card h-100">
-                <img src="{{ url_for('static', filename='images/integracion_sistemas.jpeg') }}" class="card-img-top" alt="Integración de Sistemas NFC">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Integración de Sistemas</h5>
-                    <p class="card-text">Integramos nuestras soluciones NFC con tus sistemas existentes para optimizar procesos y mejorar la eficiencia operativa.</p>
-                    <!-- Contenedor Flex para Alinear el Ícono a la Derecha -->
-                    <div class="mt-auto d-flex justify-content-end">
-                        <a href="{{ url_for('contact', message='Estoy interesado en la integración de sistemas NFC con mis procesos actuales.') }}" 
-                           class="contact-icon" 
-                           aria-label="Contactar sobre Integración de Sistemas" 
-                           title="Contactar sobre Integración de Sistemas">
-                           <i class="fa-solid fa-paper-plane fa-beat-fade" style="color: #fc7f9c;"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Librería AOS para Animaciones -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'slide',
+            once: true
+        });
+    </script>
+<style>
+    .titulo-seccion {
+        margin-top: 130px; /* Añade espacio superior */
+    }
+</style>
+<style>
+/* Efecto hover en las tarjetas */
+.service-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px); /* Efecto de elevación */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+}
+
+/* Personalización del ícono en hover */
+.service-card a.btn-outline-primary i {
+    color: #9b9b9c; /* Color inicial del ícono */
+    transition: color 0.3s ease;
+}
+
+.service-card:hover a.btn-outline-primary i {
+    color: #fe6565; /* Cambia el color del ícono en hover */
+}
+
+/* Personalización del botón en hover */
+.service-card a.btn-outline-primary:hover {
+    background-color: #f8f8f8; /* Cambia el color de fondo */
+    border-color: #fe6565; /* Color del borde */
+    color: #ff0000; /* Color del texto */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    transform: scale(1.03); /* Efecto ligero de aumento */
+}
+</style>
 {% endblock %}

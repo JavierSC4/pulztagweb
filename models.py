@@ -133,6 +133,26 @@ class Producto(db.Model):
     def __repr__(self):
         return f"<Producto(id_producto='{self.id_producto}', nombre='{self.nombre}', cantidad={self.cantidad})>"
 
+
+class DashboardItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    name = db.Column(db.String(255), nullable=False)
+    item_type = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    
+    # Relación con el usuario
+    user = db.relationship('User', backref='dashboard_items', lazy=True)
+
+class SurveyResponse(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('dashboard_item.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    # Relación con DashboardItem
+    item = db.relationship('DashboardItem', backref='responses', lazy=True)
+
 class SecureModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin  # Verifica si el usuario es admin

@@ -25,17 +25,17 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from extensions import mail, db, migrate, bcrypt, login_manager, oauth
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView
+from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView, DashboardItem, SurveyResponse
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
     RequestResetForm, ResetPasswordForm,
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
     ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
     BodegaForm, EditBodegaForm, DeleteBodegaForm,
-    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm,
 )
 from flask_login import login_required, current_user, login_user, logout_user
-from datetime import datetime
+from datetime import datetime, timedelta
 
 load_dotenv()  # Carga las variables de entorno desde el archivo .env
 
@@ -347,7 +347,6 @@ def contact():
 
     return render_template('contact.html', form=form)
 
-
 @app.route('/products')
 def products():
     return render_template('products.html')
@@ -368,10 +367,6 @@ def order():
         dispositivo = form.dispositivo.data
         mensaje = form.mensaje.data
 
-        if not nombre or not email or not dispositivo or not mensaje:
-            flash('Por favor, completa todos los campos.', 'danger')
-            return redirect(url_for('order'))
-
         # Manejar los logos
         logos = request.files.getlist('logos')
         valid_logos = [logo for logo in logos if logo.filename != '']
@@ -388,8 +383,12 @@ def order():
                     unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
                     logo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
                     logo.save(logo_path)
-                    saved_logos.append((filename, logo_path))
-                    print(f"Logo guardado: {logo_path}")
+                    if os.path.exists(logo_path):
+                        saved_logos.append((filename, logo_path))
+                        print(f"Logo guardado: {logo_path}")
+                    else:
+                        flash(f"Error al guardar el logo {filename}.", 'danger')
+                        return redirect(url_for('order'))
                 except Exception as e:
                     print(f"Error al guardar el logo {filename}: {e}")
                     flash(f"Hubo un error al guardar el logo {filename}.", 'danger')
@@ -408,7 +407,11 @@ def order():
                     unique_filename = f"{uuid.uuid4().hex}_{secure_name}"
                     excel_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
                     excel.save(excel_path)
-                    print(f"Archivo Excel guardado: {excel_path}")
+                    if os.path.exists(excel_path):
+                        print(f"Archivo Excel guardado: {excel_path}")
+                    else:
+                        flash(f"Error al guardar el archivo Excel {filename}.", 'danger')
+                        return redirect(url_for('order'))
                 except Exception as e:
                     print(f"Error al guardar el archivo Excel {filename}: {e}")
                     flash(f"Hubo un error al guardar el archivo Excel {filename}.", 'danger')
@@ -430,8 +433,17 @@ def order():
 
         # Guardar el DataFrame en un archivo Excel
         pedido_excel_path = os.path.join(app.config['UPLOAD_FOLDER'], f"pedido_{uuid.uuid4().hex}.xlsx")
-        df.to_excel(pedido_excel_path, index=False)
-        print(f"Pedido guardado en: {pedido_excel_path}")
+        try:
+            df.to_excel(pedido_excel_path, index=False)
+            if os.path.exists(pedido_excel_path):
+                print(f"Pedido guardado en: {pedido_excel_path}")
+            else:
+                flash("Error al guardar los detalles del pedido.", 'danger')
+                return redirect(url_for('order'))
+        except Exception as e:
+            print(f"Error al guardar el pedido en Excel: {e}")
+            flash("Hubo un error al procesar los detalles del pedido.", 'danger')
+            return redirect(url_for('order'))
 
         # Enviar el correo con los archivos adjuntos
         try:
@@ -452,9 +464,7 @@ def order():
             # Adjuntar los logos
             for original_filename, logo_path in saved_logos:
                 try:
-                    print(f"Adjuntando logo: {original_filename} desde {logo_path}")
                     with open(logo_path, 'rb') as fp:
-                        # Determinar el MIME type correcto
                         ext = original_filename.rsplit('.', 1)[1].lower()
                         mime_type = f"image/{'jpeg' if ext in ['jpg', 'jpeg'] else ext}"
                         msg.attach(
@@ -462,28 +472,40 @@ def order():
                             mime_type,
                             fp.read()
                         )
+                        print(f"Adjuntado logo: {original_filename}")
                 except Exception as e:
                     print(f"Error adjuntando el logo {original_filename}: {e}")
+                    flash(f"Error adjuntando el logo {original_filename}.", 'danger')
+                    return redirect(url_for('order'))
 
             # Adjuntar el archivo Excel si existe
             if excel_path:
-                with open(excel_path, 'rb') as fp:
-                    msg.attach(
-                        os.path.basename(excel_path),
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        fp.read()
-                    )
+                try:
+                    with open(excel_path, 'rb') as fp:
+                        msg.attach(
+                            os.path.basename(excel_path),
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            fp.read()
+                        )
+                        print(f"Adjuntado archivo Excel: {excel_path}")
+                except Exception as e:
+                    print(f"Error adjuntando el archivo Excel {excel_path}: {e}")
+                    flash(f"Error adjuntando el archivo Excel {excel_path}.", 'danger')
+                    return redirect(url_for('order'))
 
             mail.send(msg)
             print("Correo enviado exitosamente.")
 
             # Eliminar archivos temporales
-            os.remove(pedido_excel_path)
-            for _, logo_path in saved_logos:
-                os.remove(logo_path)
-            if excel_path:
-                os.remove(excel_path)
-            print("Archivos temporales eliminados.")
+            try:
+                os.remove(pedido_excel_path)
+                for _, logo_path in saved_logos:
+                    os.remove(logo_path)
+                if excel_path:
+                    os.remove(excel_path)
+                print("Archivos temporales eliminados.")
+            except Exception as e:
+                print(f"Error al eliminar archivos temporales: {e}")
 
             flash('Su solicitud fue enviada exitosamente. ¡Pronto nos pondremos en contacto contigo!', 'success')
             return redirect(url_for('order'))
@@ -660,6 +682,7 @@ def profile():
     delete_forms = {card.id: DeletePulzcardForm(prefix=str(card.card_id)) for card in pulzcards}
     delete_tag_forms = {tag.id: DeleteTagForm(prefix=str(tag.tag_id)) for tag in tags}
     delete_bodega_forms = {bodega.uuid: DeleteBodegaForm(prefix=str(bodega.uuid)) for bodega in bodegas}
+    dashboard_items = DashboardItem.query.filter_by(user_id=current_user.id).all()
 
     if tag_form.validate_on_submit() and tag_form.submit.data:
         new_tag = Tag(
@@ -707,7 +730,8 @@ def profile():
         delete_bodega_forms=delete_bodega_forms,
         tag_fields=tag_fields,
         bulk_delete_tag_form=bulk_delete_tag_form,
-        section=section  # Pasar el parámetro de sección a la plantilla
+        section=section,
+        dashboard_items=dashboard_items  # Añade esta línea
     )
 
 @app.context_processor
@@ -1435,6 +1459,121 @@ def producto_qrcode(uuid_producto):
         tag_id=uuid_producto,
         share_url=share_url
     )
+
+@app.route('/create_dashboard_item', methods=['POST'])
+@login_required
+def create_dashboard_item():
+    data = request.get_json()
+    name = data.get('name')
+    item_type = data.get('item_type')
+
+    if not name or not item_type:
+        return jsonify({'error': 'Datos incompletos'}), 400
+
+    new_item = DashboardItem(
+        name=name,
+        item_type=item_type,
+        user_id=current_user.id
+    )
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({'uuid': new_item.uuid}), 200
+
+
+@app.route('/survey/<item_uuid>')
+def survey(item_uuid):
+    item = DashboardItem.query.filter_by(uuid=item_uuid).first()
+    if not item:
+        return "Este ítem no existe o ha sido eliminado.", 404
+
+    if item.item_type == "Evaluación de Clientes":
+        return render_template('encuesta_evaluacion.html', item_uuid=item_uuid)
+    elif item.item_type == "Visualizaciones diarias":
+        return "Esta sección mostrará un resultado distinto para 'Visualizaciones diarias'."
+    else:
+        return "Tipo de ítem desconocido."
+
+@app.route('/survey/submit/<item_uuid>', methods=['POST'])
+def submit_survey(item_uuid):
+    # Aquí obtienes la evaluación enviada por el usuario
+    evaluation = request.form.get('evaluation')
+    
+    # Lógica para guardar la respuesta en la BD
+    # Suponiendo que tienes un modelo SurveyResponse con campos item_id, rating, timestamp
+    # Necesitarías obtener el item a partir del item_uuid:
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
+    if not item:
+        flash("Item no encontrado", "danger")
+        return redirect(url_for('home'))
+
+    new_response = SurveyResponse(
+        item_id=item.id,
+        rating=int(evaluation),
+        timestamp=datetime.utcnow()
+    )
+    db.session.add(new_response)
+    db.session.commit()
+
+    flash("¡Gracias por tu evaluación!", "success")
+    # Redirige a donde quieras, por ejemplo, de vuelta a la encuesta o al profile
+    return redirect(url_for('survey', item_uuid=item_uuid))
+
+@app.route('/delete_dashboard_item', methods=['POST'])
+@login_required
+def delete_dashboard_item():
+    data = request.get_json()
+    item_uuid = data.get('uuid')
+    if not item_uuid:
+        return jsonify({'error': 'UUID no proporcionado'}), 400
+
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
+    if not item:
+        return jsonify({'error': 'Ítem no encontrado o no autorizado'}), 404
+
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({'success': True}), 200
+
+@app.route('/get_ratings_data', methods=['GET'])
+@login_required
+def get_ratings_data():
+    item_uuid = request.args.get('item_uuid')
+    if not item_uuid:
+        return jsonify({"error": "Falta item_uuid"}), 400
+
+    # Encontrar el ítem correspondiente
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
+    if not item:
+        return jsonify({"error": "Item no encontrado"}), 404
+
+    # Obtener las fechas de los últimos 10 días (incluyendo hoy)
+    today = datetime.utcnow().date()
+    dates = [(today - timedelta(days=i)) for i in range(10)]
+    dates.sort()  # Asegurarse que estén ordenadas de la más antigua a la más reciente
+
+    # Crear estructura inicial
+    ratingsData = {str(r): [0]*10 for r in range(1,6)}
+
+    # Filtrar las respuestas dentro de los últimos 10 días
+    start_date = dates[0]
+    end_date = dates[-1] + timedelta(days=1)  # Hasta el día siguiente del último día, para incluirlo completo
+    
+    responses = SurveyResponse.query.filter(
+        SurveyResponse.item_id == item.id,
+        SurveyResponse.timestamp >= datetime(start_date.year, start_date.month, start_date.day),
+        SurveyResponse.timestamp < datetime(end_date.year, end_date.month, end_date.day)
+    ).all()
+
+    # Contabilizar las respuestas por día y valoración
+    for resp in responses:
+        resp_date = resp.timestamp.date()
+        if resp_date in dates:
+            day_index = dates.index(resp_date)
+            # resp.rating: un entero del 1 al 5
+            ratingsData[str(resp.rating)][day_index] += 1
+
+    return jsonify({"ratings": ratingsData})
 
 # Crear las tablas de la base de datos
 with app.app_context():
