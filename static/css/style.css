@@ -2,7 +2,7 @@
 
 /* Tipografía Global */
 body {
-    background-image: url("/static/images/background.jpg"), url("/static/images/background_1.jpg");
+    background-image: url("/static/images/bg2.jpg"), url("/static/images/background_1.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -38,7 +38,7 @@ h6 {
 .titulo-seccion {
     font-size: 2.5em; /* Tamaño del texto */
     font-weight: bold; /* Peso de la fuente */
-    color: #2F2C2C; /* Color del texto */
+    color: #2c6682; /* Color del texto */
     text-align: center; /* Alineación centrada */
     margin-top: 25px; /* Añade espacio superior */
     margin-bottom: 45px; /* Margen inferior aumentado */
@@ -195,13 +195,13 @@ footer div {
 
 /* Botones Personalizados */
 .btn-primary {
-    background-color: #0b396dbd;
+    background-color: #03B8FF;
     border-color: #0b396dbd;
 }
 
 .btn-primary:hover {
     background-color: #02a8d1;
-    border-color: #0290b8;
+    border-color: #03FFFB;
 }
 
 /* Jumbotron / Hero Section */
@@ -222,7 +222,7 @@ footer div {
 
 /* Clase para el fondo de las secciones de servicios */
 .service-background {
-    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+    background: linear-gradient(135deg, #ffffff00 0%, #ffffff 100%);
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -355,7 +355,7 @@ form button:hover {
 .text-primary:hover,
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
-    color: #ff5757 !important;
+    color: #2F2C2C !important;
 }
 
 /* Estilos para el botón "Agregar Contacto" */
