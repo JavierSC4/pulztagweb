@@ -2,7 +2,7 @@
 
 /* Tipografía Global */
 body {
-    background-image: url("/static/images/background_1.jpg"), url("/static/images/backup.jpg");
+    background-image: url("/static/images/background.jpg"), url("/static/images/background_1.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
@@ -15,7 +15,7 @@ h4,
 h5,
 h6 {
     font-family: 'Montserrat', sans-serif;
-    color: #0b396dbd;
+    color: #2F2C2C;
 }
 
 .title {
@@ -38,7 +38,7 @@ h6 {
 .titulo-seccion {
     font-size: 2.5em; /* Tamaño del texto */
     font-weight: bold; /* Peso de la fuente */
-    color: #0872a7ec; /* Color del texto */
+    color: #2F2C2C; /* Color del texto */
     text-align: center; /* Alineación centrada */
     margin-top: 25px; /* Añade espacio superior */
     margin-bottom: 45px; /* Margen inferior aumentado */
@@ -222,7 +222,7 @@ footer div {
 
 /* Clase para el fondo de las secciones de servicios */
 .service-background {
-    background: linear-gradient(135deg, #00000000 0%, #03acfa19 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
     padding: 2rem;
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -349,13 +349,13 @@ form button:hover {
 .btn-outline-primary,
 .btn-outline-secondary,
 .text-primary.text-decoration-none {
-    color: #29547a !important;
+    color: #03B8FF !important;
 }
 
 .text-primary:hover,
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
-    color: #57a0ff !important;
+    color: #ff5757 !important;
 }
 
 /* Estilos para el botón "Agregar Contacto" */
@@ -543,24 +543,14 @@ form h4 {
 }
 
 /* Estilos para la sección Hero en login y register */
+/* Ajustes para la sección Hero */
 .hero-section {
     position: relative;
     overflow: hidden;
     height: 85vh; /* Ajustar según necesidad */
 }
 
-.hero-video-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-}
-
-/* Contenedor del video */
-.video-container {
+.hero-section .video-container {
     position: absolute;
     top: 0;
     left: 0;
@@ -570,13 +560,12 @@ form h4 {
     overflow: hidden;
 }
 
-.video-container video {
+.hero-section video {
     object-fit: cover;
     width: 100%;
     height: 100%;
 }
 
-/* Overlay para oscurecer el video */
 .overlay {
     background: rgba(18, 37, 51, 0.527); /* Color oscuro con opacidad */
     position: absolute;
@@ -587,16 +576,74 @@ form h4 {
     z-index: 2; /* Sobre el video pero detrás del contenido */
 }
 
-/* Contenido del Hero Section */
 .hero-section .container {
     position: relative;
     z-index: 3; /* Sobre el overlay */
 }
 
-.hero-section .container-fluid {
-    position: relative;
-    z-index: 3;
+/* Tipografía en la sección Hero */
+.hero-section .title {
+    font-size: 3.6rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: left;
+    margin-bottom: 1rem;
 }
+
+.hero-section .subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: left;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+/* Responsividad para pantallas medianas y pequeñas */
+@media (max-width: 992px) {
+    .hero-section .title {
+        font-size: 3rem;
+        text-align: center;
+    }
+    .hero-section .subtitle {
+        font-size: 1.3rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section .title {
+        font-size: 2.5rem;
+    }
+    .hero-section .subtitle {
+        font-size: 1.1rem;
+    }
+    .hero-section {
+        height: auto; /* Permite que la altura se ajuste al contenido */
+        padding: 60px 20px;
+    }
+    .hero-section .video-container {
+        display: none; /* Opcional: Ocultar el video en móviles para mejorar el rendimiento */
+    }
+    .overlay {
+        background: rgba(18, 37, 51, 0.7); /* Aumentar opacidad para mejor legibilidad */
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section .title {
+        font-size: 2rem;
+    }
+    .hero-section .subtitle {
+        font-size: 1rem;
+    }
+    .btn-stack {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+    }
+}
+
 
 .login-card, .register-card {
     background-color: rgba(255, 255, 255, 0.85); /* Semi-transparente */
@@ -672,7 +719,7 @@ img.img-fluid {
 
 /* Estilos para la sección de llamada a la acción */
 .cta-section {
-    background-image: linear-gradient(135deg, #21282fbd 0%, #1164c2bd 100%);
+    background-image: linear-gradient(135deg, #21282f00 0%, #0077ff98 100%);
     color: #ffffff;
 }
 
@@ -833,6 +880,7 @@ h3 {
 
 .card-title {
     font-family: 'Montserrat', sans-serif;
+    font-size: 1.5rem;
 }
 
 /* Animaciones sutiles */

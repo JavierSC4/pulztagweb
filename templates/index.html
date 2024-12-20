@@ -23,16 +23,15 @@
     </div>
 
     <!-- Overlay (oscurece el video) -->
-    <div class="overlay position-absolute top-0 start-0 w-100 h-100" 
-         style="background: rgba(18, 37, 51, 0.527); z-index: 2;">
-    </div>
+    <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
 
     <!-- Contenido -->
     <div class="container position-relative z-3">
         <div class="row align-items-center min-vh-100 text-center text-lg-start">
-            <div class="col-lg-8 col-md-7 mx-auto mx-lg-3 px-3">
+            <!-- Remueve mx-auto y utiliza offset si es necesario -->
+            <div class="col-lg-6 col-md-10 offset-lg-1 px-3">
                 <h1 class="title display-4 fw-bold mb-2">
-                    Revoluciona la Experiencia de tus Clientes
+                    Eleva la Experiencia de tus Clientes
                     <span class="text-highlight d-block">con Tecnología Interactiva</span>
                 </h1>
                 <p class="subtitle lead text-white mb-4">
@@ -40,12 +39,12 @@
                 </p>
                 <div class="btn-stack d-flex justify-content-center justify-content-lg-start flex-wrap gap-2">
                     <a href="{{ url_for('create_item') }}" 
-                       class="btn btn-lg fw-bold text-dark" 
-                       style="background-color: #ffd700;">
-                       Comienza ahora Gratis
+                    class="btn btn-lg fw-bold text-dark" 
+                    style="background-color: #ffd700;">
+                    Comienza ahora Gratis
                     </a>
                     <a href="{{ url_for('contact') }}" 
-                       class="btn btn-outline-light btn-lg fw-bold">
+                    class="btn btn-outline-light btn-lg fw-bold">
                         Contáctanos
                     </a>
                 </div>
@@ -91,7 +90,7 @@
             </div>
         </div>
         <div style="margin-top: 40px;">
-            <a href="#contacto" style="text-decoration: none; background-color: #1c579b; color: #fff; padding: 15px 30px; font-size: 1.1em; border-radius: 5px;">
+            <a href="#contacto" style="text-decoration: none; background-color: #03B8FF; color: #fff; padding: 15px 30px; font-size: 1.1em; border-radius: 5px;">
                 Descubre cómo funciona
             </a>
         </div>
@@ -154,7 +153,7 @@
                 <!-- Ventaja 1: Centralización de la Información -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-database fa-3x text-primary me-3"></i>
+                        <i class="fas fa-database fa-3x text-info me-3"></i>
                         <div>
                             <h5>Centralización de la Información</h5>
                             <p>
@@ -166,7 +165,7 @@
                 <!-- Ventaja 2: Personalización y Omnicanalidad -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-magic fa-3x text-primary me-3"></i>
+                        <i class="fas fa-magic fa-3x text-info me-3"></i>
                         <div>
                             <h5>Personalización y Omnicanalidad</h5>
                             <p>
@@ -178,7 +177,7 @@
                 <!-- Ventaja 3: Mejora de la Satisfacción y Fidelidad del Cliente -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-smile fa-3x text-primary me-3"></i>
+                        <i class="fas fa-smile fa-3x text-info me-3"></i>
                         <div>
                             <h5>Mejora de la Satisfacción y Fidelidad del Cliente</h5>
                             <p>
@@ -190,7 +189,7 @@
                 <!-- Ventaja 4: Eficiencia Operativa -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-cogs fa-3x text-primary me-3"></i>
+                        <i class="fas fa-cogs fa-3x text-info me-3"></i>
                         <div>
                             <h5>Eficiencia Operativa</h5>
                             <p>
@@ -202,7 +201,7 @@
                 <!-- Ventaja 5: Toma de Decisiones Informadas -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-chart-line fa-3x text-primary me-3"></i>
+                        <i class="fas fa-chart-line fa-3x text-info me-3"></i>
                         <div>
                             <h5>Toma de Decisiones Informadas</h5>
                             <p>
@@ -214,7 +213,7 @@
                 <!-- Ventaja 6: Seguridad y Protección de Datos -->
                 <div class="col-md-6 mb-4">
                     <div class="d-flex">
-                        <i class="fas fa-shield-alt fa-3x text-primary me-3"></i>
+                        <i class="fas fa-shield-alt fa-3x text-info me-3"></i>
                         <div>
                             <h5>Seguridad y Protección de Datos</h5>
                             <p>
@@ -228,7 +227,7 @@
     </section>
 
     <!-- Sección de Llamado a la Acción -->
-    <section class="cta-section bg-primary text-white py-5 mt-4">
+    <section class="cta-section bg-info text-white py-5 mt-4">
         <div class="container text-center">
             <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
             <p class="lead mb-4">
@@ -237,6 +236,15 @@
             <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">Contáctanos</a>
         </div>
     </section>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('hero-video').play();
+            } else {
+                document.querySelector('.video-container').style.display = 'none';
+            }
+        });
+    </script>
     <style>
         .icono-beneficio {
             font-size: 0.5rem; /* Ajusta el tamaño según necesites */
