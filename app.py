@@ -38,7 +38,7 @@ from forms import (
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime, timedelta, timezone
 
-load_dotenv()  # Carga las variables de entorno desde el archivo .env
+load_dotenv()  # Carga las variables de entorno desde el archivo .env es
 
 app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
