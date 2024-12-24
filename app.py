@@ -54,9 +54,6 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_timeout": 30,
 }
 
-# Inicializar SQLAlchemy
-db = SQLAlchemy(app)
-
 db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
