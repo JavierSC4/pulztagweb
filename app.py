@@ -6,6 +6,7 @@ from io import BytesIO
 from random import randint
 from urllib.parse import urlparse
 from sqlalchemy.exc import IntegrityError
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import exists
 from sqlalchemy.orm import joinedload  # Asegúrate de importar esto al inicio del archivo
 from flask import (
@@ -45,6 +46,16 @@ app.secret_key = os.getenv('SECRET_KEY', 'test_secret_key')
 # Configuración de la Base de Datos
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    "pool_pre_ping": True,
+    "pool_size": 5,
+    "max_overflow": 10,
+    "pool_timeout": 30,
+}
+
+# Inicializar SQLAlchemy
+db = SQLAlchemy(app)
 
 db.init_app(app)
 migrate.init_app(app, db)
