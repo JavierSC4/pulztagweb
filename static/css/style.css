@@ -87,9 +87,9 @@ h6 {
 .nav-link {
     color: #555555 !important;
     transition: color 0.3s, transform 0.3s, background-color 0.3s;
-    font-size: 1.0rem; /* Aumentado de 1.07rem a 1.2rem */
+    font-size: 1.1rem; /* Aumentado de 1.07rem a 1.2rem */
     padding: 0.5rem 1rem; /* Mayor área clicable */
-    border-radius: 5px; /* Bordes redondeados */
+    border-radius: 8px; /* Bordes redondeados */
     position: relative;
 }
 
@@ -98,7 +98,7 @@ h6 {
     position: absolute;
     width: 0%;
     height: 1px;
-    background-color: #03c0ff;
+    background-color: #797979;
     left: 0;
     bottom: 0;
     transition: width 0.3s;
@@ -109,7 +109,7 @@ h6 {
 }
 
 .nav-link:hover {
-    color: #03c0ff !important;
+    color: #03B8FF !important;
     transform: translateY(-2px); /* Subir ligeramente al pasar el cursor */
     background-color: rgba(3, 192, 255, 0.1); /* Fondo sutil al pasar el cursor */
 }
@@ -556,7 +556,7 @@ form h4 {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Video está detrás del overlay */
+    z-index: 1;
     overflow: hidden;
 }
 
@@ -564,6 +564,16 @@ form h4 {
     object-fit: cover;
     width: 100%;
     height: 100%;
+}
+
+.hero-section .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
 }
 
 .overlay {
@@ -721,8 +731,9 @@ img.img-fluid {
 
 /* Estilos para la sección de llamada a la acción */
 .cta-section {
-    background-image: linear-gradient(135deg, #21282f00 0%, #0077ff98 100%);
+    background-image: linear-gradient(135deg, #2f212b00 0%, #0077ff98 100%);
     color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .cta-section h2 {
@@ -1022,23 +1033,23 @@ h3 {
     position: relative;
     font-size: 0.9rem;
     padding: 1.1rem 0.75rem;
-    background-color: #ffffff46;
+    background-color: #9c9d9d36;
 }
 
 .nav-link.sidebar-link:hover {
-    background-color: rgba(3, 192, 255, 0.1);
-    color: #03c0ff;
+    background-color: #78cafd4f; /* buen color para tabla */
+    color: #78cafd;
 }
 
 /* Submenús */
 .collapse.show .sub-link {
-    background-color: #c7e5f9;
+    background-color: #ffffff20; 
 }
 
 .user-fullname {
     font-weight: bold;
-    font-size: 1rem; /* Ajusta el tamaño si lo deseas */
-    color: #303334; /* Color opcional, puedes mantener el predeterminado */
+    font-size: 1.1rem; /* Ajusta el tamaño si lo deseas */
+    color: #03c0ff; /* Color opcional, puedes mantener el predeterminado */
 }
 
 .sub-link {
@@ -1046,6 +1057,7 @@ h3 {
     padding: 10px 15px; /* Espaciado interno para aumentar el área clicable */
     border-radius: 5px; /* Opcional: bordes redondeados */
     transition: background-color 0.3s ease;
+    font-size: 0.75rem;
 }
 
 .sub-link:hover {
@@ -1054,16 +1066,16 @@ h3 {
 
 /* Tablas */
 .custom-table thead th {
-    background-color: #c7e5f9;
-    color: #4d4d4e8f;
-    text-align: center;
+    background-color: #78cafd4f;
+    color: #404e57;
+    text-align: left;
     vertical-align: middle;
 }
 .custom-table td,
 .custom-table th {
-    text-align: center;
+    text-align: left;
     vertical-align: middle;
-    padding: 8px;
+    padding: 7px;
 }
 .custom-table tbody tr:hover {
     background-color: #e6f7ff;
@@ -1141,4 +1153,22 @@ h3 {
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#sidebar {
+    /* Asegura que el sidebar ocupe toda la altura disponible */
+    height: calc(100vh - 90px - 60px); /* Ajusta según la altura de tu navbar y footer */
+    overflow-y: auto; /* Permite desplazamiento si el contenido excede la altura */
+}
+
+@media (max-width: 768px) {
+    #sidebar {
+        height: auto; /* Permite que el sidebar se ajuste en pantallas pequeñas */
+    }
 }

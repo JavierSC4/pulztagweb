@@ -6,579 +6,608 @@
 
 {% block head %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+<style>
+    /* Asegura que el contenedor principal use Flexbox */
+    .d-flex {
+        display: flex !important;
+    }
+    .h-100 {
+        height: 100% !important;
+    }
+    /* Estilos para el Sidebar */
+    #sidebar {
+        /* Mantiene el sidebar fijo entre navbar y footer */
+        height: calc(100vh - 90px - 60px); /* Ajusta 90px para navbar y 60px para footer según tus alturas reales */
+        overflow-y: auto;
+    }
+    /* Ajustes responsivos para el Sidebar */
+    @media (max-width: 768px) {
+        #sidebar {
+            height: auto;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid p-0">
-    <div class="row g-0">
-
-        <!-- Sidebar -->
-        <div id="sidebar" class="col-auto border-end sidebar-transition d-none d-md-flex flex-column collapsed">
-            <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
-                <!-- Nombre de Usuario -->
-                <div class="user-display">
-                    <span class="user-fullname">{{ current_user.username }}</span>
-                </div>
-                <!-- Botón para expandir/contraer -->
-                <button id="sidebarToggle" class="btn btn-light btn-sm" title="Expandir/Contraer Sidebar">
-                    <i class="bi bi-chevron-left"></i>
-                </button>
+<div class="d-flex h-100">
+    <!-- Sidebar -->
+    <div id="sidebar" class="col-auto border-end sidebar-transition d-none d-md-flex flex-column collapsed" style="flex-shrink: 0;">
+        <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
+            <!-- Nombre de Usuario -->
+            <div class="user-display">
+                <span class="user-fullname">{{ current_user.username }}</span>
             </div>
+            <!-- Botón para expandir/contraer -->
+            <button id="sidebarToggle" class="btn btn-light btn-sm ms-auto" title="Expandir/Contraer Sidebar">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </div>
 
-            <ul class="nav flex-column pt-2" id="sidebarMenu">
-                <!-- Pulzcards -->
-                <li class="nav-item mt-2">
-                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-                       data-bs-target="#pulzcardSubmenu" aria-expanded="false" title="Pulzcards">
-                        <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
-                    </a>
-                    <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenu">
-                        <li>
-                            <a href="{{ url_for('pulzcard') }}" class="nav-link sub-link">
-                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#pulzcardsSection" class="nav-link sub-link">
-                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- Etiquetas -->
-                <li class="nav-item mt-2">
-                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-                       data-bs-target="#etiquetasSubmenu" aria-expanded="false" title="Etiquetas">
-                        <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
-                    </a>
-                    <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenu">
-                        <li>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
-                               class="nav-link sub-link">
-                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#importTagsModal" class="nav-link sub-link" title="Importar Etiquetas">
-                                <i class="bi bi-file-arrow-up-fill"></i><span class="text-label ms-1">Importar</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#etiquetasSection" class="nav-link sub-link">
-                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- Bodegas -->
-                <li class="nav-item mt-2">
-                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenu"
-                       aria-expanded="false" title="Bodegas">
-                        <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
-                    </a>
-                    <ul class="collapse list-unstyled ps-0" id="bodegasSubmenu">
-                        <li>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
-                               class="nav-link sub-link">
-                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#bodegasSection" class="nav-link sub-link">
-                                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todas</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- Dashboard -->
-                <li class="nav-item mt-2">
-                    <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu"
-                       aria-expanded="false" title="Dashboard">
-                        <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
-                    </a>
-                    <ul class="collapse list-unstyled ps-0" id="dashboardSubmenu">
-                        <li>
-                            <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
-                                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
-                            </a>
-                        </li>
-                        <li id="dashboardItemsContainer">
+        <ul class="nav flex-column pt-2" id="sidebarMenu">
+            <!-- Pulzcards -->
+            <li class="nav-item mt-2">
+                <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+                   data-bs-target="#pulzcardSubmenu" aria-expanded="false" title="Pulzcards">
+                    <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
+                </a>
+                <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenu">
+                    <li>
+                        <a href="{{ url_for('pulzcard') }}" class="nav-link sub-link">
+                            <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#pulzcardsSection" class="nav-link sub-link">
+                            <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Etiquetas -->
+            <li class="nav-item mt-2">
+                <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+                   data-bs-target="#etiquetasSubmenu" aria-expanded="false" title="Etiquetas">
+                    <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
+                </a>
+                <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenu">
+                    <li>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
+                           class="nav-link sub-link">
+                            <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#importTagsModal" class="nav-link sub-link" title="Importar Etiquetas">
+                            <i class="bi bi-file-arrow-up-fill"></i><span class="text-label ms-1">Importar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#etiquetasSection" class="nav-link sub-link">
+                            <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Bodegas -->
+            <li class="nav-item mt-2">
+                <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenu"
+                   aria-expanded="false" title="Bodegas">
+                    <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
+                </a>
+                <ul class="collapse list-unstyled ps-0" id="bodegasSubmenu">
+                    <li>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
+                           class="nav-link sub-link">
+                            <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#bodegasSection" class="nav-link sub-link">
+                            <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todas</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!-- Dashboard -->
+            <li class="nav-item mt-2">
+                <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu"
+                aria-expanded="false" aria-controls="dashboardSubmenu" title="Dashboard">
+                    <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
+                </a>
+                <ul class="collapse list-unstyled ps-0" id="dashboardSubmenu">
+                    <!-- Agregar Item -->
+                    <li>
+                        <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
+                            <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
+                        </a>
+                    </li>
+                    <!-- Lista de Items -->
+                    <div id="dashboardItemsContainer">
+                        {% if dashboard_items %}
                             {% for item in dashboard_items %}
-                            <a href="#"
-                               class="nav-link sub-link dashboard-item-link"
-                               data-item-id="{{ item.uuid }}"
-                               data-item-name="{{ item.name }}"
-                               data-item-type="{{ item.item_type }}">
-                               <i class="bi bi-dot"></i><span class="text-label ms-1">{{ item.name }}</span>
-                            </a>
+                            <li>
+                                <a href="#dashboardItemDetailSection"
+                                class="nav-link sub-link dashboard-item-link"
+                                data-item-id="{{ item.uuid }}"
+                                data-item-name="{{ item.name }}"
+                                data-item-type="{{ item.item_type }}">
+                                    <i class="bi bi-dot"></i><span class="text-label ms-1">{{ item.name }}</span>
+                                </a>
+                            </li>
                             {% endfor %}
-                        </li>
-                    </ul>
-                </li>
+                        {% else %}
+                            <li>
+                                <span class="text-muted ms-3">No hay items disponibles</span>
+                            </li>
+                        {% endif %}
+                    </div>
+                </ul>
+            </li>
 
-                <!-- Separador -->
-                <hr class="my-10">
+            <!-- Separador -->
+            <hr class="my-10">
 
-                <!-- Sección Mi Perfil -->
-                <li class="nav-item mt-2">
-                    <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
-                        <i class="bi bi-person-lines-fill"></i><span class="text-label ms-2">Mi Perfil</span>
-                    </a>
-                </li>
-            </ul>
+            <!-- Sección Mi Perfil -->
+            <li class="nav-item mt-2">
+                <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
+                    <i class="bi bi-person-lines-fill"></i><span class="text-label ms-2">Mi Perfil</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Navbar superior para pantallas pequeñas -->
+    <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='images/logov3.png') }}"
+                    height="40"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbarMenu"
+                aria-controls="topbarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="topbarMenu">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Pulzcards -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="pulzcardDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Pulzcards</a>
+                        <ul class="dropdown-menu" aria-labelledby="pulzcardDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('pulzcard') }}">Crear Nuevo</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showSection('pulzcardsSection')">Ver Todos</a></li>
+                        </ul>
+                    </li>
+                    <!-- Etiquetas -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="etiquetasDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Etiquetas</a>
+                        <ul class="dropdown-menu" aria-labelledby="etiquetasDropdown">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#agregarEtiquetaModal">Crear Nuevo</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showSection('etiquetasSection')">Ver Todos</a></li>
+                        </ul>
+                    </li>
+                    <!-- Bodegas -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="bodegasDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Bodegas</a>
+                        <ul class="dropdown-menu" aria-labelledby="bodegasDropdown">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#agregarBodegaModal">Crear Nueva</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showSection('bodegasSection')">Ver Todas</a></li>
+                        </ul>
+                    </li>
+                    <!-- Mi Perfil -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('miPerfilSection')">Mi Perfil</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <div class="flex-grow-1" id="mainContent" style="padding:20px; overflow-y: auto;">
+
+        <!-- Sección Mi Perfil (Información Personal) -->
+        <div id="miPerfilSection">
+            <h2 class="text-center mb-4">Mi Perfil</h2>
+            <!-- Información del Usuario -->
+            <div class="container-fluid mb-5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Información Personal</h4>
+                        <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
+                        <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5">
         </div>
 
-        <!-- Navbar superior para pantallas pequeñas -->
-        <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='images/logobasev4.png') }}"
-                        height="40"></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbarMenu"
-                    aria-controls="topbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+        <!-- Sección Pulzcards -->
+        <div id="pulzcardsSection" style="display:none;">
+            <h4>Tus Pulzcards</h4>
+            {% if pulzcards %}
+            <div class="table-responsive">
+                <table class="table table-hover custom-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre Tarjeta</th>
+                            <th>Nombre</th>
+                            <th>Organización</th>
+                            <th>Email</th>
+                            <th>Fecha de Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for card in pulzcards %}
+                        <tr>
+                            <td>{{ card.card_name }}</td>
+                            <td>{{ card.first_name }} {{ card.last_name }}</td>
+                            <td>{{ card.organization }}</td>
+                            <td>{{ card.email }}</td>
+                            <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <div class="d-none d-md-flex gap-2">
+                                    <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                        class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
+                                    <a href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"
+                                        class="btn btn-outline-secondary btn-sm">Editar</a>
+                                    <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                        class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                    </a>
+                                    <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
+                                        method="POST" style="display:inline;">
+                                        {{ delete_forms[card.id].hidden_tag() }}
+                                        <button type="submit"
+                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                            style="background:none; border:none; padding:0; cursor:pointer;">
+                                            <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="d-md-none">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                            type="button" id="dropdownMenuButton{{ card.card_id }}"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Acciones
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ card.card_id }}">
+                                            <li><a class="dropdown-item"
+                                                    href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                                    target="_blank"><i class="fas fa-eye me-2"></i>Ver</a></li>
+                                            <li><a class="dropdown-item"
+                                                    href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"><i
+                                                        class="fas fa-edit me-2"></i>Editar</a></li>
+                                            <li><a class="dropdown-item"
+                                                    href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                                    title="Ver Código QR">
+                                                <i class="fas fa-qrcode me-2"></i>Ver QR</a></li>
+                                            <li>
+                                                <form
+                                                    action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
+                                                    method="POST" style="display:inline;">
+                                                    {{ delete_forms[card.id].hidden_tag() }}
+                                                    <button type="submit"
+                                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                                        class="dropdown-item bg-danger text-white">
+                                                        <i class="fa-regular fa-eraser me-2"></i>Eliminar
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
+            {% endif %}
+
+            <div class="mt-3">
+                <a href="{{ url_for('pulzcard') }}" class="btn btn-secondary">
+                    <i class="fas fa-user-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i> Añadir
+                </a>
+            </div>
+            <hr class="my-5">
+        </div>
+
+        <!-- Sección Etiquetas -->
+        <div id="etiquetasSection" style="display:none;">
+            <h4>Tus Etiquetas y QR Code</h4>
+            {% if tags %}
+            <form method="POST" action="{{ url_for('delete_bulk_tags') }}" id="bulkDeleteForm">
+                {{ bulk_delete_tag_form.hidden_tag() }}
+                <div class="action-bar-wrapper">
+                    <div class="action-bar">
+                        <button type="button"
+                                class="action-btn btn-import"
+                                data-bs-toggle="modal"
+                                data-bs-target="#importTagsModal"
+                                title="Importar etiquetas desde un archivo">
+                            <i class="bi bi-upload"></i>
+                        </button>
+
+                        <button type="button"
+                                class="action-btn btn-export"
+                                onclick="exportSelectedTags()"
+                                title="Exportar etiquetas seleccionadas">
+                            <i class="bi bi-download"></i>
+                        </button>
+
+                        <button type="button"
+                                class="action-btn btn-delete"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteBulkModal"
+                                title="Eliminar etiquetas seleccionadas">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="modal fade" id="confirmDeleteBulkModal" tabindex="-1" aria-labelledby="confirmDeleteBulkModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteBulkModalLabel">Confirmar Eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que deseas eliminar la(s) etiqueta(s) seleccionada(s)? Esta acción no se puede deshacer.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBulkBtn">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-10">
+
+            <div class="table-responsive">
+                <table class="table table-hover custom-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select_all" form="bulkDeleteForm">
+                            </th>
+                            <th>Nombre Etiqueta</th>
+                            <th>URL destino</th>
+                            <th>URL enlace</th>
+                            <th>Vistas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tag in tags %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selected_tags" value="{{ tag.tag_id }}" form="bulkDeleteForm">
+                            </td>
+                            <td>
+                                {% set tag_name_display = tag.tag_name[:30] + '...' if tag.tag_name|length > 30 else tag.tag_name %}
+                                {{ tag_name_display }}
+                            </td>
+                            <td>
+                                {% set redirect_url_display = tag.redirect_url[:30] + '...' if tag.redirect_url|length > 30 else tag.redirect_url %}
+                                <a href="{{ tag.redirect_url }}" target="_blank">{{ redirect_url_display }}</a>
+                            </td>
+                            <td>
+                                {% set generated_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True) %}
+                                {% set shortened_url = generated_url[:30] + '...' if generated_url|length > 30 else generated_url %}
+                                <a href="{{ generated_url }}" target="_blank">{{ shortened_url }}</a>
+                            </td>
+                            <td>{{ tag.vistas }}</td>
+                            <td>
+                                <div class="d-none d-md-flex gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyURL('{{ generated_url }}')">Copiar</button>
+                                    <a href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetasSection') }}" class="btn btn-outline-secondary btn-sm">Editar</a>
+                                    <a href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                        <i class="fas fa-qrcode"></i>
+                                    </a>
+                                    <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
+                                        {{ delete_tag_forms[tag.id].hidden_tag() }}
+                                        <button type="submit"
+                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
+                                            style="background:none; border:none; padding:0; cursor:pointer;">
+                                            <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="d-md-none">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButtonTag{{ tag.tag_id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Acciones
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTag{{ tag.tag_id }}">
+                                            <li>
+                                                <a href="#" class="dropdown-item" onclick="copyURL('{{ generated_url }}'); return false;">
+                                                    <i class="fas fa-copy me-2"></i>Copiar URL
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetasSection') }}">
+                                                    <i class="fas fa-edit me-2"></i>Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" title="Ver Código QR">
+                                                    <i class="fas fa-qrcode me-2"></i>Ver QR
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
+                                                    {{ delete_tag_forms[tag.id].hidden_tag() }}
+                                                    <button type="submit"
+                                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
+                                                        class="dropdown-item bg-danger text-white">
+                                                        <i class="fa-regular fa-eraser me-2"></i>Eliminar
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No has creado ninguna etiqueta aún. <a href="#" class="text-decoration-underline"
+                    data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">Crear una Etiqueta</a>.</p>
+            {% endif %}
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#agregarEtiquetaModal">
+                    <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
+                    Añadir
                 </button>
-                <div class="collapse navbar-collapse" id="topbarMenu">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <!-- Pulzcards -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="pulzcardDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Pulzcards</a>
-                            <ul class="dropdown-menu" aria-labelledby="pulzcardDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('pulzcard') }}">Crear Nuevo</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="showSection('pulzcardsSection')">Ver Todos</a></li>
-                            </ul>
-                        </li>
-                        <!-- Etiquetas -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="etiquetasDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Etiquetas</a>
-                            <ul class="dropdown-menu" aria-labelledby="etiquetasDropdown">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#agregarEtiquetaModal">Crear Nuevo</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="showSection('etiquetasSection')">Ver Todos</a></li>
-                            </ul>
-                        </li>
-                        <!-- Bodegas -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="bodegasDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">Bodegas</a>
-                            <ul class="dropdown-menu" aria-labelledby="bodegasDropdown">
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                        data-bs-target="#agregarBodegaModal">Crear Nueva</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="showSection('bodegasSection')">Ver Todas</a></li>
-                            </ul>
-                        </li>
-                        <!-- Mi Perfil -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('miPerfilSection')">Mi Perfil</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
-        </nav>
-
-        <!-- Contenido Principal -->
-        <div class="col" id="mainContent" style="padding:20px;">
-
-            <!-- Sección Mi Perfil (Información Personal) -->
-            <div id="miPerfilSection">
-                <h2 class="text-center mb-4">Mi Perfil</h2>
-                <!-- Información del Usuario -->
-                <div class="container-fluid mb-5">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Información Personal</h4>
-                            <p><strong>Nombre de Usuario:</strong> {{ current_user.username }}</p>
-                            <p><strong>Correo Electrónico:</strong> {{ current_user.email }}</p>
-                        </div>
-                        <div class="col-md-6 text-end">
-                            <a href="{{ url_for('account') }}" class="btn btn-primary">Editar Perfil</a>
-                        </div>
-                    </div>
-                </div>
-                <hr class="my-5">
-            </div>
-
-            <!-- Sección Pulzcards -->
-            <div id="pulzcardsSection" style="display:none;">
-                <h4>Tus Pulzcards</h4>
-                {% if pulzcards %}
-                <div class="table-responsive">
-                    <table class="table table-hover custom-table">
-                        <thead>
-                            <tr>
-                                <th>Nombre Tarjeta</th>
-                                <th>Nombre Completo</th>
-                                <th>Organización</th>
-                                <th>Email</th>
-                                <th>Fecha de Creación</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for card in pulzcards %}
-                            <tr>
-                                <td>{{ card.card_name }}</td>
-                                <td>{{ card.first_name }} {{ card.last_name }}</td>
-                                <td>{{ card.organization }}</td>
-                                <td>{{ card.email }}</td>
-                                <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                                <td>
-                                    <div class="d-none d-md-flex gap-2">
-                                        <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
-                                            class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
-                                        <a href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"
-                                            class="btn btn-outline-secondary btn-sm">Editar</a>
-                                        <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
-                                            class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
-                                            <i class="fa-solid fa-qrcode"></i>
-                                        </a>
-                                        <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
-                                            method="POST" style="display:inline;">
-                                            {{ delete_forms[card.id].hidden_tag() }}
-                                            <button type="submit"
-                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
-                                                style="background:none; border:none; padding:0; cursor:pointer;">
-                                                <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <div class="d-md-none">
-                                        <div class="dropdown">
-                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                                type="button" id="dropdownMenuButton{{ card.card_id }}"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                Acciones
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ card.card_id }}">
-                                                <li><a class="dropdown-item"
-                                                        href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
-                                                        target="_blank"><i class="fas fa-eye me-2"></i>Ver</a></li>
-                                                <li><a class="dropdown-item"
-                                                        href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"><i
-                                                            class="fas fa-edit me-2"></i>Editar</a></li>
-                                                <li><a class="dropdown-item"
-                                                        href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
-                                                        title="Ver Código QR"><i class="fas fa-qrcode me-2"></i>Ver QR</a></li>
-                                                <li>
-                                                    <form
-                                                        action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
-                                                        method="POST" style="display:inline;">
-                                                        {{ delete_forms[card.id].hidden_tag() }}
-                                                        <button type="submit"
-                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
-                                                            class="dropdown-item bg-danger text-white">
-                                                            <i class="fa-regular fa-eraser me-2"></i>Eliminar
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
-                {% endif %}
-
-                <div class="mt-3">
-                    <a href="{{ url_for('pulzcard') }}" class="btn btn-secondary">
-                        <i class="fas fa-user-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i> Añadir
-                    </a>
-                </div>
-                <hr class="my-5">
-            </div>
-
-            <!-- Sección Etiquetas -->
-            <div id="etiquetasSection" style="display:none;">
-                <h4>Tus Etiquetas y QR Code</h4>
-                {% if tags %}
-                <form method="POST" action="{{ url_for('delete_bulk_tags') }}" id="bulkDeleteForm">
-                    {{ bulk_delete_tag_form.hidden_tag() }}
-                    <div class="action-bar-wrapper">
-                        <div class="action-bar">
-                            <button type="button"
-                                    class="action-btn btn-import"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#importTagsModal"
-                                    title="Importar etiquetas desde un archivo">
-                                <i class="bi bi-upload"></i>
-                            </button>
-
-                            <button type="button"
-                                    class="action-btn btn-export"
-                                    onclick="exportSelectedTags()"
-                                    title="Exportar etiquetas seleccionadas">
-                                <i class="bi bi-download"></i>
-                            </button>
-
-                            <button type="button"
-                                    class="action-btn btn-delete"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#confirmDeleteBulkModal"
-                                    title="Eliminar etiquetas seleccionadas">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="modal fade" id="confirmDeleteBulkModal" tabindex="-1" aria-labelledby="confirmDeleteBulkModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmDeleteBulkModalLabel">Confirmar Eliminación</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>¿Estás seguro de que deseas eliminar la(s) etiqueta(s) seleccionada(s)? Esta acción no se puede deshacer.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-danger" id="confirmDeleteBulkBtn">Eliminar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-10">
-
-                <div class="table-responsive">
-                    <table class="table table-hover custom-table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" id="select_all" form="bulkDeleteForm">
-                                </th>
-                                <th>Nombre Etiqueta</th>
-                                <th>URL destino</th>
-                                <th>URL enlace</th>
-                                <th>Vistas</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for tag in tags %}
-                            <tr>
-                                <td>
-                                    <input type="checkbox" name="selected_tags" value="{{ tag.tag_id }}" form="bulkDeleteForm">
-                                </td>
-                                <td>
-                                    {% set tag_name_display = tag.tag_name[:30] + '...' if tag.tag_name|length > 30 else tag.tag_name %}
-                                    {{ tag_name_display }}
-                                </td>
-                                <td>
-                                    {% set redirect_url_display = tag.redirect_url[:30] + '...' if tag.redirect_url|length > 30 else tag.redirect_url %}
-                                    <a href="{{ tag.redirect_url }}" target="_blank">{{ redirect_url_display }}</a>
-                                </td>
-                                <td>
-                                    {% set generated_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True) %}
-                                    {% set shortened_url = generated_url[:30] + '...' if generated_url|length > 30 else generated_url %}
-                                    <a href="{{ generated_url }}" target="_blank">{{ shortened_url }}</a>
-                                </td>
-                                <td>{{ tag.vistas }}</td>
-                                <td>
-                                    <div class="d-none d-md-flex gap-2">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="copyURL('{{ generated_url }}')">Copiar</button>
-                                        <a href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetasSection') }}" class="btn btn-outline-secondary btn-sm">Editar</a>
-                                        <a href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
-                                            <i class="fas fa-qrcode"></i>
-                                        </a>
-                                        <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
-                                            {{ delete_tag_forms[tag.id].hidden_tag() }}
-                                            <button type="submit"
-                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
-                                                style="background:none; border:none; padding:0; cursor:pointer;">
-                                                <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <div class="d-md-none">
-                                        <div class="dropdown">
-                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButtonTag{{ tag.tag_id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Acciones
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonTag{{ tag.tag_id }}">
-                                                <li>
-                                                    <a href="#" class="dropdown-item" onclick="copyURL('{{ generated_url }}'); return false;">
-                                                        <i class="fas fa-copy me-2"></i>Copiar URL
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="{{ url_for('edit_tag', tag_id=tag.tag_id, next='etiquetasSection') }}">
-                                                        <i class="fas fa-edit me-2"></i>Editar
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="{{ url_for('tag_qrcode', tag_id=tag.tag_id) }}" title="Ver Código QR">
-                                                        <i class="fas fa-qrcode me-2"></i>Ver QR
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <form action="{{ url_for('delete_tag', tag_id=tag.tag_id) }}" method="POST" style="display:inline;">
-                                                        {{ delete_tag_forms[tag.id].hidden_tag() }}
-                                                        <button type="submit"
-                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta etiqueta? Esta acción no se puede deshacer.')"
-                                                            class="dropdown-item bg-danger text-white">
-                                                            <i class="fa-regular fa-eraser me-2"></i>Eliminar
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p>No has creado ninguna etiqueta aún. <a href="#" class="text-decoration-underline"
-                        data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">Crear una Etiqueta</a>.</p>
-                {% endif %}
-
-                <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                        data-bs-target="#agregarEtiquetaModal">
-                        <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
-                        Añadir
-                    </button>
-                </div>
-                <hr class="my-5">
-            </div>
-
-            <!-- Sección Bodegas -->
-            <div id="bodegasSection" style="display:none;">
-                <h4>Bodegas</h4>
-                {% if bodegas %}
-                <div class="table-responsive">
-                    <table class="table table-hover custom-table">
-                        <thead>
-                            <tr>
-                                <th>ID Bodega</th>
-                                <th>Nombre</th>
-                                <th>Fecha de Creación</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for bodega in bodegas %}
-                            <tr>
-                                <td><a href="{{ url_for('view_bodega', uuid_bodega=bodega.uuid) }}">{{ bodega.id_bodega }}</a></td>
-                                <td>{{ bodega.nombre }}</td>
-                                <td>{{ bodega.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</td>
-                                <td>
-                                    <div class="d-none d-md-flex gap-2">
-                                        <a href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}"
-                                            class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
-                                            <i class="fas fa-qrcode"></i>
-                                        </a>
-                                        <a href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegasSection') }}"
-                                            class="btn btn-outline-secondary btn-sm">Editar</a>
-                                        <form action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}"
-                                            method="POST" style="display:inline;">
-                                            {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
-                                            <button type="submit"
-                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
-                                                style="background:none; border:none; padding:0; cursor:pointer;">
-                                                <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-
-                                    <div class="d-md-none">
-                                        <div class="dropdown">
-                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                                type="button" id="dropdownMenuButtonBodega{{ bodega.uuid }}"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                Acciones
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonBodega{{ bodega.uuid }}">
-                                                <li>
-                                                    <a href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}" class="dropdown-item" title="Ver Código QR">
-                                                        <i class="fas fa-qrcode me-2"></i>Ver QR
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegasSection') }}">
-                                                        <i class="fas fa-edit me-2"></i>Editar
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <form action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}" method="POST" style="display:inline;">
-                                                        {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
-                                                        <button type="submit"
-                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
-                                                            class="dropdown-item bg-danger text-white">
-                                                            <i class="fa-regular fa-eraser me-2"></i>Eliminar
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <p>No has creado ninguna bodega aún. <a href="#" class="text-decoration-underline"
-                        data-bs-toggle="modal" data-bs-target="#agregarBodegaModal">Crear una Bodega</a>.</p>
-                {% endif %}
-
-                <div class="mt-3">
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
-                        data-bs-target="#agregarBodegaModal">
-                        <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
-                        Añadir
-                    </button>
-                </div>
-            </div>
-
-            <!-- Sección detalle de Item de Dashboard -->
-            <div id="dashboardItemDetailSection" style="display:none;">
-                <h2 class="text-center mb-4" id="dashboardItemName"></h2>
-                <p class="text-center" id="dashboardItemType"></p>
-                <div class="text-center" id="surveyLinkContainer" style="display:none;">
-                    <a href="#" id="surveyLink" target="_blank" class="btn btn-primary">Responder Encuesta</a>
-                </div>
-                <div class="text-center">
-                    <button class="btn btn-danger" id="eliminarItemBtn">Eliminar</button>
-                </div>
-                <hr class="my-5">
-
-                <!-- Estadísticas de valoraciones -->
-                <div id="dashboardItemStats" style="display:none;">
-                    <h4 class="text-center mb-4">Estadísticas de Valoraciones (últimos 10 días)</h4>
-                    <table class="table table-bordered text-center" id="ratingsTable">
-                        <thead>
-                            <tr id="ratingsHeader">
-                                <th>Valoración</th>
-                                <!-- Se insertarán las fechas dinámicamente -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="rating5Row"><th>5</th></tr>
-                            <tr id="rating4Row"><th>4</th></tr>
-                            <tr id="rating3Row"><th>3</th></tr>
-                            <tr id="rating2Row"><th>2</th></tr>
-                            <tr id="rating1Row"><th>1</th></tr>
-                            <tr id="totalRow"><th>Total</th></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
+            <hr class="my-5">
         </div>
+
+        <!-- Sección Bodegas -->
+        <div id="bodegasSection" style="display:none;">
+            <h4>Bodegas</h4>
+            {% if bodegas %}
+            <div class="table-responsive">
+                <table class="table table-hover custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID Bodega</th>
+                            <th>Nombre</th>
+                            <th>Fecha de Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bodega in bodegas %}
+                        <tr>
+                            <td><a href="{{ url_for('view_bodega', uuid_bodega=bodega.uuid) }}">{{ bodega.id_bodega }}</a></td>
+                            <td>{{ bodega.nombre }}</td>
+                            <td>{{ bodega.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</td>
+                            <td>
+                                <div class="d-none d-md-flex gap-2">
+                                    <a href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}"
+                                        class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                        <i class="fas fa-qrcode"></i>
+                                    </a>
+                                    <a href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegasSection') }}"
+                                        class="btn btn-outline-secondary btn-sm">Editar</a>
+                                    <form action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}"
+                                        method="POST" style="display:inline;">
+                                        {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
+                                        <button type="submit"
+                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
+                                            style="background:none; border:none; padding:0; cursor:pointer;">
+                                            <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="d-md-none">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                            type="button" id="dropdownMenuButtonBodega{{ bodega.uuid }}"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            Acciones
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonBodega{{ bodega.uuid }}">
+                                            <li>
+                                                <a href="{{ url_for('bodega_qrcode', uuid_bodega=bodega.uuid) }}" class="dropdown-item" title="Ver Código QR">
+                                                    <i class="fas fa-qrcode me-2"></i>Ver QR
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('edit_bodega', uuid_bodega=bodega.uuid, next='bodegasSection') }}">
+                                                    <i class="fas fa-edit me-2"></i>Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="{{ url_for('delete_bodega', uuid_bodega=bodega.uuid) }}" method="POST" style="display:inline;">
+                                                    {{ delete_bodega_forms[bodega.uuid].hidden_tag() }}
+                                                    <button type="submit"
+                                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer.')"
+                                                        class="dropdown-item bg-danger text-white">
+                                                        <i class="fa-regular fa-eraser me-2"></i>Eliminar
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No has creado ninguna bodega aún. <a href="#" class="text-decoration-underline"
+                    data-bs-toggle="modal" data-bs-target="#agregarBodegaModal">Crear una Bodega</a>.</p>
+            {% endif %}
+
+            <div class="mt-3">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#agregarBodegaModal">
+                    <i class="fa-regular fa-square-plus" style="color: rgb(104, 245, 167); font-size: 1.0em;"></i>
+                    Añadir
+                </button>
+            </div>
+        </div>
+
+         <!-- Sección detalle de Item de Dashboard -->
+         <div id="dashboardItemDetailSection" style="display:none;">
+            <h2 class="text-center mb-4" id="dashboardItemName"></h2>
+            <p class="text-center" id="dashboardItemType"></p>
+            <div class="text-center" id="surveyLinkContainer" style="display:none;">
+                <a href="#" id="surveyLink" target="_blank" class="btn btn-primary">Responder Encuesta</a>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-danger" id="eliminarItemBtn">Eliminar</button>
+            </div>
+            <hr class="my-5">
+
+            <!-- Estadísticas de valoraciones -->
+            <div id="dashboardItemStats" style="display:none;">
+                <h4 class="text-center mb-4">Estadísticas de Valoraciones (últimos 10 días)</h4>
+                <table class="table table-bordered text-center" id="ratingsTable">
+                    <thead>
+                        <tr id="ratingsHeader">
+                            <th>Valoración</th>
+                            <!-- Se insertarán las fechas dinámicamente -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="rating5Row"><th>5</th></tr>
+                        <tr id="rating4Row"><th>4</th></tr>
+                        <tr id="rating3Row"><th>3</th></tr>
+                        <tr id="rating2Row"><th>2</th></tr>
+                        <tr id="rating1Row"><th>1</th></tr>
+                        <tr id="totalRow"><th>Total</th></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -708,6 +737,60 @@
     </div>
 </div>
 
+<!-- Modal para agregar un nuevo Item del Dashboard -->
+<div class="modal fade" id="agregarItemModal" tabindex="-1" aria-labelledby="agregarItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="agregarItemForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="agregarItemModalLabel">Agregar Nuevo Item al Dashboard</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="itemNameInput" class="form-label">Nombre del Item</label>
+                        <input type="text" class="form-control" id="itemNameInput" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="itemTypeSelect" class="form-label">Tipo de Item</label>
+                        <select class="form-select" id="itemTypeSelect" name="item_type" required>
+                            <option value="" selected disabled>Selecciona un tipo</option>
+                            <option value="Evaluación de Clientes">Evaluación de Clientes</option>
+                            <option value="Visualizaciones diarias">Visualizaciones diarias</option>
+                            <!-- Agrega más opciones según tus necesidades -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Agregar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar un Item del Dashboard -->
+<div class="modal fade" id="confirmDeleteDashboardItemModal" tabindex="-1" aria-labelledby="confirmDeleteDashboardItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteDashboardItemForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteDashboardItemModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este ítem del Dashboard? Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% if bodega_form.errors %}
 <script>
     var agregarBodegaModal = new bootstrap.Modal(document.getElementById('agregarBodegaModal'));
@@ -729,16 +812,26 @@
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
-{% include 'modal_agregar_item.html' %}
+<!-- Elimina esta línea si 'modal_agregar_item.html' ya está incluido directamente -->
+<!-- {% include 'modal_agregar_item.html' %} -->
 
 <script>
     $(document).ready(function () {
-        // Aquí asocias el evento a todos los .dashboard-item-link ya existentes
-        $('.dashboard-item-link').off('click').on('click', function(e) {
+        // Inicializar DataTables
+        $('.custom-table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
+            }
+        });
+
+        // Manejo de clic en Dashboard Items
+        $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
             e.preventDefault();
             const name = $(this).data('item-name');
             const type = $(this).data('item-type');
             const itemId = $(this).data('item-id');
+            
+            console.log("Name:", name, "Type:", type, "Item ID:", itemId);
 
             $('#dashboardItemName').text(name);
             $('#dashboardItemType').text(type);
@@ -746,6 +839,7 @@
 
             if (type === "Evaluación de Clientes") {
                 const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
+                console.log("Survey URL:", surveyUrl);
                 $('#surveyLink').attr('href', surveyUrl);
                 $('#surveyLinkContainer').show();
                 $('#dashboardItemStats').show();
@@ -758,12 +852,6 @@
             showSection('dashboardItemDetailSection');
         });
 
-        $('.custom-table').DataTable({
-            "language": {
-                "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-            }
-        });
-
         function showSection(section) {
             const sections = ['miPerfilSection', 'pulzcardsSection', 'etiquetasSection', 'bodegasSection', 'dashboardItemDetailSection'];
             sections.forEach(sec => {
@@ -771,10 +859,17 @@
             });
         }
 
+        // Manejo de hash en la URL para mantener el estado al refrescar
         function handleHash() {
             const hash = window.location.hash.substring(1);
             if (hash) {
                 showSection(hash);
+                if (hash === 'dashboardItemDetailSection') {
+                    const itemId = $('#eliminarItemBtn').data('item-id');
+                    if (itemId) {
+                        renderLast10DaysTable(itemId);
+                    }
+                }
             } else {
                 showSection('miPerfilSection');
             }
@@ -783,6 +878,7 @@
         window.addEventListener('load', handleHash, false);
         window.addEventListener('hashchange', handleHash, false);
 
+        // Manejar navegación en pantallas pequeñas
         document.querySelectorAll('a.nav-link.sub-link').forEach(function(link) {
             const href = link.getAttribute('href');
             if (href.startsWith('#')) {
@@ -795,6 +891,7 @@
             }
         });
 
+        // Función para copiar URL al portapapeles
         window.copyURL = function(url) {
             navigator.clipboard.writeText(url).then(() => {
                 alert('URL copiada al portapapeles!');
@@ -803,6 +900,7 @@
             });
         }
 
+        // Toggle del Sidebar
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('sidebarToggle');
 
@@ -815,10 +913,12 @@
             }
         });
 
+        // Seleccionar/Desseleccionar todas las etiquetas
         $('#select_all').click(function(){
             $('input[name="selected_tags"]').prop('checked', this.checked);
         });
 
+        // Confirmar eliminación en masa de etiquetas
         $('#confirmDeleteBulkBtn').click(function(){
             $('#bulkDeleteForm').submit();
         });
@@ -844,41 +944,48 @@
                 },
                 success: function(response) {
                     const newItem = `
-                      <a href="#" 
-                         class="nav-link sub-link dashboard-item-link" 
-                         data-item-id="${response.uuid}"
-                         data-item-name="${itemName}" 
-                         data-item-type="${itemType}">
-                         <i class="bi bi-dot"></i><span class="text-label ms-1">${itemName}</span>
-                      </a>`;
+                      <li>
+                          <a href="#dashboardItemDetailSection" 
+                             class="nav-link sub-link dashboard-item-link" 
+                             data-item-id="${response.uuid}"
+                             data-item-name="${itemName}" 
+                             data-item-type="${itemType}">
+                             <i class="bi bi-dot"></i><span class="text-label ms-1">${itemName}</span>
+                          </a>
+                      </li>`;
                     $('#dashboardItemsContainer').append(newItem);
 
                     $('#agregarItemModal').modal('hide');
                     $('#itemNameInput').val('');
                     $('#itemTypeSelect').val('');
 
-                    // Reasignamos el evento click a todos los ítems del dashboard, incluidos los recién creados:
+                    // Asignar eventos de clic a los nuevos enlaces
                     $('.dashboard-item-link').off('click').on('click', function(e) {
                         e.preventDefault();
                         const name = $(this).data('item-name');
                         const type = $(this).data('item-type');
                         const itemId = $(this).data('item-id');
-    
+
+                        if (!itemId) {
+                            console.error("El UUID del ítem no fue proporcionado.");
+                            alert("Hubo un problema al cargar este ítem.");
+                            return;
+                        }
+
                         $('#dashboardItemName').text(name);
                         $('#dashboardItemType').text(type);
                         $('#eliminarItemBtn').data('item-id', itemId);
-    
+
                         if (type === "Evaluación de Clientes") {
                             const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
                             $('#surveyLink').attr('href', surveyUrl);
                             $('#surveyLinkContainer').show();
-                            $('#dashboardItemStats').show();
                             renderLast10DaysTable(itemId);
                         } else {
                             $('#surveyLinkContainer').hide();
                             $('#dashboardItemStats').hide();
                         }
-    
+
                         showSection('dashboardItemDetailSection');
                     });
                 },
@@ -888,7 +995,7 @@
             });
         });
 
-        // Evento para el botón "Eliminar" en el detalle
+        // Evento para el botón "Eliminar" en el detalle del ítem del Dashboard
         $('#eliminarItemBtn').off('click').on('click', function() {
             const itemId = $(this).data('item-id');
 
@@ -897,26 +1004,158 @@
                 return;
             }
 
-            $.ajax({
-                url: "{{ url_for('delete_dashboard_item') }}",
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ uuid: itemId }),
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token() }}'
-                },
-                success: function() {
-                    $(`.dashboard-item-link[data-item-id="${itemId}"]`).remove();
-                    showSection('miPerfilSection');
-                },
-                error: function() {
-                    alert('Error al eliminar el ítem.');
-                }
+            // Mostrar el modal de confirmación de eliminación
+            var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
+            confirmDeleteModal.show();
+
+            // Manejar la eliminación dentro del modal
+            $('#deleteDashboardItemForm').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ url_for('delete_dashboard_item') }}",
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ uuid: itemId }),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // Eliminar el enlace del ítem del DOM
+                        $(`.dashboard-item-link[data-item-id="${itemId}"]`).parent().remove();
+                        // Ocultar la sección de detalles
+                        showSection('miPerfilSection');
+                        // Cerrar el modal
+                        confirmDeleteModal.hide();
+                        alert('Ítem eliminado exitosamente.');
+                    },
+                    error: function() {
+                        alert('Error al eliminar el ítem.');
+                    }
+                });
             });
         });
 
+        // Función para exportar etiquetas seleccionadas
+        function exportSelectedTags() {
+            const selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
+            if (selectedTags.length === 0) {
+                alert('Por favor, selecciona al menos una etiqueta para exportar.');
+                return;
+            }
+
+            const tagIds = Array.from(selectedTags).map(tag => tag.value);
+            fetch('{{ url_for("export_tags") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ tag_ids: tagIds })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.error); });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'tags_export.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Hubo un error al exportar las etiquetas: ' + error.message);
+            });
+        }
+
+        // Función para renderizar la tabla de valoraciones de los últimos 10 días
+        function renderLast10DaysTable(itemUUID) {
+            const ratingsHeader = document.getElementById('ratingsHeader');
+            // Limpiar las cabeceras (excepto la primera columna)
+            Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
+
+            ['rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'].forEach(rowId => {
+                const row = document.getElementById(rowId);
+                while (row.children.length > 1) {
+                    row.removeChild(row.lastChild);
+                }
+            });
+
+            const today = new Date();
+            const dates = [];
+            for (let i = 0; i < 10; i++) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth()+1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                dates.unshift(`${dd}-${mm}-${yyyy}`);
+            }
+
+            dates.forEach(dateStr => {
+                const th = document.createElement('th');
+                th.textContent = dateStr;
+                ratingsHeader.appendChild(th);
+            });
+
+            // Obtener el UUID del ítem actualmente seleccionado
+            $.ajax({
+                url: '{{ url_for("get_ratings_data") }}',
+                type: 'GET',
+                data: { item_uuid: itemUUID },
+                success: function(response) {
+                    if (response.error) {
+                        console.error("Error:", response.error);
+                        return;
+                    }
+
+                    console.log(response); // Debugging
+
+                    const ratingsData = response.ratings;
+                    renderTableWithData(ratingsData);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al obtener datos:', error);
+                }
+            });
+        }
+
+        // Función para renderizar los datos en la tabla de valoraciones
+        function renderTableWithData(ratingsData) {
+            [5,4,3,2,1].forEach(val => {
+                const row = document.getElementById('rating' + val + 'Row');
+                ratingsData[val.toString()].forEach(count => {
+                    const td = document.createElement('td');
+                    td.textContent = count;
+                    row.appendChild(td);
+                });
+            });
+
+            const totalRow = document.getElementById('totalRow');
+            let dayTotals = Array(10).fill(0);
+            [5,4,3,2,1].forEach(val => {
+                ratingsData[val.toString()].forEach((count, i) => {
+                    dayTotals[i] += count;
+                });
+            });
+
+            dayTotals.forEach(count => {
+                const td = document.createElement('td');
+                td.textContent = count;
+                totalRow.appendChild(td);
+            });
+        }
+
     });
 
+    // Inicializar Tooltips
     document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(function (tooltipTriggerEl) {
@@ -924,117 +1163,5 @@
         });
     });
 
-    function exportSelectedTags() {
-        const selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
-        if (selectedTags.length === 0) {
-            alert('Por favor, selecciona al menos una etiqueta para exportar.');
-            return;
-        }
-
-        const tagIds = Array.from(selectedTags).map(tag => tag.value);
-        fetch('/export_tags', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ tag_ids: tagIds })
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = 'tags_export.xlsx';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            alert('Hubo un error al exportar las etiquetas.');
-        });
-    }
-
-    function renderLast10DaysTable(itemUUID) {
-        const ratingsHeader = document.getElementById('ratingsHeader');
-        // Limpiar las cabeceras (excepto la primera columna)
-        Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
-
-        ['rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'].forEach(rowId => {
-            const row = document.getElementById(rowId);
-            while (row.children.length > 1) {
-                row.removeChild(row.lastChild);
-            }
-        });
-
-        const today = new Date();
-        const dates = [];
-        for (let i = 0; i < 10; i++) {
-            const d = new Date(today);
-            d.setDate(d.getDate() - i);
-            const dd = String(d.getDate()).padStart(2, '0');
-            const mm = String(d.getMonth()+1).padStart(2, '0');
-            const yyyy = d.getFullYear();
-            dates.unshift(`${dd}-${mm}-${yyyy}`);
-        }
-
-        dates.forEach(dateStr => {
-            const th = document.createElement('th');
-            th.textContent = dateStr;
-            ratingsHeader.appendChild(th);
-        });
-
-        // Obtener el UUID del ítem actualmente seleccionado
-        $.ajax({
-            url: '/get_ratings_data',
-            type: 'GET',
-            data: { item_uuid: itemUUID },
-            success: function(response) {
-                if (response.error) {
-                    console.error("Error:", response.error);
-                    return;
-                }
-
-        console.log(response); // <-- Agregar esta línea
-
-                const ratingsData = response.ratings;
-                renderTableWithData(ratingsData);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al obtener datos:', error);
-            }
-        });
-    }
-
-    function renderTableWithData(ratingsData) {
-        [5,4,3,2,1].forEach(val => {
-            const row = document.getElementById('rating' + val + 'Row');
-            ratingsData[val.toString()].forEach(count => {
-                const td = document.createElement('td');
-                td.textContent = count;
-                row.appendChild(td);
-            });
-        });
-
-        const totalRow = document.getElementById('totalRow');
-        let dayTotals = Array(10).fill(0);
-        [5,4,3,2,1].forEach(val => {
-            ratingsData[val.toString()].forEach((count, i) => {
-                dayTotals[i] += count;
-            });
-        });
-
-        dayTotals.forEach(count => {
-            const td = document.createElement('td');
-            td.textContent = count;
-            totalRow.appendChild(td);
-        });
-    }
 </script>
-<style>
-    body {background-image: url("/static/images/background.jpg"), url("/static/images/backup.jpg");}
-</style>
 {% endblock %}

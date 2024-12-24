@@ -1,7 +1,7 @@
 # forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, TextAreaField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FileField, TextAreaField, SelectField, IntegerField, HiddenField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Optional, Regexp
 from flask_wtf.file import FileAllowed
 from models import User
@@ -11,13 +11,9 @@ class VerificationForm(FlaskForm):
     submit = SubmitField('Verificar')
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Nombre de Usuario', validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])
-    password = PasswordField('Contraseña', validators=[
-        DataRequired(),
-        Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
-        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
-    submit = SubmitField('Registrarse')
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Register')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
@@ -58,7 +54,7 @@ class ResetPasswordForm(FlaskForm):
     password = PasswordField('Contraseña', validators=[
         DataRequired(),
         Length(min=8, message='La contraseña debe tener al menos 8 caracteres.'),
-        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.')])
+        Regexp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$', message='La contraseña debe incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial (@$!%*?&).')])
     confirm_password = PasswordField('Confirmar Contraseña', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Restablecer Contraseña')
 
@@ -194,3 +190,8 @@ class DeleteProductoForm(FlaskForm):
 
 class BulkDeleteTagForm(FlaskForm):
     submit = SubmitField('Eliminar Selección')
+
+class DeleteDashboardItemForm(FlaskForm):
+    submit = SubmitField('Eliminar')
+    # Si necesitas, puedes añadir un campo oculto para el UUID
+    item_uuid = HiddenField('UUID', validators=[DataRequired()])

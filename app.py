@@ -32,10 +32,10 @@ from forms import (
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
     ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
     BodegaForm, EditBodegaForm, DeleteBodegaForm,
-    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm,
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm
 )
 from flask_login import login_required, current_user, login_user, logout_user
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 load_dotenv()  # Carga las variables de entorno desde el archivo .env
 
@@ -198,7 +198,7 @@ Equipo de PulztagWeb
 def login():
     if current_user.is_authenticated:
         flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
+        return redirect(url_for('profile') + '#miPerfilSection')  # Redirigir a 'profile' con el hash para la sección de perfil
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -208,7 +208,8 @@ def login():
                 flash('Por favor, establece una nueva contraseña.', 'warning')
                 return redirect(url_for('change_password'))
             flash('Has iniciado sesión correctamente.', 'success')
-            return redirect(url_for('home'))
+            # Redirigir al perfil, específicamente a la sección 'miPerfilSection'
+            return redirect(url_for('profile') + '#miPerfilSection')
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
@@ -346,6 +347,7 @@ def contact():
             return redirect(url_for('contact'))
 
     return render_template('contact.html', form=form)
+
 
 @app.route('/products')
 def products():
@@ -522,6 +524,7 @@ def order():
 def create_item():
     return render_template('create_item.html')
 
+
 def redirect_back(default='profile'):
     next_page = request.args.get('next')
     if next_page:
@@ -530,6 +533,7 @@ def redirect_back(default='profile'):
         return redirect(request.referrer)
     else:
         return redirect(url_for(default))
+
 
 # Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
@@ -664,6 +668,7 @@ def pulzcard_download_vcard(filename):
         return redirect(url_for('home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
+
 tag_fields = ['tag_name', 'redirect_url']
 
 # Ruta: Perfil de Usuario
@@ -683,6 +688,7 @@ def profile():
     delete_tag_forms = {tag.id: DeleteTagForm(prefix=str(tag.tag_id)) for tag in tags}
     delete_bodega_forms = {bodega.uuid: DeleteBodegaForm(prefix=str(bodega.uuid)) for bodega in bodegas}
     dashboard_items = DashboardItem.query.filter_by(user_id=current_user.id).all()
+    print(f"Dashboard Items para el usuario {current_user.id}: {dashboard_items}")
 
     if tag_form.validate_on_submit() and tag_form.submit.data:
         new_tag = Tag(
@@ -776,7 +782,6 @@ def delete_tag(tag_id):
 
     return redirect(url_for('profile') + '#etiquetasSection')
 
-tag_fields = ['tag_name', 'redirect_url']
 
 @app.route('/tags/delete_bulk', methods=['POST'])
 @login_required
@@ -801,6 +806,7 @@ def delete_bulk_tags():
     else:
         flash('Formulario inválido o token CSRF no válido.', 'danger')
     return redirect(url_for('profile') + '#etiquetasSection')
+
 
 @app.route('/import/tags', methods=['POST'])
 @login_required
@@ -851,6 +857,7 @@ def import_tags():
 
     return redirect(url_for('profile') + '#etiquetasSection')
 
+
 @app.route('/export_tags', methods=['POST'])
 @login_required
 def export_tags():
@@ -886,6 +893,7 @@ def export_tags():
     response.headers["Content-Disposition"] = "attachment; filename=tags_export.xlsx"
     response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     return response
+
 
 # Ruta: Editar Pulzcard
 @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST'])
@@ -1014,6 +1022,7 @@ def edit_tag(tag_id):
 
     return render_template('edit_tag.html', title='Editar Etiqueta', form=form, tag=tag)
 
+
 @app.route('/tag/qrcode_image/<tag_id>')
 @login_required
 def tag_qrcode_image(tag_id):
@@ -1110,10 +1119,11 @@ def view_bodega(uuid_bodega):
         delete_caja_forms=delete_caja_forms
     )
 
+
 @app.route('/bodega/<uuid_bodega>/caja/new', methods=['GET', 'POST'])
 @login_required
 def create_caja(uuid_bodega):
-    # Verifica si la bodega existe
+    # Verificar si la bodega existe
     bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
 
     form = CajaForm()
@@ -1135,6 +1145,7 @@ def create_caja(uuid_bodega):
         return redirect(url_for('view_bodega', uuid_bodega=uuid_bodega))
 
     return render_template('create_caja.html', form=form, bodega=bodega)
+
 
 @app.route('/bodega/edit/<uuid_bodega>', methods=['GET', 'POST'])
 @login_required
@@ -1195,6 +1206,7 @@ def bodega_qrcode(uuid_bodega):
         tag_id=uuid_bodega,
         share_url=share_url
     )
+
 
 @app.route('/caja/<uuid_caja>', methods=['GET'])
 @login_required
@@ -1287,6 +1299,7 @@ def caja_qrcode(uuid_caja):
     share_url = url_for('view_caja', uuid_caja=caja.uuid, _external=True)
     return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Caja', tag_id=uuid_caja, share_url=share_url)
 
+
 @app.route('/productos/<uuid_producto>', endpoint='product_detail')
 @login_required
 def product_detail(uuid_producto):
@@ -1306,6 +1319,7 @@ def product_detail(uuid_producto):
     
     delete_producto_form = DeleteProductoForm()
     return render_template('product_detail.html', producto=producto, delete_producto_form=delete_producto_form)
+
 
 @app.route('/cajas/<uuid_caja>/productos/nuevo', methods=['GET', 'POST'])
 @login_required
@@ -1361,6 +1375,7 @@ def create_producto(uuid_caja):
 
     return render_template('create_producto.html', form=form, caja=caja)
 
+
 @app.route('/productos/<uuid_producto>/edit', methods=['GET', 'POST'], endpoint='edit_producto')
 @login_required
 def edit_producto(uuid_producto):
@@ -1397,6 +1412,7 @@ def edit_producto(uuid_producto):
 
     return render_template('edit_producto.html', form=form, producto=producto)
 
+
 @app.route('/productos/<uuid_producto>/delete', methods=['POST'], endpoint='delete_producto')
 @login_required
 def delete_producto(uuid_producto):
@@ -1426,7 +1442,6 @@ def delete_producto(uuid_producto):
 
     return redirect(url_for('view_caja', uuid_caja=producto.caja.uuid))
 
-# app.py
 
 @app.route('/productos/<uuid_producto>/qrcode_image', methods=['GET'])
 @login_required
@@ -1439,6 +1454,7 @@ def producto_qrcode_image(uuid_producto):
     qr_img.save(img_io, 'PNG')
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
+
 
 @app.route('/productos/qrcode/<uuid_producto>', methods=['GET'])
 @login_required
@@ -1460,6 +1476,8 @@ def producto_qrcode(uuid_producto):
         share_url=share_url
     )
 
+
+# Rutas para DashboardItem (Definidas una sola vez)
 @app.route('/create_dashboard_item', methods=['POST'])
 @login_required
 def create_dashboard_item():
@@ -1481,44 +1499,6 @@ def create_dashboard_item():
     return jsonify({'uuid': new_item.uuid}), 200
 
 
-@app.route('/survey/<item_uuid>')
-def survey(item_uuid):
-    item = DashboardItem.query.filter_by(uuid=item_uuid).first()
-    if not item:
-        return "Este ítem no existe o ha sido eliminado.", 404
-
-    if item.item_type == "Evaluación de Clientes":
-        return render_template('encuesta_evaluacion.html', item_uuid=item_uuid)
-    elif item.item_type == "Visualizaciones diarias":
-        return "Esta sección mostrará un resultado distinto para 'Visualizaciones diarias'."
-    else:
-        return "Tipo de ítem desconocido."
-
-@app.route('/survey/submit/<item_uuid>', methods=['POST'])
-def submit_survey(item_uuid):
-    # Aquí obtienes la evaluación enviada por el usuario
-    evaluation = request.form.get('evaluation')
-    
-    # Lógica para guardar la respuesta en la BD
-    # Suponiendo que tienes un modelo SurveyResponse con campos item_id, rating, timestamp
-    # Necesitarías obtener el item a partir del item_uuid:
-    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
-    if not item:
-        flash("Item no encontrado", "danger")
-        return redirect(url_for('home'))
-
-    new_response = SurveyResponse(
-        item_id=item.id,
-        rating=int(evaluation),
-        timestamp=datetime.utcnow()
-    )
-    db.session.add(new_response)
-    db.session.commit()
-
-    flash("¡Gracias por tu evaluación!", "success")
-    # Redirige a donde quieras, por ejemplo, de vuelta a la encuesta o al profile
-    return redirect(url_for('survey', item_uuid=item_uuid))
-
 @app.route('/delete_dashboard_item', methods=['POST'])
 @login_required
 def delete_dashboard_item():
@@ -1531,9 +1511,14 @@ def delete_dashboard_item():
     if not item:
         return jsonify({'error': 'Ítem no encontrado o no autorizado'}), 404
 
-    db.session.delete(item)
-    db.session.commit()
-    return jsonify({'success': True}), 200
+    try:
+        db.session.delete(item)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'Error al eliminar el ítem.'}), 500
+
 
 @app.route('/get_ratings_data', methods=['GET'])
 @login_required
@@ -1556,13 +1541,13 @@ def get_ratings_data():
     ratingsData = {str(r): [0]*10 for r in range(1,6)}
 
     # Filtrar las respuestas dentro de los últimos 10 días
-    start_date = dates[0]
-    end_date = dates[-1] + timedelta(days=1)  # Hasta el día siguiente del último día, para incluirlo completo
-    
+    start_datetime = datetime.combine(dates[0], datetime.min.time())
+    end_datetime = datetime.combine(dates[-1] + timedelta(days=1), datetime.min.time())
+
     responses = SurveyResponse.query.filter(
         SurveyResponse.item_id == item.id,
-        SurveyResponse.timestamp >= datetime(start_date.year, start_date.month, start_date.day),
-        SurveyResponse.timestamp < datetime(end_date.year, end_date.month, end_date.day)
+        SurveyResponse.timestamp >= start_datetime,
+        SurveyResponse.timestamp < end_datetime
     ).all()
 
     # Contabilizar las respuestas por día y valoración
@@ -1574,6 +1559,57 @@ def get_ratings_data():
             ratingsData[str(resp.rating)][day_index] += 1
 
     return jsonify({"ratings": ratingsData})
+
+
+@app.route('/survey/<item_uuid>')
+def survey(item_uuid):
+    item = DashboardItem.query.filter_by(uuid=item_uuid).first()
+    if not item:
+        return "Este ítem no existe o ha sido eliminado.", 404
+
+    if item.item_type == "Evaluación de Clientes":
+        return render_template('encuesta_evaluacion.html', item_uuid=item_uuid)
+    elif item.item_type == "Visualizaciones diarias":
+        return "Esta sección mostrará un resultado distinto para 'Visualizaciones diarias'."
+    else:
+        return "Tipo de ítem desconocido."
+
+
+@app.route('/survey/submit/<item_uuid>', methods=['POST'])
+def submit_survey(item_uuid):
+    evaluation = request.form.get('evaluation')
+    
+    item = DashboardItem.query.filter_by(uuid=item_uuid).first()
+    if not item:
+        flash("Item no encontrado", "danger")
+        return jsonify({'error': 'Item not found'}), 404
+
+    if item.item_type != "Evaluación de Clientes":
+        flash("Este ítem no admite evaluaciones.", "danger")
+        return jsonify({'error': 'Invalid item type'}), 400
+
+    try:
+        new_response = SurveyResponse(
+            item_id=item.id,
+            rating=int(evaluation),
+            timestamp=datetime.now(timezone.utc)
+        )
+        db.session.add(new_response)
+        db.session.commit()
+        flash("¡Gracias por tu evaluación!", "success")
+        return jsonify({'status': 'success', 'message': 'Evaluación guardada'}), 200
+    except Exception as e:
+        db.session.rollback()
+        flash("Hubo un error al guardar tu evaluación.", "danger")
+        return jsonify({'error': 'Database error'}), 500
+
+
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 # Crear las tablas de la base de datos
 with app.app_context():

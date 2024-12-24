@@ -1,3 +1,7 @@
+# Al hacer cambios en models.py, hay que migrar:
+ - flask db migrate -m "Añadidos descripción de cambios"
+ - flask db upgrade
+
 git status
 git add .
 git commit -m "Texto cambios"
@@ -9,6 +13,8 @@ git commit -m "Mensaje descriptivo de los cambios"
 git push origin main
 
 tree -L 3
+
+flask shell
 
 javiersc@MacBook-Air-de-Javier pulztagweb % source virtualenv/bin/activate
 (virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % 

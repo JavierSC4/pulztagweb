@@ -13,7 +13,7 @@
         </p>
 
         <!-- Grid de Productos -->
-        <div class="row gy-5">
+        <div class="row" style="padding: 60px 20px; background-color: #f9f9f975; text-align: center;">
             <!-- Producto 1 -->
             <div class="col-lg-4">
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
@@ -22,10 +22,10 @@
                     <img src="{{ url_for('static', filename='images/productos/etiqueta_redes_sociales_nfc.png') }}" class="card-img-top" alt="Etiqueta Redes Sociales NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse1">
+                        <div class="collapse text-start" id="collapse1">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Sticker personalizadas con tecnología NFC, recubiertas con epoxy antimetal para una mayor durabilidad y resistencia al agua.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -34,7 +34,7 @@
                                 <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir información de URL y redes sociales, tarjeta de presentación digital, etc.</li>
                             </ul>
-                        </div>
+                        </div>                        
 
                         <div class="mt-auto d-flex justify-content-between align-items-center">
                             <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
@@ -55,10 +55,10 @@
                     <img src="{{ url_for('static', filename='images/productos/tarjetas_pvc_inteligentes_nfc.png') }}" class="card-img-top" alt="Tarjetas PVC Inteligentes NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse2">
+                        <div class="collapse text-start" id="collapse2">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Tarjetas PVC Inteligentes NFC Pasivas Personalizables Imprimibles 13.56MHz NTAG213.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -83,15 +83,15 @@
             <!-- Producto 3 -->
             <div class="col-lg-4">
                 <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Soporte de Menú de Acrílico con Código QR y NFC.</h4>
+                    <h4 class="card-title text-primary">Soporte de Menú de Acrílico con QR Code y NFC.</h4>
                     <div style="margin: 10px;"></div>
                     <img src="{{ url_for('static', filename='images/productos/soporte_menu_qr_nfc.png') }}" class="card-img-top" alt="Soporte de Menú QR NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse3">
+                        <div class="collapse text-start" id="collapse3">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Soporte de Menú con Código QR y NFC de Acrílico Plástico Personalizado 13.56MHz Resistente al Agua
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -121,10 +121,10 @@
                     <img src="{{ url_for('static', filename='images/productos/pulseras_tejidas_nfc.jpg') }}" class="card-img-top" alt="Pulseras Tejidas RFID" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse4">
+                        <div class="collapse text-start" id="collapse4">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Pulseras Tejidas NFC personalizables.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -154,10 +154,10 @@
                     <img src="{{ url_for('static', filename='images/productos/pulsera_silicona.png') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse5">
+                        <div class="collapse text-start" id="collapse5">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Tarjeta PVC Reescribible Blanca o Negra Personalizable.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM.</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56 MHz.</li>
@@ -187,10 +187,10 @@
                     <img src="{{ url_for('static', filename='images/productos/etiqueta_nfc_redes_sociales.png') }}" class="card-img-top" alt="Etiqueta NFC Redes Sociales" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse6">
+                        <div class="collapse text-start" id="collapse6">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Etiqueta NFC de Redes Sociales Epoxy Resistente al Agua Antimetal Personalizable.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -220,10 +220,10 @@
                     <img src="{{ url_for('static', filename='images/productos/tarjetas_madera_nfc.png') }}" class="card-img-top" alt="Tarjetas de Madera NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse7">
+                        <div class="collapse text-start" id="collapse7">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Tarjetas de Madera NFC Empresariales Personalizables.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -253,10 +253,10 @@
                     <img src="{{ url_for('static', filename='images/productos/tarjeta_pvc.jpg') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse8">
+                        <div class="collapse text-start" id="collapse8">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Tarjeta PVC Reescribible Blanca o Negra Personalizable.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -286,10 +286,10 @@
                     <img src="{{ url_for('static', filename='images/productos/tarjeta_redonda_pvc_nfc.png') }}" class="card-img-top" alt="Tarjeta Redonda PVC NFC" style="object-fit: cover; height: 200px;">
                     <div class="card-body d-flex flex-column">
                         <!-- Sección Colapsable -->
-                        <div class="collapse" id="collapse9">
+                        <div class="collapse text-start" id="collapse9">
                             <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2">
-                                    Tarjetas redondas de PVC duro con etiquetas NFC integradas, ideales para juegos, tarjetas de presentación digitales y conexiones a redes sociales.
+                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
+                                    Detalle técnico
                                 </h6>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
                                 <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
@@ -315,7 +315,7 @@
     </div>
     <style>
         .titulo-seccion {
-            margin-top: 130px; /* Añade espacio superior */
+            margin-top: 50px; /* Añade espacio superior */
         }
     </style>
     <!-- Estilos CSS para el Chevron -->
