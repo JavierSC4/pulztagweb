@@ -33,7 +33,7 @@ from forms import (
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
     ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
     BodegaForm, EditBodegaForm, DeleteBodegaForm,
-    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm, ImportPulzcardForm, BulkDeletePulzcardForm
 )
 from flask_login import login_required, current_user, login_user, logout_user
 from datetime import datetime, timedelta, timezone
@@ -222,7 +222,6 @@ def login():
         else:
             flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
     return render_template('login.html', title='Iniciar Sesión', form=form)
-
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -680,12 +679,164 @@ def pulzcard_download_vcard(filename):
 
 tag_fields = ['tag_name', 'redirect_url']
 
+# 1. Ruta para importar Pulzcards
+@app.route('/import/pulzcards', methods=['POST'])
+@login_required
+def import_pulzcards():
+    form = ImportPulzcardForm()
+    if form.validate_on_submit():
+        file = form.excelFile.data
+        if file.filename == '':
+            flash('No se ha seleccionado ningún archivo para Pulzcards.', 'danger')
+            return redirect(url_for('profile') + '#pulzcardsSection')
+
+        if allowed_file(file.filename, ALLOWED_EXCEL_EXTENSIONS):
+            try:
+                df = pd.read_excel(file)
+
+                # Definir las columnas que esperas
+                required_columns = [
+                    'card_name', 'first_name', 'last_name', 
+                    'organization', 'position', 'phone',
+                    'email', 'website', 'address', 'template'
+                ]
+                # Verificar que existan
+                if not all(col in df.columns for col in required_columns):
+                    flash('El archivo Excel no contiene todas las columnas requeridas para Pulzcards.', 'danger')
+                    return redirect(url_for('profile') + '#pulzcardsSection')
+
+                # Insertar
+                for _, row in df.iterrows():
+                    new_pulz = Pulzcard(
+                        card_name=row['card_name'],
+                        first_name=row['first_name'],
+                        last_name=row['last_name'],
+                        organization=row['organization'],
+                        position=row['position'],
+                        phone=row['phone'],
+                        email=row['email'],
+                        website=row['website'],
+                        address=row['address'],
+                        template=row['template'] if 'template' in row and pd.notna(row['template']) else 'template1',
+                        user_id=current_user.id
+                    )
+                    db.session.add(new_pulz)
+                    db.session.flush()  # Para asignar card_id
+
+                    # Crear la vCard en archivo .vcf (similar a como lo haces en /pulzcard)
+                    vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{new_pulz.first_name} {new_pulz.last_name}
+ORG:{new_pulz.organization}
+TITLE:{new_pulz.position}
+TEL;TYPE=WORK,VOICE:{new_pulz.phone}
+EMAIL:{new_pulz.email}
+URL:{new_pulz.website}
+ADR;TYPE=WORK:;;{new_pulz.address}
+END:VCARD"""
+                    vcard_path = os.path.join(VCARD_FOLDER, f'{new_pulz.card_id}.vcf')
+                    with open(vcard_path, 'w') as f:
+                        f.write(vcard)
+
+                db.session.commit()
+                flash('Pulzcards importadas exitosamente.', 'success')
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error al importar Pulzcards: {e}', 'danger')
+        else:
+            flash('Formato de archivo no permitido.', 'danger')
+    else:
+        # Errores del formulario
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"Error en {field}: {error}", 'danger')
+
+    return redirect(url_for('profile') + '#pulzcardsSection')
+
+
+# 2. Ruta para exportar Pulzcards seleccionadas
+@app.route('/export_pulzcards', methods=['POST'])
+@login_required
+def export_pulzcards():
+    data = request.get_json()
+    pulz_ids = data.get('pulz_ids', [])
+    if not pulz_ids:
+        return jsonify({'error': 'No se seleccionaron Pulzcards para exportar.'}), 400
+
+    # Buscar las pulzcards del user actual
+    pulzcards = Pulzcard.query.filter(Pulzcard.card_id.in_(pulz_ids), Pulzcard.user_id == current_user.id).all()
+    if not pulzcards:
+        return jsonify({'error': 'Pulzcards no encontradas o no pertenecen al usuario.'}), 404
+
+    # Crear DataFrame
+    df = pd.DataFrame([{
+        'card_name': p.card_name,
+        'first_name': p.first_name,
+        'last_name': p.last_name,
+        'organization': p.organization,
+        'position': p.position,
+        'phone': p.phone,
+        'email': p.email,
+        'website': p.website,
+        'address': p.address,
+        'template': p.template,
+        'fecha_creacion': p.created_at
+    } for p in pulzcards])
+
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, sheet_name='Pulzcards', index=False)
+    writer.close()
+    output.seek(0)
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=pulzcards_export.xlsx"
+    response.headers["Content-type"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    return response
+
+
+# 3. Borrado masivo de Pulzcards (opcional)
+@app.route('/pulzcard/delete_bulk', methods=['POST'])
+@login_required
+def delete_bulk_pulzcards():
+    form = BulkDeletePulzcardForm()
+    if form.validate_on_submit():
+        selected_pulzcards = request.form.getlist('selected_pulzcards')  # array con card_id
+        if not selected_pulzcards:
+            flash('No se seleccionaron Pulzcards para eliminar.', 'warning')
+            return redirect(url_for('profile') + '#pulzcardsSection')
+
+        try:
+            pulzcards_to_delete = Pulzcard.query.filter(
+                Pulzcard.card_id.in_(selected_pulzcards),
+                Pulzcard.user_id == current_user.id
+            ).all()
+
+            for p in pulzcards_to_delete:
+                # Eliminar vCard del sistema de archivos
+                vcard_path = os.path.join(VCARD_FOLDER, f'{p.card_id}.vcf')
+                if os.path.exists(vcard_path):
+                    os.remove(vcard_path)
+                db.session.delete(p)
+
+            db.session.commit()
+            flash(f'{len(pulzcards_to_delete)} Pulzcard(s) eliminada(s) exitosamente.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al eliminar Pulzcards: {e}', 'danger')
+    else:
+        flash('Formulario inválido o token CSRF no válido.', 'danger')
+
+    return redirect(url_for('profile') + '#pulzcardsSection')
+
 # Ruta: Perfil de Usuario
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     global tag_fields  # Declarar que tag_fields es una variable global
     pulzcards = Pulzcard.query.filter_by(user_id=current_user.id).order_by(Pulzcard.created_at.desc()).all()
+    import_pulzcards_form = ImportPulzcardForm() # Instancia de Importar Pulzcards
+    bulk_delete_pulzcard_form = BulkDeletePulzcardForm() # Instancia de Borrado Masivo Pulzcards (opcional)
     tags = Tag.query.filter_by(user_id=current_user.id).order_by(Tag.created_at.desc()).all()
     bodegas = Bodega.query.filter_by(user_id=current_user.id).order_by(Bodega.fecha_creacion.desc()).all()
     tag_form = TagForm()
@@ -735,6 +886,8 @@ def profile():
         'profile.html',
         title='Perfil de Usuario',
         pulzcards=pulzcards,
+        import_pulzcards_form=import_pulzcards_form,
+        bulk_delete_pulzcard_form=bulk_delete_pulzcard_form,
         tags=tags,
         bodegas=bodegas,
         tag_form=tag_form,
@@ -746,7 +899,7 @@ def profile():
         tag_fields=tag_fields,
         bulk_delete_tag_form=bulk_delete_tag_form,
         section=section,
-        dashboard_items=dashboard_items  # Añade esta línea
+        dashboard_items=dashboard_items,  # Añade esta línea
     )
 
 @app.context_processor

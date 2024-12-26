@@ -132,13 +132,13 @@
                                 data-item-id="{{ item.uuid }}"
                                 data-item-name="{{ item.name }}"
                                 data-item-type="{{ item.item_type }}">
-                                    <i class="bi bi-dot"></i><span class="text-label ms-1">{{ item.name }}</span>
+                                    <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
                                 </a>
                             </li>
                             {% endfor %}
                         {% else %}
                             <li>
-                                <span class="text-muted ms-3">No hay items disponibles</span>
+                                <span class="text-muted ms-3">Sin items disponibles</span>
                             </li>
                         {% endif %}
                     </div>
@@ -228,90 +228,176 @@
             <hr class="my-5">
         </div>
 
-        <!-- Sección Pulzcards -->
+        <!-- Dentro de pulzcardsSection -->
         <div id="pulzcardsSection" style="display:none;">
             <h4>Tus Pulzcards</h4>
-            {% if pulzcards %}
-            <div class="table-responsive">
-                <table class="table table-hover custom-table">
-                    <thead>
-                        <tr>
-                            <th>Nombre Tarjeta</th>
-                            <th>Nombre</th>
-                            <th>Organización</th>
-                            <th>Email</th>
-                            <th>Fecha de Creación</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for card in pulzcards %}
-                        <tr>
-                            <td>{{ card.card_name }}</td>
-                            <td>{{ card.first_name }} {{ card.last_name }}</td>
-                            <td>{{ card.organization }}</td>
-                            <td>{{ card.email }}</td>
-                            <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
-                            <td>
-                                <div class="d-none d-md-flex gap-2">
-                                    <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
-                                        class="btn btn-outline-secondary btn-sm" target="_blank">Ver</a>
-                                    <a href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"
-                                        class="btn btn-outline-secondary btn-sm">Editar</a>
-                                    <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
-                                        class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
-                                        <i class="fa-solid fa-qrcode"></i>
-                                    </a>
-                                    <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
-                                        method="POST" style="display:inline;">
-                                        {{ delete_forms[card.id].hidden_tag() }}
-                                        <button type="submit"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
-                                            style="background:none; border:none; padding:0; cursor:pointer;">
-                                            <i class="fa-solid fa-delete-left fa-rotate-by" style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
-                                        </button>
-                                    </form>
-                                </div>
 
-                                <div class="d-md-none">
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                            type="button" id="dropdownMenuButton{{ card.card_id }}"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                            Acciones
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ card.card_id }}">
-                                            <li><a class="dropdown-item"
-                                                    href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
-                                                    target="_blank"><i class="fas fa-eye me-2"></i>Ver</a></li>
-                                            <li><a class="dropdown-item"
-                                                    href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcards') }}"><i
-                                                        class="fas fa-edit me-2"></i>Editar</a></li>
-                                            <li><a class="dropdown-item"
-                                                    href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
-                                                    title="Ver Código QR">
-                                                <i class="fas fa-qrcode me-2"></i>Ver QR</a></li>
-                                            <li>
-                                                <form
-                                                    action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
-                                                    method="POST" style="display:inline;">
-                                                    {{ delete_forms[card.id].hidden_tag() }}
-                                                    <button type="submit"
-                                                        onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
-                                                        class="dropdown-item bg-danger text-white">
-                                                        <i class="fa-regular fa-eraser me-2"></i>Eliminar
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
+            {% if pulzcards %}
+            <!-- Formulario para borrado masivo -->
+            <form method="POST" action="{{ url_for('delete_bulk_pulzcards') }}" id="bulkDeletePulzcardForm">
+                {{ bulk_delete_pulzcard_form.hidden_tag() }}
+
+                <!-- Barra de acciones -->
+                <div class="action-bar-wrapper">
+                    <div class="action-bar">
+                        <!-- IMPORTAR: abre un modal similar a importTagsModal -->
+                        <button type="button"
+                                class="action-btn btn-import"
+                                data-bs-toggle="modal"
+                                data-bs-target="#importPulzcardModal"
+                                title="Importar Pulzcards desde un archivo Excel">
+                            <i class="bi bi-upload"></i>
+                        </button>
+
+                        <!-- EXPORTAR: llama a una función JS similar a exportSelectedPulzcards() -->
+                        <button type="button"
+                                class="action-btn btn-export"
+                                onclick="exportSelectedPulzcards()"
+                                title="Exportar Pulzcards seleccionadas">
+                            <i class="bi bi-download"></i>
+                        </button>
+
+                        <!-- ELIMINAR MASIVO: abre modal de confirmación -->
+                        <button type="button"
+                                class="action-btn btn-delete"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteBulkPulzcardsModal"
+                                title="Eliminar Pulzcards seleccionadas">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <hr class="my-10">
+
+                <div class="table-responsive">
+                    <table class="table table-hover custom-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="select_all_pulzcards" form="bulkDeletePulzcardForm">
+                                </th>
+                                <th>Nombre Tarjeta</th>
+                                <th>Nombre</th>
+                                <th>Organización</th>
+                                <th>Email</th>
+                                <th>Fecha de Creación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for card in pulzcards %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="selected_pulzcards" value="{{ card.card_id }}" form="bulkDeletePulzcardForm">
+                                </td>
+                                <td>{{ card.card_name }}</td>
+                                <td>{{ card.first_name }} {{ card.last_name }}</td>
+                                <td>{{ card.organization }}</td>
+                                <td>{{ card.email }}</td>
+                                <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>
+                                    <!-- Versión desktop: íconos y texto en línea -->
+                                    <div class="d-none d-md-flex gap-2">
+                                        <!-- Ver pulzcard -->
+                                        <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                           class="btn btn-outline-secondary btn-sm" target="_blank">
+                                           Ver
+                                        </a>
+                                        <!-- Editar pulzcard -->
+                                        <a href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcardsSection') }}"
+                                           class="btn btn-outline-secondary btn-sm">
+                                           Editar
+                                        </a>
+                                        <!-- Ver QR -->
+                                        <a href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                           class="btn btn-outline-secondary btn-sm" title="Ver Código QR">
+                                            <i class="fas fa-qrcode"></i>
+                                        </a>
+                                        <!-- Eliminar -->
+                                        <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" 
+                                              method="POST" style="display:inline;">
+                                            {{ delete_forms[card.id].hidden_tag() }}
+                                            <button type="submit"
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                                style="background:none; border:none; padding:0; cursor:pointer;">
+                                                <i class="fa-solid fa-delete-left fa-rotate-by" 
+                                                   style="color: #ff5957; --fa-rotate-angle: 0deg; font-size: 1.8em"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                
+                                    <!-- Versión mobile: dropdown con acciones -->
+                                    <div class="d-md-none">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                    type="button"
+                                                    id="dropdownMenuButtonPulz{{ card.card_id }}"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButtonPulz{{ card.card_id }}">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
+                                                       target="_blank">
+                                                        <i class="fas fa-eye me-2"></i>Ver
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ url_for('edit_pulzcard', card_id=card.card_id, next='pulzcardsSection') }}">
+                                                       <i class="fas fa-edit me-2"></i>Editar
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ url_for('pulzcard_qrcode', card_id=card.card_id) }}"
+                                                       title="Ver Código QR">
+                                                       <i class="fas fa-qrcode me-2"></i>Ver QR
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
+                                                          method="POST" style="display:inline;">
+                                                        {{ delete_forms[card.id].hidden_tag() }}
+                                                        <button type="submit"
+                                                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard? Esta acción no se puede deshacer.')"
+                                                            class="dropdown-item bg-danger text-white">
+                                                            <i class="fa-regular fa-eraser me-2"></i>Eliminar
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+
+            <!-- Modal de confirmación para borrado masivo -->
+            <div class="modal fade" id="confirmDeleteBulkPulzcardsModal" tabindex="-1" aria-labelledby="confirmDeleteBulkPulzcardsModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteBulkPulzcardsModalLabel">Confirmar Eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Estás seguro de que deseas eliminar las Pulzcards seleccionadas? Esta acción no se puede deshacer.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBulkPulzcardsBtn">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
             {% else %}
             <p>No has creado ninguna Pulzcard aún. <a href="{{ url_for('pulzcard') }}">Crear una Pulzcard</a>.</p>
             {% endif %}
@@ -611,6 +697,52 @@
     </div>
 </div>
 
+<!-- Modal para Importar Pulzcards -->
+<div class="modal fade" id="importPulzcardModal" tabindex="-1" aria-labelledby="importPulzcardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('import_pulzcards') }}" enctype="multipart/form-data">
+                {{ import_pulzcards_form.hidden_tag() }}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importPulzcardModalLabel">Importar Pulzcards desde Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Cómo Importar:</strong></p>
+                    <p>Asegúrate de que tu archivo Excel tenga **al menos** las columnas:</p>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                {% for field in pulzcard_fields %}
+                                <th>{{ field }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% for _ in pulzcard_fields %}
+                                <td>Ejemplo</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="mb-3">
+                        <label for="excelFilePulzcards" class="form-label">Selecciona tu archivo Excel</label>
+                        {{ import_pulzcards_form.excelFile(class="form-control", id="excelFilePulzcards", required=True) }}
+                        {% for error in import_pulzcards_form.excelFile.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    {{ import_pulzcards_form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para agregar una nueva Etiqueta -->
 <div class="modal fade" id="agregarEtiquetaModal" tabindex="-1" aria-labelledby="agregarEtiquetaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -808,69 +940,44 @@
 {% endblock %}
 
 {% block scripts %}
+
+<!-- Librerías JS para jQuery y DataTables -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- Elimina esta línea si 'modal_agregar_item.html' ya está incluido directamente -->
-<!-- {% include 'modal_agregar_item.html' %} -->
-
 <script>
     $(document).ready(function () {
-        // Inicializar DataTables
+        // 1) Inicializar DataTables en todas las tablas con clase .custom-table
         $('.custom-table').DataTable({
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
             }
         });
 
-        // Manejo de clic en Dashboard Items
-        $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
-            e.preventDefault();
-            const name = $(this).data('item-name');
-            const type = $(this).data('item-type');
-            const itemId = $(this).data('item-id');
-            
-            console.log("Name:", name, "Type:", type, "Item ID:", itemId);
-
-            $('#dashboardItemName').text(name);
-            $('#dashboardItemType').text(type);
-            $('#eliminarItemBtn').data('item-id', itemId);
-
-            if (type === "Evaluación de Clientes") {
-                const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
-                console.log("Survey URL:", surveyUrl);
-                $('#surveyLink').attr('href', surveyUrl);
-                $('#surveyLinkContainer').show();
-                $('#dashboardItemStats').show();
-                renderLast10DaysTable(itemId); 
-            } else {
-                $('#surveyLinkContainer').hide();
-                $('#dashboardItemStats').hide();
-            }
-
-            showSection('dashboardItemDetailSection');
-        });
-
+        // 2) Manejo de navegación y secciones (hash en la URL)
         function showSection(section) {
-            const sections = ['miPerfilSection', 'pulzcardsSection', 'etiquetasSection', 'bodegasSection', 'dashboardItemDetailSection'];
+            const sections = [
+                'miPerfilSection',
+                'pulzcardsSection',
+                'etiquetasSection',
+                'bodegasSection',
+                'dashboardItemDetailSection'
+            ];
             sections.forEach(sec => {
-                document.getElementById(sec).style.display = (sec === section) ? 'block' : 'none';
+                const el = document.getElementById(sec);
+                if (el) {
+                    el.style.display = (sec === section) ? 'block' : 'none';
+                }
             });
         }
 
-        // Manejo de hash en la URL para mantener el estado al refrescar
         function handleHash() {
             const hash = window.location.hash.substring(1);
             if (hash) {
                 showSection(hash);
-                if (hash === 'dashboardItemDetailSection') {
-                    const itemId = $('#eliminarItemBtn').data('item-id');
-                    if (itemId) {
-                        renderLast10DaysTable(itemId);
-                    }
-                }
             } else {
+                // Por defecto, muestra 'miPerfilSection'
                 showSection('miPerfilSection');
             }
         }
@@ -878,165 +985,61 @@
         window.addEventListener('load', handleHash, false);
         window.addEventListener('hashchange', handleHash, false);
 
-        // Manejar navegación en pantallas pequeñas
+        // Para links de sub-menu en pantallas pequeñas
         document.querySelectorAll('a.nav-link.sub-link').forEach(function(link) {
             const href = link.getAttribute('href');
             if (href.startsWith('#')) {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const hash = this.getAttribute('href').substring(1);
-                    window.location.hash = hash;
-                    showSection(hash);
+                    const targetSection = this.getAttribute('href').substring(1);
+                    window.location.hash = targetSection;
+                    showSection(targetSection);
                 });
             }
         });
 
-        // Función para copiar URL al portapapeles
+        // 3) Función para copiar URL al portapapeles
         window.copyURL = function(url) {
             navigator.clipboard.writeText(url).then(() => {
                 alert('URL copiada al portapapeles!');
             }).catch(err => {
                 alert('Error al copiar la URL: ' + err);
             });
-        }
+        };
 
-        // Toggle del Sidebar
+        // 4) Lógica del Sidebar Toggle
         const sidebar = document.getElementById('sidebar');
         const toggleBtn = document.getElementById('sidebarToggle');
-
-        toggleBtn.addEventListener('click', function () {
-            sidebar.classList.toggle('collapsed');
-            if (sidebar.classList.contains('collapsed')) {
-                this.innerHTML = '<i class="bi bi-chevron-right"></i>';
-            } else {
-                this.innerHTML = '<i class="bi bi-chevron-left"></i>';
-            }
-        });
-
-        // Seleccionar/Desseleccionar todas las etiquetas
-        $('#select_all').click(function(){
-            $('input[name="selected_tags"]').prop('checked', this.checked);
-        });
-
-        // Confirmar eliminación en masa de etiquetas
-        $('#confirmDeleteBulkBtn').click(function(){
-            $('#bulkDeleteForm').submit();
-        });
-
-        // Lógica para agregar items en el dashboard (AJAX)
-        $('#agregarItemForm').submit(function(e){
-            e.preventDefault();
-            const itemName = $('#itemNameInput').val().trim();
-            const itemType = $('#itemTypeSelect').val();
-
-            if (!itemName || !itemType) {
-                alert('Por favor, completa todos los campos antes de aceptar.');
-                return;
-            }
-
-            $.ajax({
-                url: "{{ url_for('create_dashboard_item') }}",
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ name: itemName, item_type: itemType }),
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token() }}'
-                },
-                success: function(response) {
-                    const newItem = `
-                      <li>
-                          <a href="#dashboardItemDetailSection" 
-                             class="nav-link sub-link dashboard-item-link" 
-                             data-item-id="${response.uuid}"
-                             data-item-name="${itemName}" 
-                             data-item-type="${itemType}">
-                             <i class="bi bi-dot"></i><span class="text-label ms-1">${itemName}</span>
-                          </a>
-                      </li>`;
-                    $('#dashboardItemsContainer').append(newItem);
-
-                    $('#agregarItemModal').modal('hide');
-                    $('#itemNameInput').val('');
-                    $('#itemTypeSelect').val('');
-
-                    // Asignar eventos de clic a los nuevos enlaces
-                    $('.dashboard-item-link').off('click').on('click', function(e) {
-                        e.preventDefault();
-                        const name = $(this).data('item-name');
-                        const type = $(this).data('item-type');
-                        const itemId = $(this).data('item-id');
-
-                        if (!itemId) {
-                            console.error("El UUID del ítem no fue proporcionado.");
-                            alert("Hubo un problema al cargar este ítem.");
-                            return;
-                        }
-
-                        $('#dashboardItemName').text(name);
-                        $('#dashboardItemType').text(type);
-                        $('#eliminarItemBtn').data('item-id', itemId);
-
-                        if (type === "Evaluación de Clientes") {
-                            const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
-                            $('#surveyLink').attr('href', surveyUrl);
-                            $('#surveyLinkContainer').show();
-                            renderLast10DaysTable(itemId);
-                        } else {
-                            $('#surveyLinkContainer').hide();
-                            $('#dashboardItemStats').hide();
-                        }
-
-                        showSection('dashboardItemDetailSection');
-                    });
-                },
-                error: function() {
-                    alert('Hubo un error al crear el ítem, intente nuevamente.');
+        if (sidebar && toggleBtn) {
+            toggleBtn.addEventListener('click', function () {
+                sidebar.classList.toggle('collapsed');
+                if (sidebar.classList.contains('collapsed')) {
+                    this.innerHTML = '<i class="bi bi-chevron-right"></i>';
+                } else {
+                    this.innerHTML = '<i class="bi bi-chevron-left"></i>';
                 }
             });
-        });
+        }
 
-        // Evento para el botón "Eliminar" en el detalle del ítem del Dashboard
-        $('#eliminarItemBtn').off('click').on('click', function() {
-            const itemId = $(this).data('item-id');
-
-            if (!itemId) {
-                console.error('No se encontró el item-id a eliminar');
-                return;
-            }
-
-            // Mostrar el modal de confirmación de eliminación
-            var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
-            confirmDeleteModal.show();
-
-            // Manejar la eliminación dentro del modal
-            $('#deleteDashboardItemForm').off('submit').on('submit', function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: "{{ url_for('delete_dashboard_item') }}",
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ uuid: itemId }),
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        // Eliminar el enlace del ítem del DOM
-                        $(`.dashboard-item-link[data-item-id="${itemId}"]`).parent().remove();
-                        // Ocultar la sección de detalles
-                        showSection('miPerfilSection');
-                        // Cerrar el modal
-                        confirmDeleteModal.hide();
-                        alert('Ítem eliminado exitosamente.');
-                    },
-                    error: function() {
-                        alert('Error al eliminar el ítem.');
-                    }
-                });
+        // 5) Seleccionar/Desseleccionar todas las Etiquetas
+        const selectAllTagsCheckbox = document.getElementById('select_all');
+        if (selectAllTagsCheckbox) {
+            selectAllTagsCheckbox.addEventListener('click', function(){
+                const checkboxes = document.querySelectorAll('input[name="selected_tags"]');
+                checkboxes.forEach(ch => ch.checked = this.checked);
             });
-        });
+        }
 
-        // Función para exportar etiquetas seleccionadas
-        function exportSelectedTags() {
+        // 6) Confirmar eliminación en masa de Etiquetas
+        const confirmDeleteBulkBtn = document.getElementById('confirmDeleteBulkBtn');
+        if (confirmDeleteBulkBtn) {
+            confirmDeleteBulkBtn.addEventListener('click', function(){
+                document.getElementById('bulkDeleteForm').submit();
+            });
+        }
+
+        // 7) Función para exportar Etiquetas seleccionadas
+        window.exportSelectedTags = function() {
             const selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
             if (selectedTags.length === 0) {
                 alert('Por favor, selecciona al menos una etiqueta para exportar.');
@@ -1073,14 +1076,182 @@
                 console.error('Error:', error);
                 alert('Hubo un error al exportar las etiquetas: ' + error.message);
             });
+        };
+
+        // -------------------------------------------------------------------
+        //    BLOQUE PARA PULZCARDS: Importar, Exportar, Selección en Masa
+        // -------------------------------------------------------------------
+
+        // 8) Seleccionar/Desseleccionar todas las Pulzcards
+        const selectAllPulzcardsCheckbox = document.getElementById('select_all_pulzcards');
+        if (selectAllPulzcardsCheckbox) {
+            selectAllPulzcardsCheckbox.addEventListener('click', function(){
+                const checkboxes = document.querySelectorAll('input[name="selected_pulzcards"]');
+                checkboxes.forEach(ch => ch.checked = this.checked);
+            });
         }
 
-        // Función para renderizar la tabla de valoraciones de los últimos 10 días
+        // 9) Confirmar eliminación en masa de Pulzcards
+        const confirmDeleteBulkPulzcardsBtn = document.getElementById('confirmDeleteBulkPulzcardsBtn');
+        if (confirmDeleteBulkPulzcardsBtn) {
+            confirmDeleteBulkPulzcardsBtn.addEventListener('click', function(){
+                document.getElementById('bulkDeletePulzcardForm').submit();
+            });
+        }
+
+        // 10) Función para exportar Pulzcards seleccionadas
+        window.exportSelectedPulzcards = function() {
+            const selected = document.querySelectorAll('input[name="selected_pulzcards"]:checked');
+            if (selected.length === 0) {
+                alert('Por favor, selecciona al menos una Pulzcard para exportar.');
+                return;
+            }
+
+            const pulz_ids = Array.from(selected).map(el => el.value);
+            fetch('{{ url_for("export_pulzcards") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ pulz_ids: pulz_ids })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => { throw new Error(data.error); });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'pulzcards_export.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Hubo un error al exportar las Pulzcards: ' + error.message);
+            });
+        };
+
+        // -------------------------------------------------------------------
+        //             BLOQUE PARA MANEJO DE DASHBOARD ITEMS
+        // -------------------------------------------------------------------
+
+        // Lógica para mostrar el detalle de un Item en el Dashboard (si lo usas)
+        $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
+            e.preventDefault();
+            const name = $(this).data('item-name');
+            const type = $(this).data('item-type');
+            const itemId = $(this).data('item-id');
+
+            $('#dashboardItemName').text(name);
+            $('#dashboardItemType').text(type);
+            $('#eliminarItemBtn').data('item-id', itemId);
+
+            if (type === "Evaluación de Clientes") {
+                const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
+                $('#surveyLink').attr('href', surveyUrl);
+                $('#surveyLinkContainer').show();
+                $('#dashboardItemStats').show();
+                renderLast10DaysTable(itemId);
+            } else {
+                $('#surveyLinkContainer').hide();
+                $('#dashboardItemStats').hide();
+            }
+
+            showSection('dashboardItemDetailSection');
+        });
+
+        // Agregar ítem al dashboard (Ajax)
+        $('#agregarItemForm').submit(function(e){
+            e.preventDefault();
+            const itemName = $('#itemNameInput').val().trim();
+            const itemType = $('#itemTypeSelect').val();
+
+            if (!itemName || !itemType) {
+                alert('Por favor, completa todos los campos antes de continuar.');
+                return;
+            }
+
+            $.ajax({
+                url: "{{ url_for('create_dashboard_item') }}",
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: itemName, item_type: itemType }),
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    // Agregar el nuevo link en el sidebar
+                    const newItem = `
+                    <li>
+                        <a href="#dashboardItemDetailSection" 
+                           class="nav-link sub-link dashboard-item-link" 
+                           data-item-id="${response.uuid}"
+                           data-item-name="${itemName}"
+                           data-item-type="${itemType}">
+                            <i class="bi bi-dot"></i><span class="text-label ms-1">${itemName}</span>
+                        </a>
+                    </li>`;
+                    $('#dashboardItemsContainer').append(newItem);
+
+                    $('#agregarItemModal').modal('hide');
+                    $('#itemNameInput').val('');
+                    $('#itemTypeSelect').val('');
+                },
+                error: function() {
+                    alert('Hubo un error al crear el ítem, intenta nuevamente.');
+                }
+            });
+        });
+
+        // Eliminar ítem del dashboard (Ajax)
+        $('#eliminarItemBtn').on('click', function() {
+            const itemId = $(this).data('item-id');
+            if (!itemId) {
+                console.error('No se encontró el item-id a eliminar');
+                return;
+            }
+            var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
+            confirmDeleteModal.show();
+
+            $('#deleteDashboardItemForm').off('submit').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "{{ url_for('delete_dashboard_item') }}",
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ uuid: itemId }),
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        // Eliminar el link del DOM
+                        $(`.dashboard-item-link[data-item-id="${itemId}"]`).parent().remove();
+                        // Volver a la vista "Mi Perfil"
+                        showSection('miPerfilSection');
+                        confirmDeleteModal.hide();
+                        alert('Ítem eliminado exitosamente.');
+                    },
+                    error: function() {
+                        alert('Error al eliminar el ítem.');
+                    }
+                });
+            });
+        });
+
+        // Renderizar tabla de valoraciones (Ejemplo: "Evaluación de Clientes")
         function renderLast10DaysTable(itemUUID) {
             const ratingsHeader = document.getElementById('ratingsHeader');
-            // Limpiar las cabeceras (excepto la primera columna)
+            // Limpiar las cabeceras (excepto la primera)
             Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
-
+            // Limpiar filas
             ['rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'].forEach(rowId => {
                 const row = document.getElementById(rowId);
                 while (row.children.length > 1) {
@@ -1099,13 +1270,14 @@
                 dates.unshift(`${dd}-${mm}-${yyyy}`);
             }
 
+            // Agregar cabeceras con fechas
             dates.forEach(dateStr => {
                 const th = document.createElement('th');
                 th.textContent = dateStr;
                 ratingsHeader.appendChild(th);
             });
 
-            // Obtener el UUID del ítem actualmente seleccionado
+            // Llamar a la ruta de Flask para obtener los datos
             $.ajax({
                 url: '{{ url_for("get_ratings_data") }}',
                 type: 'GET',
@@ -1115,9 +1287,6 @@
                         console.error("Error:", response.error);
                         return;
                     }
-
-                    console.log(response); // Debugging
-
                     const ratingsData = response.ratings;
                     renderTableWithData(ratingsData);
                 },
@@ -1127,7 +1296,6 @@
             });
         }
 
-        // Función para renderizar los datos en la tabla de valoraciones
         function renderTableWithData(ratingsData) {
             [5,4,3,2,1].forEach(val => {
                 const row = document.getElementById('rating' + val + 'Row');
@@ -1152,16 +1320,15 @@
                 totalRow.appendChild(td);
             });
         }
-
     });
 
-    // Inicializar Tooltips
+    // Inicializar Tooltips (si los usas en tu HTML)
     document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.forEach(function (tooltipTriggerEl) {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
-
 </script>
+
 {% endblock %}

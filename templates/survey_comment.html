@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Comentarios de la Encuesta{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Comentarios para el ítem: {{ item.name }}</h2>
+    <hr>
+    {% if responses %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Valoración</th>
+                    <th>Comentario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for resp in responses %}
+                <tr>
+                    <td>{{ resp.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ resp.rating }}</td>
+                    <td>{{ resp.comment or '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No se han registrado comentarios para este ítem.</p>
+    {% endif %}
+</div>
+{% endblock %}

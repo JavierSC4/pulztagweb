@@ -89,6 +89,16 @@ class EditPulzcardForm(FlaskForm):
 class DeletePulzcardForm(FlaskForm):
     submit = SubmitField('Eliminar')
 
+class ImportPulzcardForm(FlaskForm):
+    excelFile = FileField('Archivo Excel', validators=[
+        DataRequired(message='Por favor, selecciona un archivo Excel.'),
+        FileAllowed(['xlsx', 'xls'], 'Solo se permiten archivos de Excel (.xlsx, .xls).')
+    ])
+    submit = SubmitField('Importar Pulzcards')
+
+class BulkDeletePulzcardForm(FlaskForm):
+    submit = SubmitField('Eliminar Selección')
+
 class ContactForm(FlaskForm):
     nombre = StringField('Nombre', validators=[DataRequired()])
     email = StringField('Correo Electrónico', validators=[DataRequired(), Email()])

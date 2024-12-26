@@ -16,10 +16,6 @@ tree -L 3
 
 flask shell
 
-flask db migrate -m "Descripción del cambio"
-flask db upgrade
-
-
 javiersc@MacBook-Air-de-Javier pulztagweb % source virtualenv/bin/activate
 (virtualenv) javiersc@MacBook-Air-de-Javier pulztagweb % 
 
