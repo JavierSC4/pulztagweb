@@ -75,5 +75,20 @@
 
     {% block scripts %}{% endblock %}
 </body>
+<style>
+    @media (max-width: 768px) {
+        /* Oculta el contenedor del video */
+        .video-container {
+        display: none;
+        }
+        
+        /* Muestra la imagen como fondo en la sección hero */
+        .hero-section {
+        background: url("{{ url_for('static', filename='images/bg_image1.png') }}") center center no-repeat;
+        background-size: cover;
+        }
+    }
+</style>
+
 
 </html>
