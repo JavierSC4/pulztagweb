@@ -626,17 +626,17 @@ form h4 {
         font-size: 2.5rem;
     }
     .hero-section .subtitle {
-        font-size: 1.1rem;
+        font-size: 2.1rem;
     }
     .hero-section {
-        height: 100vh; /* Reducir la altura a la mitad de la pantalla */
-        padding: 40px 15px; /* Ajustar el padding si es necesario */
+        height: 80vh; /* Reducir la altura a la mitad de la pantalla */
+        padding: 0px 0px; /* Ajustar el padding si es necesario */
     }
     .hero-section .video-container {
         display: none; /* Opcional: Ocultar el video en móviles para mejorar el rendimiento */
     }
     .overlay {
-        background: rgba(18, 37, 51, 0.7); /* Aumentar opacidad para mejor legibilidad */
+        background: rgba(18, 37, 51, 0.257); /* Aumentar opacidad para mejor legibilidad */
     }
 }
 
@@ -666,7 +666,7 @@ form h4 {
 @media (max-width: 576px) {
     .login-card, .register-card {
         width: 90%;
-        padding: 1.5rem;
+        padding: 0.3rem;
     }
 }
 
