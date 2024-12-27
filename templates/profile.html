@@ -7,6 +7,16 @@
 {% block head %}
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 <style>
+    /* Sobrescribir la imagen de fondo global para la página de perfil */
+    body {
+        background-image: url("/static/images/background.jpg") !important;
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        /* Opcional: Puedes ajustar o añadir otras propiedades según necesites */
+    }
+</style>
+<style>
     /* Asegura que el contenedor principal use Flexbox */
     .d-flex {
         display: flex !important;
