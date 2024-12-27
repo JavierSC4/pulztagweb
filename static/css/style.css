@@ -7,12 +7,21 @@ html, body {
     padding: 0;
 }
 
+/* Definición de fondo por defecto para dispositivos móviles */
 body {
     background-image: url("/static/images/bg2.jpg"), url("/static/images/background_1.jpg");
     background-size: cover;
-    background-attachment: fixed;
+    background-attachment: scroll; /* Evita 'fixed' en móviles */
     background-position: center;
     font-family: 'Roboto', sans-serif; /* Fuente base */
+}
+
+/* Sobrescribe la imagen de fondo para pantallas más grandes (desktops y tablets) */
+@media (min-width: 768px) {
+    body {
+        background-image: url("/static/images/background.jpg"), url("/static/images/background_1.jpg");
+        background-attachment: fixed; /* Solo aplica 'fixed' en pantallas grandes */
+    }
 }
 
 /****************************************************************************/
