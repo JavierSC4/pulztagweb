@@ -2,7 +2,7 @@
 
 /* Tipografía Global */
 body {
-    background-image: url("/static/images/bg2.jpg"), url("/static/images/background_1.jpg");
+    background-image: url("/static/images/bg2.png"), url("/static/images/background_1.jpg");
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
