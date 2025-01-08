@@ -1,6 +1,35 @@
+<!-- templates/about.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Acerca de - Pulztag{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <!-- Meta para responsividad -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+      .titulo-seccion {
+          font-size: 2.3em;
+          font-weight: bold;
+          text-align: center;
+          margin-top: 50px;
+          margin-bottom: 40px;
+      }
+      .introduction-section .zoom-effect:hover {
+          transform: scale(1.02);
+          transition: transform 0.3s ease-in-out;
+      }
+      .service-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .service-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+    </style>
+{% endblock %}
 
 {% block content %}
 <div class="container my-5">
@@ -18,18 +47,24 @@
             <div class="col-md-6 order-md-1">
                 <h3>Innovación y Tecnología a tu Servicio</h3>
                 <p>
-                    En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes con <strong>soluciones NFC personalizadas</strong>.  
-                    Nos especializamos en <strong>optimizar procesos</strong>, crear conexiones significativas y llevar a nuestros clientes hacia la <strong>transformación digital</strong>.
+                    En <strong>Pulztag</strong>, reinventamos la interacción entre empresas y clientes con <strong>soluciones NFC personalizadas</strong>.
+                    Nos especializamos en <strong>optimizar procesos</strong>, crear conexiones significativas y llevar a nuestros clientes
+                    hacia la <strong>transformación digital</strong>.
                 </p>
                 <p>
-                    Nuestra pasión por la <strong>innovación tecnológica</strong> nos posiciona como tu socio estratégico en el mundo digital actual.
+                    Nuestra pasión por la <strong>innovación tecnológica</strong> nos posiciona como tu socio estratégico en el
+                    mundo digital actual, garantizando un crecimiento continuo y adaptándonos a las últimas tendencias.
                 </p>
-                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg mt-3">Contáctanos</a>
+                <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg mt-3" title="Contáctanos">
+                    Contáctanos
+                </a>
             </div>
             <!-- Imagen a la Derecha -->
             <div class="col-md-6 order-md-2 mt-4 mt-md-0">
-                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" alt="Pulztag Innovación NFC"
-                    class="img-fluid rounded shadow-sm zoom-effect">
+                <img src="{{ url_for('static', filename='images/acerca_de.jpeg') }}" 
+                     alt="Pulztag Innovación NFC"
+                     class="img-fluid rounded shadow-sm zoom-effect"
+                     loading="lazy">
             </div>
         </div>
     </section>
@@ -48,8 +83,10 @@
                         <i class="bi bi-flag fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Misión</h5>
                         <p class="card-text">
-                            <strong>Transformar</strong> la experiencia de interacción entre empresas y clientes mediante **soluciones NFC personalizadas</strong>  
-                            que <strong>optimicen procesos</strong>, generen <strong>conexiones significativas</strong> y mejoren la <strong>eficiencia operativa</strong>.
+                            <strong>Transformar</strong> la experiencia de interacción entre empresas y clientes
+                            mediante <strong>soluciones NFC personalizadas</strong>  
+                            que <strong>optimicen procesos</strong>, generen <strong>conexiones significativas</strong>
+                            y mejoren la <strong>eficiencia operativa</strong>.
                         </p>
                     </div>
                 </div>
@@ -61,7 +98,7 @@
                         <i class="bi bi-eye fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Visión</h5>
                         <p class="card-text">
-                            Ser la <strong>empresa líder</strong> en <strong>soluciones NFC innovadoras</strong> en <strong>Latinoamérica</strong>,  
+                            Ser la <strong>empresa líder</strong> en <strong>soluciones NFC innovadoras</strong> en <strong>Latinoamérica</strong>,
                             facilitando la <strong>transformación digital</strong> y creando un mundo más <strong>interactivo, eficiente y conectado</strong>.
                         </p>
                     </div>
@@ -84,7 +121,8 @@
                         <i class="bi bi-lightbulb fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Innovación</h5>
                         <p class="card-text">
-                            Nos mantenemos a la <strong>vanguardia tecnológica</strong>, entregando <strong>soluciones únicas</strong> y efectivas.
+                            Nos mantenemos a la <strong>vanguardia tecnológica</strong>, entregando
+                            <strong>soluciones únicas</strong> y efectivas.
                         </p>
                     </div>
                 </div>
@@ -96,7 +134,8 @@
                         <i class="bi bi-award fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Calidad</h5>
                         <p class="card-text">
-                            Cada proyecto se ejecuta con <strong>altos estándares</strong>, asegurando la <strong>satisfacción</strong> de nuestros clientes.
+                            Cada proyecto se ejecuta con <strong>altos estándares</strong>, asegurando la
+                            <strong>satisfacción</strong> de nuestros clientes.
                         </p>
                     </div>
                 </div>
@@ -108,7 +147,8 @@
                         <i class="bi bi-people-fill fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Colaboración</h5>
                         <p class="card-text">
-                            Trabajamos en <strong>estrecha colaboración</strong> con nuestros clientes para <strong>superar sus expectativas<strong>.
+                            Trabajamos en <strong>estrecha colaboración</strong> con nuestros clientes para
+                            <strong>superar sus expectativas</strong>.
                         </p>
                     </div>
                 </div>
@@ -123,30 +163,28 @@
     <section class="text-center mt-5">
         <h2>¿Listo para Transformar tu Negocio?</h2>
         <p class="lead">
-            Contáctanos y descubre cómo nuestras <strong>soluciones NFC personalizadas</strong> pueden <strong>impulsar tu empresa<strong>.
+            Contáctanos y descubre cómo nuestras <strong>soluciones NFC personalizadas</strong> pueden
+            <strong>impulsar tu empresa</strong>.
         </p>
-        <a class="btn btn-primary btn-lg" href="{{ url_for('contact') }}" role="button">Contáctanos</a>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('contact') }}" role="button"
+           title="Contáctanos y emprende la transformación digital">
+           Contáctanos
+        </a>
     </section>
 </div>
 
-<!-- Estilos Adicionales -->
-<style>
-    .titulo-seccion {
-        font-size: 2.5em;
-        font-weight: bold;
-        text-align: center;
-        margin-top: 50px;
-        margin-bottom: 50px;
-    }
+{% endblock %}
 
-    /* Efecto hover en las tarjetas */
-    .service-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .service-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-</style>
+{% block scripts %}
+<!-- AOS JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 800,
+        easing: 'slide',
+        once: true
+    });
+});
+</script>
 {% endblock %}

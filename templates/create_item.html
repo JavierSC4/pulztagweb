@@ -1,3 +1,5 @@
+<!-- templates/create_item.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Crear Item - PulztagWeb{% endblock %}
@@ -6,8 +8,8 @@
 <div class="container my-5">
     <!-- Sección de Encabezado -->
     <div class="text-center mb-5">
-        <h2 class="titulo-seccion">Crea tu Nuevo Item</h2>
-        <p class="lead">Elige entre nuestras soluciones NFC personalizadas y comienza a compartir información de manera innovadora y eficiente.</p>
+        <h2 class="titulo-seccion">Crea tu Nuevo Ítem NFC</h2>
+        <p class="lead">Elige entre nuestras <strong>soluciones NFC personalizadas</strong> y comienza a compartir información de manera innovadora y eficiente.</p>
     </div>
 
     <!-- Opciones de Creación -->
@@ -19,9 +21,9 @@
                     <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
                         <img src="{{ url_for('static', filename='images/pulzcard_form.png') }}" class="card-img-top rounded-top" alt="Pulzcard">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Pulzcard (vCard)</h6>
+                            <h6 class="card-title fw-bold">Pulzcard (Tarjeta de Contacto Inteligente)</h6>
                             <p class="card-text mb-4">
-                                Crea una <strong>Pulzcard personalizada</strong> con tu información de contacto, perfecta para networking.
+                                Crea una <strong>Pulzcard</strong> con tu información de contacto, ideal para networking y marketing personal.
                             </p>
                             <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-primary">Crea tu Pulzcard</a>
                         </div>
@@ -35,9 +37,9 @@
                     <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
                         <img src="{{ url_for('static', filename='images/tags_form.png') }}" class="card-img-top rounded-top" alt="Etiqueta">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Etiqueta NFC</h6>
+                            <h6 class="card-title fw-bold">Etiqueta NFC Interactiva</h6>
                             <p class="card-text mb-4">
-                                Diseña una <strong>etiqueta NFC</strong> que redireccione a URLs específicas y potencie tu contenido digital.
+                                Diseña una <strong>etiqueta NFC</strong> que redirija a URLs específicas y potencie tu contenido digital.
                             </p>
                             <a href="{{ url_for('create_tag') }}" class="btn btn-outline-primary">Crea tu Etiqueta</a>
                         </div>
@@ -51,9 +53,9 @@
                     <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
                         <img src="{{ url_for('static', filename='images/storetag_form.png') }}" class="card-img-top rounded-top" alt="Storetag">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Storetag</h6>
+                            <h6 class="card-title fw-bold">Storetag (Inventario NFC)</h6>
                             <p class="card-text mb-4">
-                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas eficientemente.
+                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas y inventarios
                             </p>
                             <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-primary">Crea tu Storetag</a>
                         </div>

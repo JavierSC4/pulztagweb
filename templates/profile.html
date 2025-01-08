@@ -135,6 +135,7 @@
                     <!-- Lista de Items -->
                     <div id="dashboardItemsContainer">
                         {% if dashboard_items %}
+                            <!-- Dentro del loop que muestra los items del Dashboard -->
                             {% for item in dashboard_items %}
                             <li>
                                 <a href="#dashboardItemDetailSection"
@@ -670,8 +671,7 @@
             </div>
         </div>
 
-         <!-- Sección detalle de Item de Dashboard -->
-         <div id="dashboardItemDetailSection" style="display:none;">
+        <div id="dashboardItemDetailSection" style="display:none;">
             <h2 class="text-center mb-4" id="dashboardItemName"></h2>
             <p class="text-center" id="dashboardItemType"></p>
             <div class="text-center" id="surveyLinkContainer" style="display:none;">
@@ -681,7 +681,7 @@
                 <button class="btn btn-danger" id="eliminarItemBtn">Eliminar</button>
             </div>
             <hr class="my-5">
-
+        
             <!-- Estadísticas de valoraciones -->
             <div id="dashboardItemStats" style="display:none;">
                 <h4 class="text-center mb-4">Estadísticas de Valoraciones (últimos 10 días)</h4>
@@ -693,6 +693,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Dependiendo del tipo de evaluación, se muestran diferentes filas -->
                         <tr id="rating5Row"><th>5</th></tr>
                         <tr id="rating4Row"><th>4</th></tr>
                         <tr id="rating3Row"><th>3</th></tr>
@@ -703,7 +704,6 @@
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -895,10 +895,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="itemTypeSelect" class="form-label">Tipo de Item</label>
+                        <!-- Dentro del modal para agregar un nuevo Item del Dashboard en profile.html -->
                         <select class="form-select" id="itemTypeSelect" name="item_type" required>
                             <option value="" selected disabled>Selecciona un tipo</option>
                             <option value="Evaluación de Clientes">Evaluación de Clientes</option>
-                            <option value="Visualizaciones diarias">Visualizaciones diarias</option>
+                            <option value="Evaluación de Semáforo">Evaluación de Semáforo</option>
+                            <option value="Visualizaciones diarias">Visualizaciones Diarias</option>
                             <!-- Agrega más opciones según tus necesidades -->
                         </select>
                     </div>
@@ -1153,7 +1155,7 @@
         //             BLOQUE PARA MANEJO DE DASHBOARD ITEMS
         // -------------------------------------------------------------------
 
-        // Lógica para mostrar el detalle de un Item en el Dashboard (si lo usas)
+        // Lógica para mostrar el detalle de un Item en el Dashboard
         $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
             e.preventDefault();
             const name = $(this).data('item-name');
@@ -1164,12 +1166,12 @@
             $('#dashboardItemType').text(type);
             $('#eliminarItemBtn').data('item-id', itemId);
 
-            if (type === "Evaluación de Clientes") {
+            if (type === "Evaluación de Clientes" || type === "Evaluación de Semáforo") {
                 const surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
                 $('#surveyLink').attr('href', surveyUrl);
                 $('#surveyLinkContainer').show();
                 $('#dashboardItemStats').show();
-                renderLast10DaysTable(itemId);
+                renderLast10DaysTable(itemId, type);
             } else {
                 $('#surveyLinkContainer').hide();
                 $('#dashboardItemStats').hide();
@@ -1202,10 +1204,10 @@
                     const newItem = `
                     <li>
                         <a href="#dashboardItemDetailSection" 
-                           class="nav-link sub-link dashboard-item-link" 
-                           data-item-id="${response.uuid}"
-                           data-item-name="${itemName}"
-                           data-item-type="${itemType}">
+                        class="nav-link sub-link dashboard-item-link" 
+                        data-item-id="${response.uuid}"
+                        data-item-name="${itemName}"
+                        data-item-type="${itemType}">
                             <i class="bi bi-dot"></i><span class="text-label ms-1">${itemName}</span>
                         </a>
                     </li>`;
@@ -1256,8 +1258,8 @@
             });
         });
 
-        // Renderizar tabla de valoraciones (Ejemplo: "Evaluación de Clientes")
-        function renderLast10DaysTable(itemUUID) {
+        // Renderizar tabla de valoraciones (Ejemplo: "Evaluación de Clientes" y "Evaluación de Semáforo")
+        function renderLast10DaysTable(itemUUID, itemType) {
             const ratingsHeader = document.getElementById('ratingsHeader');
             // Limpiar las cabeceras (excepto la primera)
             Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
@@ -1298,7 +1300,7 @@
                         return;
                     }
                     const ratingsData = response.ratings;
-                    renderTableWithData(ratingsData);
+                    renderTableWithData(ratingsData, itemType);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error al obtener datos:', error);
@@ -1306,23 +1308,31 @@
             });
         }
 
-        function renderTableWithData(ratingsData) {
-            [5,4,3,2,1].forEach(val => {
+        function renderTableWithData(ratingsData, itemType) {
+            let maxRating = 5;
+            if (itemType === "Evaluación de Semáforo") {
+                maxRating = 3;
+            }
+            for (let val = maxRating; val >=1; val--) {
                 const row = document.getElementById('rating' + val + 'Row');
-                ratingsData[val.toString()].forEach(count => {
+                if (!row) continue;
+                const countArray = ratingsData[val.toString()] || [];
+                countArray.forEach(count => {
                     const td = document.createElement('td');
                     td.textContent = count;
                     row.appendChild(td);
                 });
-            });
+            }
 
+            // Total
             const totalRow = document.getElementById('totalRow');
             let dayTotals = Array(10).fill(0);
-            [5,4,3,2,1].forEach(val => {
-                ratingsData[val.toString()].forEach((count, i) => {
+            for (let val = maxRating; val >=1; val--) {
+                const counts = ratingsData[val.toString()] || [];
+                counts.forEach((count, i) => {
                     dayTotals[i] += count;
                 });
-            });
+            }
 
             dayTotals.forEach(count => {
                 const td = document.createElement('td');

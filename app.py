@@ -1,31 +1,46 @@
 # app.py
 
+# ============================================
+# Importaciones estándar de la biblioteca
+# ============================================
+
 import os
 import uuid
 from io import BytesIO
 from random import randint
 from urllib.parse import urlparse
-from sqlalchemy.exc import IntegrityError
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import exists
-from sqlalchemy.orm import joinedload  # Asegúrate de importar esto al inicio del archivo
+from datetime import datetime, timedelta, timezone
+
+# ============================================
+# Importaciones de terceros
+# ============================================
+
 from flask import (
     Flask, render_template, request, flash, redirect, url_for,
     send_from_directory, send_file, jsonify, make_response, abort
 )
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import exists
+from sqlalchemy.orm import joinedload
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect
-from dotenv import load_dotenv
-import pandas as pd
-import qrcode
-from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-
-from extensions import mail, db, migrate, bcrypt, login_manager, oauth
+from flask_login import login_required, current_user, login_user, logout_user, LoginManager
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+import pandas as pd
+import qrcode
+from dotenv import load_dotenv
+
+# ============================================
+# Importaciones locales
+# ============================================
+
+from extensions import mail, db, migrate, bcrypt, login_manager, oauth
 from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView, DashboardItem, SurveyResponse
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
@@ -33,10 +48,14 @@ from forms import (
     PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
     ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
     BodegaForm, EditBodegaForm, DeleteBodegaForm,
-    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm, ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm, ImportPulzcardForm, BulkDeletePulzcardForm
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm,
+    ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm,
+    ImportPulzcardForm, BulkDeletePulzcardForm, DeleteCajaForm, DeleteProductoForm
 )
-from flask_login import login_required, current_user, login_user, logout_user
-from datetime import datetime, timedelta, timezone
+
+# ============================================
+# Configuración de la aplicación Flask
+# ============================================
 
 load_dotenv()  # Carga las variables de entorno desde el archivo .env es
 
@@ -55,12 +74,43 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_timeout": 30,
 }
 
+# Directorio para guardar las vCards
+VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
+os.makedirs(VCARD_FOLDER, exist_ok=True)
+
+# Directorio para guardar las subidas
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Extensiones permitidas
+ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
+ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
+
 db.init_app(app)
 migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager.init_app(app)
 oauth.init_app(app)  # Inicializar `oauth` con la instancia de `app`
-mail.init_app(app)
+mail.init_app(app)  # Initialize the existing Mail instance with the app
+# Inicializar CSRFProtect
+csrf = CSRFProtect(app)
+
+# Configuración de Flask-Login
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'warning'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+
+# Configuración de Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 
 # Registrar el cliente de Google OAuth
 google = oauth.register(
@@ -85,50 +135,18 @@ admin.add_view(SecureModelView(Bodega, db.session))
 admin.add_view(SecureModelView(Caja, db.session))
 admin.add_view(SecureModelView(Producto, db.session))  # Si deseas ver Productos en admin
 
-# Configuración de Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+# Configurar el serializador
+s = URLSafeTimedSerializer(app.secret_key)
 
-mail.init_app(app)  # Initialize the existing Mail instance with the app
+tag_fields = ['tag_name', 'redirect_url']
 
-# Inicializar CSRFProtect
-csrf = CSRFProtect(app)
-
-# Configuración de Flask-Login
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'warning'
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.get(User, int(user_id))
-
-
-# Directorio para guardar las vCards
-VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
-os.makedirs(VCARD_FOLDER, exist_ok=True)
-
-# Directorio para guardar las subidas
-UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Extensiones permitidas
-ALLOWED_LOGO_EXTENSIONS = {'png', 'jpeg', 'jpg'}
-ALLOWED_EXCEL_EXTENSIONS = {'xlsx', 'xls'}
-
+# ============================================
+# Funciones auxiliares
+# ============================================
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in allowed_extensions
-
-
-# Configurar el serializador
-s = URLSafeTimedSerializer(app.secret_key)
 
 # Función para generar el ID de Bodega
 def generar_id_bodega():
@@ -158,6 +176,14 @@ def generar_id_caja():
     nuevo_id = f"CAJ{str(nuevo_numero).zfill(3)}"
     return nuevo_id
 
+def redirect_back(default='profile'):
+    next_page = request.args.get('next')
+    if next_page:
+        return redirect(url_for(next_page))
+    elif request.referrer:
+        return redirect(request.referrer)
+    else:
+        return redirect(url_for(default))
 
 # Rutas de Autenticación
 @app.route('/register', methods=['GET', 'POST'])
@@ -532,17 +558,6 @@ def order():
 def create_item():
     return render_template('create_item.html')
 
-
-def redirect_back(default='profile'):
-    next_page = request.args.get('next')
-    if next_page:
-        return redirect(url_for(next_page))
-    elif request.referrer:
-        return redirect(request.referrer)
-    else:
-        return redirect(url_for(default))
-
-
 # Rutas de Pulzcard
 @app.route('/pulzcard', methods=['GET', 'POST'])
 @login_required
@@ -675,9 +690,6 @@ def pulzcard_download_vcard(filename):
         flash('Archivo no encontrado.', 'danger')
         return redirect(url_for('home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
-
-
-tag_fields = ['tag_name', 'redirect_url']
 
 # 1. Ruta para importar Pulzcards
 @app.route('/import/pulzcards', methods=['POST'])

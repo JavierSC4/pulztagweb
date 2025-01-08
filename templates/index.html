@@ -2,33 +2,63 @@
 
 {% extends 'base.html' %}
 
-
 {% block head %}
     {{ super() }}
+    <!-- Meta para asegurar responsividad -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- AOS CSS para animaciones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <style>
+      /* Se recomienda mover estos estilos a un archivo CSS externo para mejor mantenibilidad */
+      .hero-section {
+        position: relative;
+        overflow: hidden;
+      }
+      .video-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .titulo-seccion {
+        font-size: 2em;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 30px;
+      }
+      @media (max-width: 768px) {
+        .hero-section {
+          /* Ajustes responsivos en caso de necesitar ocultar el video o reducir la altura */
+        }
+      }
+    </style>
 {% endblock %}
 
 {% block title %}Inicio - PulztagWeb{% endblock %}
 
 {% block content %}
-<!-- AOS CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
 <!-- Hero Section -->
 <section class="hero-section position-relative overflow-hidden">
-    <!-- Video de Fondo -->
-    <div class="video-container position-absolute top-0 start-0 w-100 h-100">
+    <!-- Video de Fondo (carga condicional para dispositivos > 768px) -->
+    <div class="video-container d-none d-md-block"> 
         <video id="hero-video" autoplay muted loop playsinline preload="auto" class="w-100 h-100 object-fit-cover">
             <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
-
-    <!-- Overlay (oscurece el video) -->
+    <!-- Overlay -->
     <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
 
-    <!-- Contenido -->
+    <!-- Contenido del Hero -->
     <div class="container position-relative z-3">
         <div class="row align-items-center min-vh-100 text-center text-lg-start">
-            <!-- Remueve mx-auto y utiliza offset si es necesario -->
             <div class="col-lg-6 col-md-10 offset-lg-1 px-3">
                 <h1 class="title display-4 fw-bold mb-2">
                     Eleva la Experiencia de tus Clientes
@@ -39,13 +69,15 @@
                 </p>
                 <div class="btn-stack d-flex justify-content-center justify-content-lg-start flex-wrap gap-2">
                     <a href="{{ url_for('create_item') }}" 
-                    class="btn btn-lg fw-bold text-dark" 
-                    style="background-color: #ffd700;">
-                    Comienza ahora Gratis
+                       class="btn btn-lg fw-bold text-dark" 
+                       style="background-color: #ffd700;"
+                       title="Crea tu primer Item NFC y comienza gratis">
+                       Comienza ahora Gratis
                     </a>
                     <a href="{{ url_for('contact') }}" 
-                    class="btn btn-outline-light btn-lg fw-bold">
-                        Contáctanos
+                       class="btn btn-outline-light btn-lg fw-bold"
+                       title="Contáctanos para más información">
+                       Contáctanos
                     </a>
                 </div>
             </div>
@@ -53,65 +85,67 @@
     </div>
 </section>
 
-<section id="propuesta-valor" style="padding: 60px 20px; background-color: #ffffffbf; text-align: center;"  class=" mt-4">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <h2 class="titulo-seccion">
-            Una Herramienta Única para Experiencias Interactivas
-        </h2>
-        <p style="font-size: 1.2em; color: #555; line-height: 1.6; margin-bottom: 40px;">
+<!-- Sección Propuesta de Valor -->
+<section id="propuesta-valor" class="my-4 py-5" style="background-color: #ffffffbf; text-align: center;">
+    <div class="container" style="max-width: 800px;">
+        <h2 class="titulo-seccion">Una Herramienta Única para Experiencias Interactivas</h2>
+        <p class="mb-4" style="font-size: 1.2em; color: #555; line-height: 1.6;">
             Fusionamos tecnologías innovadoras como <strong>NFC, códigos QR, RFID y biometría</strong> 
             en una sola plataforma, creando soluciones personalizadas que conectan a las personas 
             con experiencias únicas y resultados medibles.
         </p>
-        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div class="d-flex justify-content-center flex-wrap gap-4">
             <!-- Beneficio 1 -->
-            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
-                <i class="fa-solid fa-network-wired" style="font-size: 3rem; color: #ff5957; margin-bottom: 25px;"></i>
-                <h3 style="font-size: 1.2em; color: #333333; margin-bottom: 10px;">Tecnología Avanzada</h3>
-                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+            <div style="min-width: 220px; max-width: 250px;">
+                <i class="fa-solid fa-network-wired" style="font-size: 3rem; color: #ff5957; margin-bottom: 15px;"></i>
+                <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Tecnología Avanzada</h3>
+                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
                     Integración fluida de NFC, QR y más, con el respaldo de IA y AIDC.
                 </p>
             </div>
             <!-- Beneficio 2 -->
-            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
-                <i class="fa-solid fa-face-smile-wink" style="font-size: 3rem; color: #41db30; margin-bottom: 25px;"></i>
-                <h3 style="font-size: 1.2em; color: #333; margin-bottom: 10px;">Personalización Real</h3>
-                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+            <div style="min-width: 220px; max-width: 250px;">
+                <i class="fa-solid fa-face-smile-wink" style="font-size: 3rem; color: #41db30; margin-bottom: 15px;"></i>
+                <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Personalización Real</h3>
+                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
                     Experiencias interactivas adaptadas a cada cliente, sector y necesidad.
                 </p>
             </div>
             <!-- Beneficio 3 -->
-            <div style="flex: 1; min-width: 200px; max-width: 250px; text-align: center;">
-                <i class="fa-solid fa-chart-line" style="font-size: 3rem; color: #57a0ff; margin-bottom: 25px;"></i>
-                <h3 style="font-size: 1.2em; color: #333; margin-bottom: 10px;">Resultados Medibles</h3>
-                <p style="font-size: 1em; color: #777; line-height: 1.4;">
+            <div style="min-width: 220px; max-width: 250px;">
+                <i class="fa-solid fa-chart-line" style="font-size: 3rem; color: #57a0ff; margin-bottom: 15px;"></i>
+                <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Resultados Medibles</h3>
+                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
                     Optimiza procesos y obtén métricas claras para decisiones estratégicas.
                 </p>
             </div>
         </div>
-        <div style="margin-top: 40px;">
-            <a
-                href="{{ url_for('services') }}"
-                style="text-decoration: none; background-color: #03B8FF; color: #fff; padding: 15px 30px; font-size: 1.1em; border-radius: 5px;"
-            >
-                Descubre cómo funciona
+        <div class="mt-4">
+            <a href="{{ url_for('services') }}"
+               class="btn btn-primary btn-lg"
+               title="Descubre más sobre nuestros servicios">
+               Descubre cómo funciona
             </a>
         </div>
     </div>
 </section>
 
-<!-- Sección Informativa sobre CEM -->
-<section id="CEM" style="padding: 60px 20px; background-color: #ffffffbf; text-align: center;"  class=" mt-4">
+<!-- Sección CEM -->
+<section id="CEM" class="my-4 py-5" style="background-color: #ffffffbf; text-align: center;">
     <div class="container">
         <h2 class="titulo-seccion">¿Qué es la Plataforma CEM?</h2>
-        <p class="lead text-center">
+        <p class="lead text-center mb-5">
             Nuestra Plataforma Integral de Gestión de la Experiencia del Cliente (CEM) centraliza todas las herramientas necesarias para gestionar y mejorar cada interacción con tus clientes.
         </p>
         <div class="row">
-            <!-- Card 1 -->
+            <!-- Card 1: URLs -->
             <div class="col-md-4 mb-4" data-aos-delay="100">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/administracion_urls.png') }}" class="card-img-top" alt="Administración de URLs" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/administracion_urls.png') }}" 
+                         class="card-img-top" 
+                         alt="Administración de URLs"
+                         style="object-fit: cover; height: 200px; width: 100%;"
+                         loading="lazy">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">Administración de URLs</h5>
                         <p class="card-text">
@@ -120,24 +154,32 @@
                     </div>
                 </div>
             </div>
-            <!-- Card 2 -->
+            <!-- Card 2: Pulzcards -->
             <div class="col-md-4 mb-4" data-aos-delay="200">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/pulzcard_dashboard.png') }}" class="card-img-top" alt="Gestión de Pulzcards" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/pulzcard_dashboard.png') }}" 
+                         class="card-img-top" 
+                         alt="Gestión de Pulzcards" 
+                         style="object-fit: cover; height: 200px; width: 100%;"
+                         loading="lazy">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Gestión de Pulzcards</h5>
+                        <h5 class="card-title">Gestión de Tarjetas de Contacto Inteligentes (Pulzcards)</h5>
                         <p class="card-text">
                             Crea y administra tarjetas virtuales con información de contacto y códigos QR personalizados.
                         </p>
                     </div>
                 </div>
             </div>
-            <!-- Card 3 -->
+            <!-- Card 3: Etiquetas -->
             <div class="col-md-4 mb-4" data-aos-delay="300">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="{{ url_for('static', filename='images/apps_index.jpg') }}" class="card-img-top" alt="Gestión de Etiquetas" style="object-fit: cover; height: 200px;">
+                    <img src="{{ url_for('static', filename='images/apps_index.jpg') }}" 
+                         class="card-img-top" 
+                         alt="Gestión de Etiquetas NFC"
+                         style="object-fit: cover; height: 200px; width: 100%;"
+                         loading="lazy">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Gestión de Etiquetas</h5>
+                        <h5 class="card-title">Etiquetas NFC Interactivas (Tags)</h5>
                         <p class="card-text">
                             Administra etiquetas NFC y códigos QR personalizados, con importación y exportación avanzadas.
                         </p>
@@ -148,15 +190,15 @@
     </div>
 </section>
 
-<!-- Sección de Ventajas de CEM -->
-<section id="CEM" style="padding: 60px 20px; background-color: #ffffffbf; text-align: center;" class=" mt-4">
+<!-- Ventajas de CEM -->
+<section class="my-4 py-5 bg-light text-center">
     <div class="container">
         <h2 class="titulo-seccion">Ventajas de Nuestra Plataforma CEM</h2>
         <div class="row">
             <!-- Ventaja 1: Centralización de la Información -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-database fa-3x text-info me-3"></i>
+                    <i class="fas fa-database fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Centralización de la Información</h5>
                         <p>
@@ -168,7 +210,7 @@
             <!-- Ventaja 2: Personalización y Omnicanalidad -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-magic fa-3x text-info me-3"></i>
+                    <i class="fas fa-magic fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Personalización y Omnicanalidad</h5>
                         <p>
@@ -180,7 +222,7 @@
             <!-- Ventaja 3: Mejora de la Satisfacción y Fidelidad del Cliente -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-smile fa-3x text-info me-3"></i>
+                    <i class="fas fa-smile fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Mejora de la Satisfacción y Fidelidad del Cliente</h5>
                         <p>
@@ -192,7 +234,7 @@
             <!-- Ventaja 4: Eficiencia Operativa -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-cogs fa-3x text-info me-3"></i>
+                    <i class="fas fa-cogs fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Eficiencia Operativa</h5>
                         <p>
@@ -204,7 +246,7 @@
             <!-- Ventaja 5: Toma de Decisiones Informadas -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-chart-line fa-3x text-info me-3"></i>
+                    <i class="fas fa-chart-line fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Toma de Decisiones Informadas</h5>
                         <p>
@@ -216,7 +258,7 @@
             <!-- Ventaja 6: Seguridad y Protección de Datos -->
             <div class="col-md-6 mb-4">
                 <div class="d-flex">
-                    <i class="fas fa-shield-alt fa-3x text-info me-3"></i>
+                    <i class="fas fa-shield-alt fa-3x text-primary me-3"></i>
                     <div>
                         <h5>Seguridad y Protección de Datos</h5>
                         <p>
@@ -229,32 +271,36 @@
     </div>
 </section>
 
-<!-- Sección de Llamado a la Acción -->
-<section class="cta-section bg-info text-white py-5  mt-4">
+<!-- CTA Final -->
+<section class="cta-section bg-info text-white py-5 mt-4">
     <div class="container text-center">
         <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
         <p class="lead mb-4">
             Únete a las empresas que ya están optimizando sus interacciones con clientes gracias a nuestra Plataforma CEM.
         </p>
-        <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg">Contáctanos</a>
+        <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg" title="Contáctanos ahora">Contáctanos</a>
     </div>
 </section>
+
+<!-- Script para controlar el video en pantallas > 768px -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if (window.innerWidth > 768) {
-            document.getElementById('hero-video').play();
-        } else {
-            document.querySelector('.video-container').style.display = 'none';
-        }
-    });
-</script>
-<style>
-    .icono-beneficio {
-        font-size: 0.5rem; /* Ajusta el tamaño según necesites */
-        color: #03c0ff; /* Opcional: ajusta el color */
-        margin-bottom: 40px; /* Espaciado inferior */
+document.addEventListener("DOMContentLoaded", function() {
+    if (window.innerWidth > 768) {
+        const heroVideo = document.getElementById('hero-video');
+        if (heroVideo) heroVideo.play();
     }
-</style>
+});
+</script>
+
 <!-- AOS JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 800,
+        easing: 'slide',
+        once: true
+    });
+});
+</script>
 {% endblock %}

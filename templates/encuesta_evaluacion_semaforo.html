@@ -1,0 +1,241 @@
+<!-- templates/encuesta_evaluacion_moderno_fontawesome_con_logo.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Evaluación de Clientes</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reset de estilos por defecto */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .survey-container {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos del Logotipo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-width: 150px;
+            width: 100%;
+            height: auto;
+        }
+
+        .survey-container h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333333;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .semaforo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .semaforo label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            position: relative;
+        }
+
+        .semaforo label:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .semaforo input[type="radio"] {
+            display: none;
+        }
+
+        /* Estilos específicos para cada opción */
+        .happy {
+            /* Los colores se manejan a través de los estilos en línea del icono */
+        }
+
+        .neutral {
+            /* Los colores se manejan a través de los estilos en línea del icono */
+        }
+
+        .sad {
+            /* Los colores se manejan a través de los estilos en línea del icono */
+        }
+
+        .semaforo input[type="radio"]:checked + i {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .face {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            font-size: 32px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            background: #4CAF50;
+            border: none;
+            border-radius: 30px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .comment-container {
+            margin-top: 20px;
+        }
+
+        .comment-container label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333333;
+            font-weight: 500;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            resize: vertical;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        .comment-textarea:focus {
+            border: 1px solid #4CAF50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+            outline: none;
+        }
+
+        @media (max-width: 500px) {
+            .semaforo label {
+                width: 60px;
+                height: 60px;
+            }
+
+            .face {
+                font-size: 24px;
+            }
+
+            .submit-button {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .survey-container {
+                padding: 30px 20px;
+            }
+
+            .logo-container img {
+                max-width: 120px;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <!-- Contenedor del Logotipo -->
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='images/logochaintextblack.png') }}" alt="Logo de la Empresa">
+        </div>
+
+        <h2>Evaluación del Servicio</h2>
+        <form action="{{ url_for('submit_survey', item_uuid=item_uuid) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Semáforo de caras con Font Awesome -->
+            <div class="semaforo">
+                <label>
+                    <input type="radio" name="evaluation" value="happy" required>
+                    <i class="fa-sharp-duotone fa-light fa-face-laugh-wink fa-beat-fade happy" style="--fa-primary-color: #00d700; --fa-secondary-color: #00f900; font-size: 40px;"></i>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="neutral">
+                    <i class="fa-sharp-duotone fa-regular fa-face-meh fa-beat-fade neutral" style="--fa-primary-color: #cec756; --fa-secondary-color: #fff800; font-size: 40px;"></i>
+                </label>
+                <label>
+                    <input type="radio" name="evaluation" value="sad">
+                    <i class="fa-sharp-duotone fa-regular fa-face-frown fa-beat-fade sad" style="--fa-primary-color: #e32400; --fa-secondary-color: #e32400; font-size: 40px;"></i>
+                </label>
+            </div>
+
+            <!-- Campo de comentarios opcional -->
+            <div class="comment-container">
+                <label for="comment">Comentarios (opcional):</label>
+                <textarea id="comment" name="comment" class="comment-textarea" placeholder="Comparte detalles de tu experiencia"></textarea>
+            </div>
+
+            <button type="submit" class="submit-button">Aceptar</button>
+        </form>
+    </div>
+
+    <!-- Font Awesome JS (opcional, si necesitas funciones avanzadas de Font Awesome) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-pIv+e0xYz+3BPejG0FgGzP56m+YkTf3z9Z9P5cw0wRCiQw4Ek58YVGQl20C1N7GB1aLk9Z9/lpN3cYZQKbAsVA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+</html>

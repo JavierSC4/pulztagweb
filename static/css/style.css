@@ -9,7 +9,7 @@ html, body {
 
 /* Definición de fondo por defecto para dispositivos móviles */
 body {
-    background-image: url("/static/images/bg2.jpg"), url("/static/images/background_1.jpg");
+    background-image: url("/static/images/bg2.jpg");
     background-size: cover;
     background-attachment: scroll; /* Evita 'fixed' en móviles */
     background-position: center;
@@ -19,8 +19,9 @@ body {
 /* Sobrescribe la imagen de fondo para pantallas más grandes (desktops y tablets) */
 @media (min-width: 768px) {
     body {
-        background-image: url("/static/images/background.jpg"), url("/static/images/background_1.jpg");
+        background-image: url("/static/images/bg2.jpg");
         background-attachment: fixed; /* Solo aplica 'fixed' en pantallas grandes */
+        background-position: center;
     }
 }
 
@@ -467,7 +468,7 @@ a:hover {
 /* 12. SOLUCIONES PERSONALIZADAS, CTA, ABOUT */
 /****************************************************************************/
 .custom-solutions-section {
-    background: linear-gradient(135deg, #2d2f21bd 0%, #1164c2bd 100%);
+    background: linear-gradient(135deg, #03c0ff 0%, #03c0ff 100%);
     color: #fff;
     padding: 40px;
     border-radius: 15px;
@@ -551,7 +552,8 @@ a:hover {
     height: 100%;
 }
 .hero-section .overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.303);
+    background-size: cover;
     position: absolute;
     top: 0;
     left: 0;
@@ -561,6 +563,7 @@ a:hover {
 }
 .overlay {
     background: rgba(18, 37, 51, 0.527); /* Color oscuro con opacidad */
+    background-size: cover;
     position: absolute;
     top: 0;
     left: 0;
