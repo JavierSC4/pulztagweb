@@ -2514,3 +2514,112 @@ END:VCARD"""
     @app.route('/pulzcard/edit/<card_id>', methods=['GET', 'POST
 
     
+
+
+
+
+    # app.py
+
+# ============================================
+# Importaciones estándar de la biblioteca
+# ============================================
+
+import os
+import uuid
+from io import BytesIO
+from random import randint
+from urllib.parse import urlparse
+from datetime import datetime, timedelta, timezone
+
+# ============================================
+# Importaciones de terceros
+# ============================================
+
+from flask import (
+    Flask, render_template, request, flash, redirect, url_for,
+    send_from_directory, send_file, jsonify, make_response, abort
+)
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import exists
+from sqlalchemy.orm import joinedload
+from flask_bcrypt import Bcrypt
+from flask_mail import Mail, Message
+from flask_wtf.csrf import CSRFProtect
+from flask_login import login_required, current_user, login_user, logout_user, LoginManager
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+import pandas as pd
+import qrcode
+from dotenv import load_dotenv
+
+# ============================================
+# Importaciones locales
+# ============================================
+
+from extensions import mail, db, migrate, bcrypt, login_manager, oauth
+from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView, DashboardItem, SurveyResponse
+from forms import (
+    RegistrationForm, LoginForm, UpdateAccountForm,
+    RequestResetForm, ResetPasswordForm,
+    PulzcardForm, EditPulzcardForm, DeletePulzcardForm,
+    ContactForm, OrderForm, TagForm, EditTagForm, DeleteTagForm,
+    BodegaForm, EditBodegaForm, DeleteBodegaForm,
+    CajaForm, EditCajaForm, DeleteCajaForm, ProductoForm, EditProductoForm, DeleteProductoForm,
+    ImportTagsForm, BulkDeleteTagForm, DeleteDashboardItemForm,
+    ImportPulzcardForm, BulkDeletePulzcardForm, DeleteCajaForm, DeleteProductoForm
+)
+
+# ============================================
+# Configuración de la aplicación Flask
+# ============================================
+
+from routes.auth_routes import main_bp #importación de tu blueprint de autenticación
+
+load_dotenv()  # Carga las variables de entorno desde el archivo .env es
+
+
+
+
+from flask import Flask
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+import os
+import logging
+
+# Cargar variables de entorno desde .env
+load_dotenv()
+
+app = Flask(__name__)
+
+# Configuración de Flask-Mail para usar SSL en el puerto 465
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail = Mail(app)
+
+# Configuración de Logging
+logging.basicConfig(level=logging.INFO)
+app.logger.info(f"MAIL_USERNAME: {app.config['MAIL_USERNAME']}")
+# No hagas log de MAIL_PASSWORD por razones de seguridad
+
+with app.app_context():
+    try:
+        msg = Message(
+            "Prueba de Flask-Mail",
+            recipients=["contacto@pulztag.com"]  # Reemplaza con una dirección válida
+        )
+        msg.body = "Este es un correo de prueba enviado desde Flask-Mail usando SSL en el puerto 465."
+        mail.send(msg)
+        print("Correo enviado exitosamente.")
+    except Exception as e:
+        print(f"Error al enviar el correo: {e}")
+        app.logger.error(f"Error al enviar el correo: {e}")

@@ -35,6 +35,7 @@ from werkzeug.security import generate_password_hash
 import pandas as pd
 import qrcode
 from dotenv import load_dotenv
+import logging
 
 # ============================================
 # Importaciones locales
@@ -94,7 +95,6 @@ migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager.init_app(app)
 oauth.init_app(app)  # Inicializar `oauth` con la instancia de `app`
-mail.init_app(app)  # Initialize the existing Mail instance with the app
 
 # Inicializar CSRFProtect
 csrf = CSRFProtect(app)
@@ -109,11 +109,14 @@ def load_user(user_id):
 
 # Configuración de Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+mail.init_app(app)  # Inicializar mail después de configurar
 
 # Registrar el cliente de Google OAuth
 google = oauth.register(
