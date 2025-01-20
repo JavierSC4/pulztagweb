@@ -176,10 +176,10 @@ class DashboardItem(db.Model):
 
 class SurveyResponse(db.Model):
     __tablename__ = 'survey_responses'
-    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     item_id = db.Column(db.Integer, db.ForeignKey('dashboard_items.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(500), nullable=True)  # Comentario opcional
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     
     # Relación con DashboardItem usando back_populates

@@ -152,12 +152,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const qrImage = document.getElementById('qrImage');
-        const qrLoader = document.getElementById('qrLoader');
 
         qrImage.onload = function () {
-            if (qrLoader) {
-                qrLoader.style.display = 'none';
-            }
             qrImage.classList.add('loaded');
         };
 

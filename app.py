@@ -57,6 +57,8 @@ from forms import (
 # Configuración de la aplicación Flask
 # ============================================
 
+from routes.auth_routes import main_bp #importación de tu blueprint de autenticación
+
 load_dotenv()  # Carga las variables de entorno desde el archivo .env es
 
 app = Flask(__name__, instance_relative_config=True)
@@ -93,11 +95,12 @@ bcrypt.init_app(app)
 login_manager.init_app(app)
 oauth.init_app(app)  # Inicializar `oauth` con la instancia de `app`
 mail.init_app(app)  # Initialize the existing Mail instance with the app
+
 # Inicializar CSRFProtect
 csrf = CSRFProtect(app)
 
 # Configuración de Flask-Login
-login_manager.login_view = 'login'
+login_manager.login_view = 'main.login'
 login_manager.login_message_category = 'warning'
 
 @login_manager.user_loader
@@ -123,6 +126,8 @@ google = oauth.register(
     userinfo_endpoint='https://www.googleapis.com/oauth2/v1/userinfo',  # Cambiado para mayor claridad
     client_kwargs={'scope': 'openid email profile'},
 )
+
+app.register_blueprint(main_bp)
 
 # Inicializar Flask-Admin
 admin = Admin(app, name='Panel de Administración', template_mode='bootstrap4')
@@ -184,164 +189,6 @@ def redirect_back(default='profile'):
         return redirect(request.referrer)
     else:
         return redirect(url_for(default))
-
-# Rutas de Autenticación
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        # Crear el usuario sin contraseña
-        user = User(username=form.username.data, email=form.email.data, is_admin=False, must_change_password=True)
-        db.session.add(user)
-        db.session.commit()
-
-        # Generar token
-        token = user.get_reset_token()
-
-        # Enviar correo con enlace
-        try:
-            msg = Message(
-                'Configura tu Contraseña en PulztagWeb',
-                recipients=[user.email]
-            )
-            reset_url = url_for('reset_token', token=token, _external=True)
-            msg.body = f'''Hola {user.username},
-
-Gracias por registrarte en PulztagWeb. Por favor, haz clic en el siguiente enlace para establecer tu contraseña:
-
-{reset_url}
-
-Si no solicitaste este registro, por favor ignora este correo.
-
-Saludos,
-Equipo de PulztagWeb
-'''
-            mail.send(msg)
-            flash('Cuenta creada. Revisa tu correo para establecer tu contraseña.', 'success')
-        except Exception as e:
-            print(f"Error al enviar el correo: {e}")
-            flash('Hubo un error al enviar el correo. Por favor, contacta al soporte.', 'danger')
-
-        return redirect(url_for('login'))
-    return render_template('register.html', title='Registrar', form=form)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('profile') + '#miPerfilSection')  # Redirigir a 'profile' con el hash para la sección de perfil
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.password and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            if user.must_change_password:
-                flash('Por favor, establece una nueva contraseña.', 'warning')
-                return redirect(url_for('change_password'))
-            flash('Has iniciado sesión correctamente.', 'success')
-            # Redirigir al perfil, específicamente a la sección 'miPerfilSection'
-            return redirect(url_for('profile') + '#miPerfilSection')
-        else:
-            flash('Inicio de sesión fallido. Revisa el correo y la contraseña.', 'danger')
-    return render_template('login.html', title='Iniciar Sesión', form=form)
-
-@app.route('/change_password', methods=['GET', 'POST'])
-@login_required
-def change_password():
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        current_user.password = hashed_password
-        current_user.must_change_password = False
-        db.session.commit()
-        flash('Tu contraseña ha sido actualizada.', 'success')
-        return redirect(url_for('home'))
-    return render_template('change_password.html', title='Cambiar Contraseña', form=form)
-
-
-@app.route('/logout')
-def logout():
-    logout_user()
-    flash('Has cerrado sesión.', 'info')
-    return redirect(url_for('home'))
-
-
-@app.route('/account', methods=['GET', 'POST'])
-@login_required
-def account():
-    form = UpdateAccountForm()
-    if form.validate_on_submit():
-        # Verificar que la contraseña actual coincida
-        if not bcrypt.check_password_hash(current_user.password, form.current_password.data):
-            flash('La contraseña actual es incorrecta.', 'danger')
-            # Precargar datos de nuevo, ya que se falló la validación
-            form.username.data = current_user.username
-            return render_template('account.html', title='Perfil de Usuario', form=form)
-        
-        # Si la contraseña actual es correcta, proceder con la actualización
-        current_user.username = form.username.data
-
-        if form.password.data:  
-            # Las validaciones del formulario asegurarán que la nueva contraseña cumpla con los criterios
-            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-            current_user.password = hashed_password
-
-        db.session.commit()
-        flash('Tu cuenta ha sido actualizada.', 'success')
-        return redirect(url_for('profile') + '#miPerfilSection')
-    else:
-        # Precargar los datos existentes
-        form.username.data = current_user.username
-
-    return render_template('account.html', title='Perfil de Usuario', form=form, email=current_user.email)
-
-
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_request():
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    form = RequestResetForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user:
-            token = user.get_reset_token()
-            msg = Message('Recupera tu Contraseña', recipients=[user.email])
-            reset_url = url_for('reset_token', token=token, _external=True)
-            msg.body = f'''Para restablecer tu contraseña, visita el siguiente enlace:
-{reset_url}
-
-Si no solicitaste un restablecimiento de contraseña, por favor ignora este mensaje.
-'''
-            mail.send(msg)
-            flash('Se ha enviado un correo para restablecer tu contraseña.', 'info')
-            return redirect(url_for('login'))
-    return render_template('reset_request.html', title='Recuperar Contraseña', form=form)
-
-
-@app.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_token(token):
-    if current_user.is_authenticated:
-        flash('Ya estás logueado.', 'info')
-        return redirect(url_for('home'))
-    user = User.verify_reset_token(token)
-    if not user:
-        flash('El token es inválido o ha expirado.', 'warning')
-        return redirect(url_for('reset_request'))
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user.password = hashed_password
-        user.must_change_password = False
-        db.session.commit()
-        flash('Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión.', 'success')
-        return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Establecer Contraseña', form=form, token=token)
-
 
 # Rutas Existentes
 @app.route('/')
@@ -650,7 +497,7 @@ def pulzcard_card(card_id):
     pulzcard = Pulzcard.query.filter_by(card_id=card_id).first()
     if not pulzcard:
         flash('Tarjeta no encontrada.', 'danger')
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
 
     # Obtener el template desde los parámetros de la URL
     selected_template = request.args.get('template')
@@ -688,7 +535,7 @@ def pulzcard_download_vcard(filename):
     file_path = os.path.join(VCARD_FOLDER, filename)
     if not os.path.exists(file_path):
         flash('Archivo no encontrado.', 'danger')
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
 
 # 1. Ruta para importar Pulzcards
@@ -1351,7 +1198,7 @@ def delete_bodega(uuid_bodega):
         flash('Bodega eliminada exitosamente.', 'success')
     else:
         flash('Formulario inválido o token CSRF no válido.', 'danger')
-    return redirect(url_for('profile') + '#bodegasSection')
+    return redirect(url_for('main.profile') + '#bodegasSection')
 
 
 @app.route('/bodega/qrcode_image/<uuid_bodega>')
@@ -1697,97 +1544,214 @@ def delete_dashboard_item():
 @app.route('/get_ratings_data', methods=['GET'])
 @login_required
 def get_ratings_data():
+    """
+    Devuelve un JSON con:
+      {
+        "ratings": { "1": [...], "2": [...], ..., "10": [...] },
+        "dates": ["YYYY-MM-DD", ..., "YYYY-MM-DD"],
+        "details": {
+          "YYYY-MM-DD": [
+            {"rating": 7, "comment": "Algún comentario"},
+            ...
+          ],
+          ...
+        }
+      }
+    """
     item_uuid = request.args.get('item_uuid')
     if not item_uuid:
         return jsonify({"error": "Falta item_uuid"}), 400
 
-    # Encontrar el ítem correspondiente
+    # Verificar que el item exista y pertenezca al usuario actual
     item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
     if not item:
         return jsonify({"error": "Item no encontrado"}), 404
 
-    # Obtener las fechas de los últimos 10 días (incluyendo hoy)
+    # Últimos 10 días
     today = datetime.utcnow().date()
     dates = [(today - timedelta(days=i)) for i in range(10)]
-    dates.sort()  # Asegurarse que estén ordenadas de la más antigua a la más reciente
+    dates.sort()
 
-    # Crear estructura inicial
-    ratingsData = {str(r): [0]*10 for r in range(1,6)}
+    # Diccionario para totales de rating 1..10
+    ratingsData = {str(r): [0]*10 for r in range(1, 11)}
 
-    # Filtrar las respuestas dentro de los últimos 10 días
+    # Diccionario para detalles (día -> lista de {rating, comment})
+    detailsByDay = {d.strftime('%Y-%m-%d'): [] for d in dates}
+
+    # Rango de fechas
     start_datetime = datetime.combine(dates[0], datetime.min.time())
     end_datetime = datetime.combine(dates[-1] + timedelta(days=1), datetime.min.time())
 
+    # Filtrar las respuestas en ese rango
     responses = SurveyResponse.query.filter(
         SurveyResponse.item_id == item.id,
         SurveyResponse.timestamp >= start_datetime,
         SurveyResponse.timestamp < end_datetime
     ).all()
 
-    # Contabilizar las respuestas por día y valoración
+    # Sumar totales y guardar detalles
     for resp in responses:
         resp_date = resp.timestamp.date()
         if resp_date in dates:
             day_index = dates.index(resp_date)
-            # resp.rating: un entero del 1 al 5
-            ratingsData[str(resp.rating)][day_index] += 1
+            rating_str = str(resp.rating)
+            # Incrementar conteo
+            if rating_str in ratingsData:
+                ratingsData[rating_str][day_index] += 1
 
-    return jsonify({"ratings": ratingsData})
+            # Guardar detalle (rating, comentario)
+            date_key = resp_date.strftime('%Y-%m-%d')
+            detailsByDay[date_key].append({
+                "rating": resp.rating,
+                "comment": resp.comment or "Sin Comentario"
+            })
+
+    # Convertir fechas a string p.e. YYYY-MM-DD
+    sorted_dates_str = [d.strftime('%Y-%m-%d') for d in dates]
+
+    return jsonify({
+        "ratings": ratingsData,
+        "dates": sorted_dates_str,
+        "details": detailsByDay
+    })
 
 
 @app.route('/survey/<item_uuid>')
 def survey(item_uuid):
+    """
+    Muestra la encuesta para un DashboardItem específico.
+    - "Evaluación de Clientes" => encuesta NPS (1..10).
+    - "Visualizaciones diarias" => una página placeholder.
+    - "Evaluación de Semáforo" => otra encuesta, si lo deseas.
+    """
     item = DashboardItem.query.filter_by(uuid=item_uuid).first()
     if not item:
         return "Este ítem no existe o ha sido eliminado.", 404
 
     if item.item_type == "Evaluación de Clientes":
+        # Renderiza la encuesta NPS (1..10)
         return render_template('encuesta_evaluacion.html', item_uuid=item_uuid)
     elif item.item_type == "Visualizaciones diarias":
         return "Esta sección mostrará un resultado distinto para 'Visualizaciones diarias'."
+    elif item.item_type == "Evaluación de Semáforo":
+        return "Aquí podrías mostrar la encuesta de 1..3 (Semáforo)."
     else:
         return "Tipo de ítem desconocido."
 
 
 @app.route('/survey/submit/<item_uuid>', methods=['POST'])
 def submit_survey(item_uuid):
+    """
+    Procesa la respuesta de la encuesta. Almacena rating 1..10 y comentario.
+    Muestra una pantalla de gracias (survey_thanks.html) o un template de error.
+    """
     evaluation = request.form.get('evaluation')
-    
+    comment = request.form.get('comment', '')
+
+    # Buscar el ítem
     item = DashboardItem.query.filter_by(uuid=item_uuid).first()
     if not item:
-        flash("Item no encontrado", "danger")
-        return jsonify({'error': 'Item not found'}), 404
+        return render_template('survey_error.html', message="Item no encontrado"), 404
 
-    if item.item_type != "Evaluación de Clientes":
-        flash("Este ítem no admite evaluaciones.", "danger")
-        return jsonify({'error': 'Invalid item type'}), 400
+    # Verificar que el item admita evaluaciones
+    if item.item_type not in ["Evaluación de Clientes", "Evaluación de Semáforo"]:
+        return render_template('survey_error.html', message="Este ítem no admite evaluaciones."), 400
 
+    # Guardar la respuesta en SurveyResponse
     try:
+        rating_value = int(evaluation)  # rating entre 1..10
         new_response = SurveyResponse(
             item_id=item.id,
-            rating=int(evaluation),
-            timestamp=datetime.now(timezone.utc)
+            rating=rating_value,
+            comment=comment,
+            timestamp=datetime.utcnow()
         )
         db.session.add(new_response)
         db.session.commit()
-        flash("¡Gracias por tu evaluación!", "success")
-        return jsonify({'status': 'success', 'message': 'Evaluación guardada'}), 200
+
+        # Retornar survey_thanks.html con rating_value
+        #             ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+        return render_template('survey_thanks.html', item=item, rating=rating_value), 200
+        #                                    ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+        # Con "rating" pasamos el valor entero al template para mostrar 
+        # un mensaje distinto según el puntaje.
+
     except Exception as e:
         db.session.rollback()
-        flash("Hubo un error al guardar tu evaluación.", "danger")
-        return jsonify({'error': 'Database error'}), 500
+        return render_template('survey_error.html', message="Hubo un error al guardar tu evaluación."), 500
 
+# --------------------------------------------------
+# Rutas para generar y mostrar el Código QR de la encuesta
+# --------------------------------------------------
+
+@app.route('/survey_qrcode/<item_uuid>')
+@login_required
+def survey_qrcode(item_uuid):
+    """
+    Genera la página con el QR de la encuesta para un DashboardItem (item_uuid).
+    Muestra el template qrcode_card.html.
+    """
+    # Verificar que el Item pertenezca al usuario logueado
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
+    if not item:
+        flash("Este ítem no existe o no te pertenece.", "danger")
+        return redirect(url_for('profile'))
+
+    # Construimos la URL de la encuesta, p. ej. /survey/<item_uuid> en forma absoluta (_external=True)
+    survey_url = url_for('survey', item_uuid=item_uuid, _external=True)
+
+    # Apuntamos a la ruta que devuelve la imagen en PNG
+    # (survey_qrcode_image, que definimos abajo)
+    qr_image_url = url_for('survey_qrcode_image', item_uuid=item_uuid, _external=True)
+
+    # Reutilizamos el template qrcode_card.html
+    # Parametrizamos para que se muestre "Encuesta" como entity_type
+    # y la URL absoluta en "share_url" para que el usuario pueda copiarla.
+    return render_template(
+        'qrcode_card.html',
+        qr_url=qr_image_url,
+        entity_type='Encuesta',
+        tag_id=item_uuid,      # Uso de "tag_id" para mantener tu estructura qrcode_card
+        share_url=survey_url   # URL que el usuario puede copiar
+    )
+
+
+@app.route('/survey_qrcode_image/<item_uuid>')
+@login_required
+def survey_qrcode_image(item_uuid):
+    """
+    Devuelve la imagen PNG del QR, sin template intermedio.
+    El QR apunta a la URL de la encuesta: /survey/<item_uuid>.
+    """
+    # Verificar que el Item pertenezca al usuario logueado
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
+    if not item:
+        abort(404, description="Ítem no encontrado.")
+
+    # Construimos la URL final de la encuesta
+    survey_url = url_for('survey', item_uuid=item_uuid, _external=True)
+
+    # Generamos el QR
+    img = qrcode.make(survey_url)
+    buf = BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+
+    # Devolvemos la imagen QR como 'image/png'
+    return send_file(buf, mimetype='image/png')
 
 @app.after_request
 def add_header(response):
+    """
+    Deshabilita el cache del lado del navegador para evitar que
+    se muestren datos antiguos.
+    """
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '-1'
     return response
 
-# Crear las tablas de la base de datos
-with app.app_context():
-    db.create_all()
-
+# Si tu aplicación principal se ejecuta aquí:
 if __name__ == '__main__':
+    db.create_all(app=app)
     app.run(debug=True)

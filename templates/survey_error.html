@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}
+Error en la Encuesta
+{% endblock %}
+
+{% block head %}
+<style>
+  body {
+      background-color: #f8f9fa;
+      background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #333333;
+      min-height: 100vh; 
+      display: flex;
+      flex-direction: column;
+  }
+
+  .error-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .error-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .error-card h1 {
+      font-size: 1.8rem;
+      color: #c0392b;
+      margin-bottom: 1rem;
+  }
+  .error-card p {
+      font-size: 1.1rem;
+      color: #555;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="error-card mt-4">
+  <h1>Encuesta no disponible</h1>
+  <p>{{ message }}</p>
+</div>
+{% endblock %}

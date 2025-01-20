@@ -8,7 +8,7 @@
 <div class="col-lg-6 offset-lg-3 col-md-8 text-center">
 <div class="card login-card p-4 shadow-lg" style="background: rgba(0, 187, 255, 0); backdrop-filter: blur(5px); border-radius: 1rem; width: 100%; max-width: 400px; margin: auto;">
         <h2 class="text-center mb-4 text-white">Inciar Sesión</h2>
-        <form method="POST" action="{{ url_for('login') }}">
+        <form method="POST" action="{{ url_for('main.login') }}">
             {{ form.hidden_tag() }}
             <!-- Campo oculto para el parámetro 'next' -->
             <input type="hidden" name="next" value="{{ request.args.get('next') }}">
@@ -47,10 +47,10 @@
         
         <!-- Enlaces Adicionales -->
         <p class="mt-3 text-center">
-            <a href="{{ url_for('reset_request') }}">¿Olvidaste tu contraseña?</a>
+            <a href="{{ url_for('main.reset_request') }}">¿Olvidaste tu contraseña?</a>
         </p>
         <p class="text-center text-white">
-            ¿No tienes una cuenta? <a href="{{ url_for('register') }}">Regístrate</a>
+            ¿No tienes una cuenta? <a href="{{ url_for('main.register') }}">Regístrate</a>
         </p>
     </div>
 </div>

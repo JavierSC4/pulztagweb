@@ -49,7 +49,7 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li><a class="dropdown-item" href="{{ url_for('profile') }}">Perfil</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.logout') }}">Cerrar Sesión</a></li>
             </ul>
             {% else %}
             <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button" data-bs-toggle="dropdown"
@@ -58,8 +58,8 @@
                 <i class="bi bi-lock-fill ms-1"></i> <!-- Icono de cuenta -->
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authDropdown">
-                <li><a class="dropdown-item" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('register') }}">Crear Cuenta</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.login') }}">Iniciar Sesión</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('main.register') }}">Crear Cuenta</a></li>
             </ul>
             {% endif %}
         </li>

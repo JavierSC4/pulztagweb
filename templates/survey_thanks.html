@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}
+¡Gracias por tu evaluación!
+{% endblock %}
+
+{% block head %}
+<style>
+  /* Mismo fondo que en qrcode_card */
+  body {
+      background-color: #f8f9fa;
+      background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #333333;
+      min-height: 100vh; 
+      display: flex;
+      flex-direction: column;
+  }
+
+  .thanks-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 100%;
+      margin: 40px auto; /* Espacio arriba/abajo */
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .thanks-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .thanks-card h1 {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 1rem;
+  }
+  .thanks-card p {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.4;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Logo o cabecera -->
+
+<div class="thanks-card mt-4">
+  {% if rating <= 6 %}
+    <h1>¡Lo sentimos mucho!</h1>
+    <p>
+      Lamentamos no haber cumplido tus expectativas.  
+      Agradecemos enormemente tu opinión y haremos lo posible por mejorar.  
+      Si deseas darnos más detalles, contáctanos directamente.
+    </p>
+  {% elif rating <= 8 %}
+    <h1>¡Gracias por tu opinión!</h1>
+    <p>
+      Sabemos que aún podemos mejorar, y tu feedback nos ayudará a hacerlo.  
+      Gracias por confiar en nosotros y esperamos llegar a sorprenderte
+      en el futuro.
+    </p>
+  {% else %}
+    <h1>¡Excelente!</h1>
+    <p>
+      ¡Nos alegra mucho saber que has tenido una gran experiencia!  
+      Tu evaluación positiva nos motiva a seguir mejorando cada día.  
+      Muchas gracias por recomendarnos.
+    </p>
+  {% endif %}
+</div>
+{% endblock %}
