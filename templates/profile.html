@@ -764,29 +764,35 @@ body {
       </div>
     </div>
 
-    <!-- Sección DETALLE de Ítem de Dashboard -->
-    <div id="dashboardItemDetailSection" style="display:none;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="d-flex flex-column">
-          <h2 class="mb-0" id="dashboardItemName"></h2>
-          <small class="text-muted" id="dashboardItemType"></small>
-        </div>
-        <div class="d-flex align-items-center gap-3" id="dashboardItemActions">
-          <a href="#" id="surveyLink" target="_blank" class="btn btn-sm btn-primary" style="display:none;">
-            <i class="bi bi-check2-circle me-1"></i>Responder
-          </a>
-          <button class="btn btn-sm btn-secondary" id="copySurveyBtn" style="display:none;">
-            <i class="bi bi-clipboard me-1"></i>Copiar URL
-          </button>
-          <button class="btn btn-sm btn-outline-success" id="showSurveyQRBtn" style="display:none;">
-            <i class="fas fa-qrcode"></i> QR
-          </button>
-          <button class="btn btn-sm btn-danger" id="eliminarItemBtn">
-            <i class="bi bi-trash-fill"></i> Eliminar
-          </button>
+  <!-- Sección DETALLE de Ítem de Dashboard -->
+  <div id="dashboardItemDetailSection" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex flex-column">
+        <h2 class="mb-0" id="dashboardItemName"></h2>
+        <small class="text-muted" id="dashboardItemType"></small>
+      </div>
+      <!-- Botones para Dashboard Item Actions -->
+      <div class="d-flex align-items-center gap-3" id="dashboardItemActions">
+        <!-- Estructura similar a action-bar-wrapper y action-bar -->
+        <div class="action-bar-wrapper">
+          <div class="action-bar">
+            <a href="#" id="surveyLink" target="_blank" class="btn btn-sm btn-primary action-btn hidden" title="Responder">
+              <i class="bi bi-check2-circle me-1"></i>Responder
+            </a>
+            <button class="btn btn-sm btn-secondary action-btn hidden" id="copySurveyBtn" title="Copiar URL">
+              <i class="bi bi-clipboard me-1"></i>Copiar
+            </button>
+            <button class="btn btn-sm btn-outline-success action-btn hidden" id="showSurveyQRBtn" title="Ver QR">
+              <i class="fas fa-qrcode"></i> QR
+            </button>
+            <button class="btn btn-sm btn-danger action-btn" id="eliminarItemBtn" title="Eliminar">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
         </div>
       </div>
-      <hr class="my-4">
+    </div>
+    <hr class="my-4">
 
       <div id="dashboardItemStats" style="display:none;">
         <h4 class="mb-3">Estadísticas de Valoraciones (últimos 10 días)</h4>

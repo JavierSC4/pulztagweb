@@ -3393,21 +3393,6 @@ body {
   #sidebar {
     display: none;
   }
-
-  /* Asegurar que el off-canvas ocupe el 100% del ancho en móviles */
-  .offcanvas-start {
-    width: 250px;
-  }
-
-  /* Ajustar el padding del contenido principal en pantallas pequeñas */
-  #mainContent {
-    padding: 10px;
-  }
-
-  /* Ajustar el tamaño del botón del navbar en móviles */
-  .navbar .btn {
-    padding: 0.3rem 0.6rem;
-  }
 }
 
 /* Adjust main content when sidebar is collapsed */
@@ -3419,32 +3404,16 @@ body {
   transition: all 0.3s;
 }
 
-/* Ajustes para off-canvas */
+/* Adjustments for off-canvas */
 .offcanvas-custom {
   width: 250px;
-}
-
-/* Ajustes adicionales para mejorar la responsividad */
-@media (max-width: 767.98px) {
-  .offcanvas-custom {
-    width: 100%;
-  }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- NAVBAR superior con botón para abrir off-canvas en pantallas pequeñas -->
-<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
-  <div class="container-fluid">
-    <button class="btn btn-outline-secondary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-      <i class="bi bi-list"></i>
-    </button>
-  </div>
-</nav>
-
-<div class="d-md-flex h-100">
-  <!-- SIDEBAR como Sidebar Fijo para Pantallas Grandes -->
+<div class="d-flex h-100">
+  <!-- SIDEBAR as Fixed Sidebar for Large Screens -->
   <div class="d-none d-md-flex flex-column border-end sidebar-transition" id="sidebar" style="flex-shrink: 0;">
     <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
       <div class="user-display">
@@ -3568,7 +3537,7 @@ body {
     </ul>
   </div>
 
-  <!-- Off-canvas Sidebar para Pantallas Pequeñas -->
+  <!-- Off-canvas Sidebar for Small Screens -->
   <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasSidebarLabel">{{ current_user.username }}</h5>
@@ -3689,6 +3658,18 @@ body {
     </div>
   </div>
 
+  <!-- NAVBAR superior con botón para abrir off-canvas en pantallas pequeñas -->
+  <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
+    <div class="container-fluid">
+      <button class="btn btn-outline-secondary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+        <i class="bi bi-list"></i>
+      </button>
+      <a class="navbar-brand" href="/">
+        <img src="{{ url_for('static', filename='images/logov3.png') }}" height="40">
+      </a>
+    </div>
+  </nav>
+
   <!-- CONTENIDO PRINCIPAL -->
   <div class="flex-grow-1" id="mainContent" style="padding:20px; overflow-y: auto;">
     <!-- Seccion Perfil -->
@@ -3748,10 +3729,10 @@ body {
               <tr>
                 <th><input type="checkbox" id="select_all_pulzcards" form="bulkDeletePulzcardForm"></th>
                 <th>Nombre Tarjeta</th>
-                <th>Nombre Usuario</th>
+                <th>Nombre</th>
                 <th>Organización</th>
                 <th>Email</th>
-                <th>Fecha Creación</th>
+                <th>Fecha de Creación</th>
                 <th>Acciones</th>
               </tr>
             </thead>
