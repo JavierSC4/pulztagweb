@@ -26,18 +26,72 @@ body {
   height: calc(100vh - 90px - 75px); 
   overflow-y: auto;
 }
-@media (max-width: 768px) {
+
+/* Sidebar styles for larger screens */
+@media (min-width: 768px) {
   #sidebar {
-    height: auto;
+    display: block;
+  }
+}
+
+/* Off-canvas sidebar styles for small screens */
+@media (max-width: 767.98px) {
+  #sidebar {
+    display: none;
+  }
+
+  /* Asegurar que el off-canvas ocupe el 100% del ancho en móviles */
+  .offcanvas-start {
+    width: 250px;
+  }
+
+  /* Ajustar el padding del contenido principal en pantallas pequeñas */
+  #mainContent {
+    padding: 10px;
+  }
+
+  /* Ajustar el tamaño del botón del navbar en móviles */
+  .navbar .btn {
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* Adjust main content when sidebar is collapsed */
+.collapsed {
+  width: 80px !important;
+}
+
+.sidebar-transition {
+  transition: all 0.3s;
+}
+
+/* Ajustes para off-canvas */
+.offcanvas-custom {
+  width: 250px;
+}
+
+/* Ajustes adicionales para mejorar la responsividad */
+@media (max-width: 767.98px) {
+  .offcanvas-custom {
+    width: 100%;
   }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="d-flex h-100">
-  <!-- SIDEBAR -->
-  <div id="sidebar" class="col-auto border-end sidebar-transition d-none d-md-flex flex-column collapsed" style="flex-shrink: 0;">
+<!-- NAVBAR superior con botón para abrir off-canvas en pantallas pequeñas -->
+<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
+  <div class="container-fluid">
+    <button class="btn btn-outline-secondary me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+</nav>
+
+<div class="d-md-flex h-100">
+  <!-- SIDEBAR como Sidebar Fijo para Pantallas Grandes -->
+  <div class="d-none d-md-flex flex-column border-end sidebar-transition" id="sidebar" style="flex-shrink: 0;">
     <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
       <div class="user-display">
         <span class="user-fullname">{{ current_user.username }}</span>
@@ -160,61 +214,126 @@ body {
     </ul>
   </div>
 
-  <!-- NAVBAR superior para pantallas pequeñas -->
-  <nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">
-        <img src="{{ url_for('static', filename='images/logov3.png') }}" height="40">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topbarMenu"
-              aria-controls="topbarMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="topbarMenu">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="pulzcardDropdown" role="button"
-               data-bs-toggle="dropdown" aria-expanded="false">Pulzcards</a>
-            <ul class="dropdown-menu" aria-labelledby="pulzcardDropdown">
-              <li><a class="dropdown-item" href="{{ url_for('pulzcard') }}">Crear Nuevo</a></li>
-              <li><a class="dropdown-item" href="#" onclick="showSection('pulzcardsSection')">Ver Todos</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="etiquetasDropdown" role="button"
-               data-bs-toggle="dropdown" aria-expanded="false">Etiquetas</a>
-            <ul class="dropdown-menu" aria-labelledby="etiquetasDropdown">
-              <li>
-                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal">
-                  Crear Nuevo
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" onclick="showSection('etiquetasSection')">Ver Todos</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="bodegasDropdown" role="button"
-               data-bs-toggle="dropdown" aria-expanded="false">Bodegas</a>
-            <ul class="dropdown-menu" aria-labelledby="bodegasDropdown">
-              <li>
-                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal">
-                  Crear Nueva
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#" onclick="showSection('bodegasSection')">Ver Todas</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" onclick="showSection('miPerfilSection')">Mi Perfil</a>
-          </li>
-        </ul>
-      </div>
+  <!-- Off-canvas Sidebar para Pantallas Pequeñas -->
+  <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasSidebarLabel">{{ current_user.username }}</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
     </div>
-  </nav>
+    <div class="offcanvas-body p-0">
+      <ul class="nav flex-column pt-2" id="offcanvasSidebarMenu">
+        <!-- Pulzcards -->
+        <li class="nav-item mt-2">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+             data-bs-target="#pulzcardSubmenuOffcanvas" aria-expanded="false" title="Pulzcards">
+            <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
+          </a>
+          <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenuOffcanvas">
+            <li>
+              <a href="{{ url_for('pulzcard') }}" class="nav-link sub-link">
+                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+              </a>
+            </li>
+            <li>
+              <a href="#pulzcardsSection" class="nav-link sub-link">
+                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Etiquetas -->
+        <li class="nav-item mt-2">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
+             data-bs-target="#etiquetasSubmenuOffcanvas" aria-expanded="false" title="Etiquetas">
+            <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
+          </a>
+          <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenuOffcanvas">
+            <li>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
+                 class="nav-link sub-link">
+                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#importTagsModal" class="nav-link sub-link" title="Importar Etiquetas">
+                <i class="bi bi-file-arrow-up-fill"></i><span class="text-label ms-1">Importar</span>
+              </a>
+            </li>
+            <li>
+              <a href="#etiquetasSection" class="nav-link sub-link">
+                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todos</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Bodegas -->
+        <li class="nav-item mt-2">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenuOffcanvas"
+             aria-expanded="false" title="Bodegas">
+            <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
+          </a>
+          <ul class="collapse list-unstyled ps-0" id="bodegasSubmenuOffcanvas">
+            <li>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
+                 class="nav-link sub-link">
+                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
+              </a>
+            </li>
+            <li>
+              <a href="#bodegasSection" class="nav-link sub-link">
+                <i class="bi bi-eye-fill"></i><span class="text-label ms-1">Ver Todas</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Dashboard -->
+        <li class="nav-item mt-2">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenuOffcanvas"
+             aria-expanded="false" aria-controls="dashboardSubmenuOffcanvas" title="Dashboard">
+            <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
+          </a>
+          <ul class="collapse list-unstyled ps-0" id="dashboardSubmenuOffcanvas">
+            <li>
+              <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
+                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
+              </a>
+            </li>
+            <div id="dashboardItemsContainerOffcanvas">
+              {% if dashboard_items %}
+                {% for item in dashboard_items %}
+                <li>
+                  <a href="#dashboardItemDetailSection"
+                     class="nav-link sub-link dashboard-item-link"
+                     data-item-id="{{ item.uuid }}"
+                     data-item-name="{{ item.name }}"
+                     data-item-type="{{ item.item_type }}">
+                    <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
+                  </a>
+                </li>
+                {% endfor %}
+              {% else %}
+                <li>
+                  <span class="text-muted ms-3">Sin items disponibles</span>
+                </li>
+              {% endif %}
+            </div>
+          </ul>
+        </li>
+
+        <hr class="my-10">
+
+        <!-- Mi Perfil -->
+        <li class="nav-item mt-2">
+          <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
+            <i class="bi bi-person-lines-fill"></i><span class="text-label ms-2">Mi Perfil</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <!-- CONTENIDO PRINCIPAL -->
   <div class="flex-grow-1" id="mainContent" style="padding:20px; overflow-y: auto;">
@@ -275,10 +394,10 @@ body {
               <tr>
                 <th><input type="checkbox" id="select_all_pulzcards" form="bulkDeletePulzcardForm"></th>
                 <th>Nombre Tarjeta</th>
-                <th>Nombre</th>
+                <th>Nombre Usuario</th>
                 <th>Organización</th>
                 <th>Email</th>
-                <th>Fecha de Creación</th>
+                <th>Fecha Creación</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -347,8 +466,7 @@ body {
                           </a>
                         </li>
                         <li>
-                          <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}"
-                                method="POST" style="display:inline;">
+                          <form action="{{ url_for('delete_pulzcard', card_id=card.card_id) }}" method="POST" style="display:inline;">
                             {{ delete_forms[card.id].hidden_tag() }}
                             <button type="submit"
                                     onclick="return confirm('¿Estás seguro de que deseas eliminar esta Pulzcard?')"
@@ -1016,16 +1134,92 @@ $(document).ready(function() {
   }
   window.addEventListener('load', handleHash, false);
   window.addEventListener('hashchange', handleHash, false);
-  document.querySelectorAll('a.nav-link.sub-link').forEach(function(link) {
-    var href = link.getAttribute('href');
-    if (href.startsWith('#')) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        var targetSection = this.getAttribute('href').substring(1);
-        window.location.hash = targetSection;
-        showSection(targetSection);
-      });
+  
+  // Función común para manejar clics en los items del Dashboard
+  function handleDashboardItemClick(e, element){
+    e.preventDefault();
+    var name = $(element).data('item-name');
+    var type = $(element).data('item-type');
+    var itemId = $(element).data('item-id');
+
+    // Mostrar en el DOM
+    $('#dashboardItemName').text(name);
+    $('#dashboardItemType').text(type);
+    $('#eliminarItemBtn').data('item-id', itemId);
+
+    // Si es un tipo que admite encuesta
+    if (type === "Evaluación de Clientes" || type === "Evaluación de Semáforo") {
+        // Construye la URL de la encuesta (reemplaza ITEMUUID con itemId)
+        var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
+
+        // Mostrar/actualizar link de "Responder Encuesta"
+        $('#surveyLink')
+            .attr('href', surveyUrl)
+            .show();
+
+        // Botón para copiar la URL
+        $('#copySurveyBtn')
+            .off('click')
+            .on('click', function() {
+                navigator.clipboard.writeText(surveyUrl)
+                .then(function() {
+                    alert('URL copiada al portapapeles!');
+                })
+                .catch(function(err) {
+                    alert('Error al copiar la URL: ' + err);
+                });
+            })
+            .show();
+
+        // Botón para ver el QR de la encuesta
+        $('#showSurveyQRBtn')
+            .off('click')
+            .on('click', function() {
+                // Abrimos la ruta /survey_qrcode/<itemId> en otra pestaña
+                window.open('/survey_qrcode/' + itemId, '_blank');
+            })
+            .show();
+
+        // Mostrar contenedor de estadísticas y renderizar la tabla
+        $('#dashboardItemStats').show();
+        renderLast10DaysTable(itemId, type);
+
+    } else {
+        // Ocultar si no es un ítem que admita encuesta
+        $('#surveyLink').hide();
+        $('#copySurveyBtn').hide();
+        $('#showSurveyQRBtn').hide();
+        $('#dashboardItemStats').hide();
     }
+
+    // Cambiar sección a "Detalle de Ítem"
+    showSection('dashboardItemDetailSection');
+  }
+
+  // Event handler para dashboard items en el sidebar fijo
+  $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
+      handleDashboardItemClick(e, this);
+      // Cerrar offcanvas si está abierto (solo para pantallas pequeñas)
+      var offcanvasElement = document.getElementById('offcanvasSidebar');
+      if (offcanvasElement) {
+        var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+        if (offcanvas) {
+          offcanvas.hide();
+        }
+      }
+  });
+
+  // Event handler para dashboard items en el offcanvas sidebar
+  $('#dashboardItemsContainerOffcanvas').on('click', '.dashboard-item-link', function(e) {
+      handleDashboardItemClick(e, this);
+      // Cerrar offcanvas
+      var offcanvasElement = document.getElementById('offcanvasSidebar');
+      if (offcanvasElement) {
+        var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+        if (offcanvas) {
+          offcanvas.hide();
+        }
+      }
   });
 
   // 3) Copiar URL al portapapeles
@@ -1037,7 +1231,7 @@ $(document).ready(function() {
     });
   };
 
-  // 4) Toggle sidebar
+  // 4) Toggle sidebar (collapse on large screens)
   var sidebar = document.getElementById('sidebar');
   var toggleBtn = document.getElementById('sidebarToggle');
   if (sidebar && toggleBtn) {
@@ -1161,66 +1355,8 @@ $(document).ready(function() {
     });
   };
 
-    // 9) Dashboard Items (mostrar detalles)
-    $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
-        e.preventDefault();
-        var name = $(this).data('item-name');
-        var type = $(this).data('item-type');
-        var itemId = $(this).data('item-id');
-
-        // Mostrar en el DOM
-        $('#dashboardItemName').text(name);
-        $('#dashboardItemType').text(type);
-        $('#eliminarItemBtn').data('item-id', itemId);
-
-        // Si es un tipo que admite encuesta
-        if (type === "Evaluación de Clientes" || type === "Evaluación de Semáforo") {
-            // Construye la URL de la encuesta (reemplaza ITEMUUID con itemId)
-            var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
-
-            // Mostrar/actualizar link de "Responder Encuesta"
-            $('#surveyLink')
-                .attr('href', surveyUrl)
-                .show();
-
-            // Botón para copiar la URL
-            $('#copySurveyBtn')
-                .off('click')
-                .on('click', function() {
-                    navigator.clipboard.writeText(surveyUrl)
-                    .then(function() {
-                        alert('URL copiada al portapapeles!');
-                    })
-                    .catch(function(err) {
-                        alert('Error al copiar la URL: ' + err);
-                    });
-                })
-                .show();
-
-            // Botón para ver el QR de la encuesta
-            $('#showSurveyQRBtn')
-                .off('click')
-                .on('click', function() {
-                    // Abrimos la ruta /survey_qrcode/<itemId> en otra pestaña
-                    window.open('/survey_qrcode/' + itemId, '_blank');
-                })
-                .show();
-
-            // Mostrar contenedor de estadísticas y renderizar la tabla
-            $('#dashboardItemStats').show();
-            renderLast10DaysTable(itemId, type);
-
-        } else {
-            // Ocultar si no es un ítem que admita encuesta
-            $('#surveyLink').hide();
-            $('#copySurveyBtn').hide();
-            $('#showSurveyQRBtn').hide();
-            $('#dashboardItemStats').hide();
-        }
-
-        // Cambiar sección a "Detalle de Ítem"
-        showSection('dashboardItemDetailSection');
-    });
+  // 9) Dashboard Items (mostrar detalles)
+  // Ya manejado con los eventos separados arriba
 
   // Crear Item (Ajax)
   $('#agregarItemForm').submit(function(e){
@@ -1250,6 +1386,7 @@ $(document).ready(function() {
              '<i class="bi bi-dot"></i><span class="text-label ms-1">'+itemName+'</span>'+
           '</a></li>';
         $('#dashboardItemsContainer').append(newItem);
+        $('#dashboardItemsContainerOffcanvas').append(newItem);
         $('#agregarItemModal').modal('hide');
         $('#itemNameInput').val('');
         $('#itemTypeSelect').val('');
@@ -1281,7 +1418,10 @@ $(document).ready(function() {
           'X-CSRFToken': '{{ csrf_token() }}'
         },
         success: function(response){
+          // Remover del sidebar fijo
           $('.dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
+          // Remover del offcanvas sidebar
+          $('.offcanvas #dashboardItemsContainerOffcanvas .dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
           showSection('miPerfilSection');
           confirmDeleteModal.hide();
           alert('Ítem eliminado exitosamente.');
@@ -1578,6 +1718,7 @@ $(document).ready(function() {
       chartContainer.style.display='block';
     });
   }
+
 });
 </script>
 {% endblock %}

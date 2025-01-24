@@ -772,7 +772,7 @@ a:hover {
     overflow-y: auto;
     position: sticky;
     top: altura_del_navbar; /* Ajusta según sea necesario */
-    background-color: #ffffff0a;
+    background-color: #ffffffd4;
     height: calc(100vh - 90px - 60px);
 }
 #sidebar.collapsed {
