@@ -1,5 +1,3 @@
-<!-- templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb (Escala 1-10 NPS){% endblock %}
@@ -56,7 +54,7 @@ body {
   }
 }
 
-/* Adjust main content when sidebar is collapsed */
+/* Ajust main content when sidebar is collapsed */
 .collapsed {
   width: 80px !important;
 }
@@ -65,16 +63,64 @@ body {
   transition: all 0.3s;
 }
 
-/* Ajustes para off-canvas */
+/* Ajustes para off-canvas en móviles */
 .offcanvas-custom {
   width: 250px;
 }
-
-/* Ajustes adicionales para mejorar la responsividad */
 @media (max-width: 767.98px) {
   .offcanvas-custom {
     width: 100%;
   }
+}
+
+/* Estilos para los botones de acción */
+.action-btn {
+  margin-right: 5px;
+}
+
+/* Estilos del contenedor de gráficos */
+#chartContainer {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;  
+  align-items: center;      
+  max-width: 1000px;        
+  height: 60vh;            
+  width: 100%;
+}
+
+.table-responsive {
+  width: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Asegurar que gráficos y tablas ocupen todo el ancho */
+.full-width {
+  width: 100%;
+}
+
+/* Estilos adicionales para las etiquetas de los gráficos (tooltip, etc.) */
+.chartjs-tooltip {
+  opacity: 1;
+  position: absolute;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  transition: all .1s ease;
+}
+
+/* Mejora de la apariencia de las tablas */
+.custom-table thead th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+.custom-table tbody tr:hover {
+  background-color: #f1f1f1;
 }
 </style>
 {% endblock %}
@@ -90,7 +136,7 @@ body {
 </nav>
 
 <div class="d-md-flex h-100">
-  <!-- SIDEBAR como Sidebar Fijo para Pantallas Grandes -->
+  <!-- SIDEBAR para pantallas grandes -->
   <div class="d-none d-md-flex flex-column border-end sidebar-transition" id="sidebar" style="flex-shrink: 0;">
     <div class="sidebar-header d-flex align-items-center p-3 border-bottom">
       <div class="user-display">
@@ -123,7 +169,7 @@ body {
                     data-item-id="{{ item.uuid }}"
                     data-item-name="{{ item.name }}"
                     data-item-type="{{ item.item_type }}">
-                  <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
+                    <i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">{{ item.name }}</span>
                 </a>
               </li>
               {% endfor %}
@@ -213,7 +259,7 @@ body {
     </ul>
   </div>
 
-  <!-- Off-canvas Sidebar para Pantallas Pequeñas -->
+  <!-- Off-canvas Sidebar para pantallas pequeñas -->
   <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
     <div class="offcanvas-header">
       <h5 class="offcanvas-title" id="offcanvasSidebarLabel">{{ current_user.username }}</h5>
@@ -387,8 +433,8 @@ body {
         </div>
         <hr class="my-10">
 
-        <div class="table-responsive">
-          <table class="table table-hover custom-table">
+        <div class="table-responsive full-width">
+          <table class="table table-hover custom-table table-striped table-bordered">
             <thead>
               <tr>
                 <th><input type="checkbox" id="select_all_pulzcards" form="bulkDeletePulzcardForm"></th>
@@ -565,8 +611,8 @@ body {
 
       <hr class="my-10">
 
-      <div class="table-responsive">
-        <table class="table table-hover custom-table">
+      <div class="table-responsive full-width">
+        <table class="table table-hover custom-table table-striped table-bordered">
           <thead>
             <tr>
               <th><input type="checkbox" id="select_all" form="bulkDeleteForm"></th>
@@ -676,7 +722,7 @@ body {
     <div id="bodegasSection" style="display:none;">
       <h4>Bodegas</h4>
       {% if bodegas %}
-      <div class="table-responsive">
+      <div class="table-responsive full-width">
         <table class="table table-hover custom-table">
           <thead>
             <tr>
@@ -763,59 +809,93 @@ body {
       </div>
     </div>
 
-  <!-- Sección DETALLE de Ítem de Dashboard -->
-  <div id="dashboardItemDetailSection" style="display:none;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div class="d-flex flex-column">
+    <!-- SECCIÓN DETALLE DE Ítem de Dashboard -->
+    <div id="dashboardItemDetailSection" style="display:none;">
+
+      <!-- Bloque con nombre y tipo, centrado -->
+      <div class="mb-3 text-center">
         <h2 class="mb-0" id="dashboardItemName"></h2>
         <small class="text-muted" id="dashboardItemType"></small>
       </div>
-      <!-- Botones para Dashboard Item Actions -->
-      <div class="d-flex align-items-center gap-3" id="dashboardItemActions">
-        <!-- Estructura similar a action-bar-wrapper y action-bar -->
+      <hr class="my-4">
+      <!-- Contenedor de botones, alineados a la derecha -->
+      <div class="d-flex align-items-center justify-content-end gap-3 flex-wrap" id="dashboardItemActions">
         <div class="action-bar-wrapper">
           <div class="action-bar">
-            <a href="#" id="surveyLink" target="_blank" class="btn btn-sm btn-primary action-btn hidden" title="Responder">
-              <i class="bi bi-check2-circle me-1"></i>Responder
+            <!-- Enlace (ahora <a>) para Responder -->
+              <a class="btn btn-sm btn-info action-btn d-flex align-items-center"
+              id="surveyLink"
+              title="Responder"
+              target="_blank">
+              <i class="bi bi-check2-circle"></i>
+              <span class="d-none d-sm-inline ms-1">Responder</span>
             </a>
-            <button class="btn btn-sm btn-secondary action-btn hidden" id="copySurveyBtn" title="Copiar URL">
-              <i class="bi bi-clipboard me-1"></i>Copiar
+            <!-- Botón: Descargar Gráfico -->
+            <button class="btn btn-sm btn-info action-btn d-flex align-items-center" id="downloadChartBtn" title="Descargar Gráfico">
+              <i class="bi bi-download"></i>
+              <span class="d-none d-sm-inline ms-1">Descargar</span>
             </button>
-            <button class="btn btn-sm btn-outline-success action-btn hidden" id="showSurveyQRBtn" title="Ver QR">
-              <i class="fas fa-qrcode"></i> QR
+
+            <!-- Botón: Copiar URL -->
+            <button class="btn btn-sm btn-info action-btn d-flex align-items-center"
+                    id="copySurveyBtn"
+                    title="Copiar URL">
+              <i class="bi bi-clipboard"></i>
+              <span class="d-none d-sm-inline ms-1">Copiar</span>
             </button>
-            <button class="btn btn-sm btn-danger action-btn" id="eliminarItemBtn" title="Eliminar">
+
+            <!-- Botón: Ver QR -->
+            <button class="btn btn-sm btn-info action-btn d-flex align-items-center"
+                    id="showSurveyQRBtn"
+                    title="Ver QR">
+              <i class="fas fa-qrcode"></i>
+              <span class="d-none d-sm-inline ms-1">QR</span>
+            </button>
+
+            <!-- Botón: Eliminar -->
+            <button class="btn btn-sm btn-danger action-btn d-flex align-items-center"
+                    id="eliminarItemBtn"
+                    title="Eliminar">
               <i class="bi bi-trash-fill"></i>
+              <span class="d-none d-sm-inline ms-1">Eliminar</span>
             </button>
           </div>
         </div>
       </div>
-    </div>
-    <hr class="my-4">
 
       <div id="dashboardItemStats" style="display:none;">
-        <h4 class="mb-3">Estadísticas de Valoraciones (últimos 10 días)</h4>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="d-flex align-items-center gap-2">
-            <button id="showTableBtn" class="btn btn-outline-primary btn-sm">Ver Tabla</button>
-            <button id="showChartBtn" class="btn btn-outline-secondary btn-sm">Ver Gráfico</button>
-          </div>
-          <div>
-            <select id="chartIndicatorSelect" class="form-select form-select-sm" style="width: 220px;">
-              <option value="count" selected>Cantidad de Evaluaciones</option>
-              <option value="average">Promedio de Puntajes</option>
-              <option value="nps">NPS Ponderado</option>
-              <option value="promoters">Clientes Promotores (%)</option>
-              <option value="passives">Clientes Neutros (%)</option>
-              <option value="detractors">Clientes Detractores (%)</option>
-              <option value="stacked">Gráfico Barras Apiladas</option>
-            </select>
-          </div>
+        <h4 class="mb-3">Estadísticas de Valoraciones</h4>
+        <!-- Filtro de rango de fechas -->
+        <div class="mb-3">
+          <label for="dateRangePicker" class="form-label">Selecciona rango de fechas:</label>
+          <input type="date" id="startDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
+          <span class="mx-2">a</span>
+          <input type="date" id="endDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
+          <button class="btn btn-sm btn-primary ms-2" id="filterDateBtn">Filtrar</button>
         </div>
 
-        <div id="tableContainer">
-          <table class="table table-bordered text-center" id="ratingsTable">
-            <thead>
+        <!-- Selección de indicador con 'Tabla de Evaluaciones' al final -->
+        <div class="d-flex justify-content-end align-items-center mb-3">
+          <select id="chartIndicatorSelect" class="form-select form-select-sm" style="width: 220px;">
+            <option value="count" selected>Cantidad de Evaluaciones</option>
+            <option value="average">Promedio de Puntajes</option>
+            <option value="nps">NPS Ponderado</option>
+            <option value="csat">CSAT (Satisfacción del Cliente)</option>
+            <option value="ces">CES (Esfuerzo del Cliente)</option>
+            <option value="response_rate">Tasa de Respuesta</option>
+            <option value="sentiment">Análisis de Sentimientos</option>
+            <option value="stacked">Gráfico Barras Apiladas</option>
+            <option value="table">Tabla de Evaluaciones</option><!-- Nuevo -->
+          </select>
+        </div>
+
+        <div id="chartContainer" class="full-width">
+          <canvas id="myChart"></canvas>
+        </div>
+
+        <div id="tableContainer" style="display:none;">
+          <table class="table table-bordered table-striped table-hover text-center" id="ratingsTable">
+            <thead class="table-dark">
               <tr id="ratingsHeader">
                 <th>Valoración</th>
               </tr>
@@ -834,10 +914,6 @@ body {
               <tr id="totalRow"><th>Total</th></tr>
             </tbody>
           </table>
-        </div>
-
-        <div id="chartContainer" style="display:none;">
-          <canvas id="myChart"></canvas>
         </div>
 
         <div id="dayDetailsContainer" style="display:none; margin-top: 20px;">
@@ -1048,6 +1124,13 @@ body {
               <option value="Evaluación de Clientes">Evaluación de Clientes (NPS 1-10)</option>
               <option value="Evaluación de Semáforo">Evaluación de Semáforo (1-3)</option>
               <option value="Visualizaciones diarias">Visualizaciones Diarias</option>
+              <!-- (Si no deseas más tipos, remueve los de abajo) -->
+              <!--
+              <option value="CSAT">CSAT (Satisfacción del Cliente)</option>
+              <option value="CES">CES (Esfuerzo del Cliente)</option>
+              <option value="Sentiment">Análisis de Sentimientos</option>
+              <option value="Response Rate">Tasa de Respuesta</option>
+              -->
             </select>
           </div>
         </div>
@@ -1101,12 +1184,13 @@ agregarEtiquetaModal.show();
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
 <script>
 // ----------------------------------------------------------------------------------
 // Al cargar DOM
 $(document).ready(function() {
-  // 1) Inicializa DataTables
+  // 1) Inicializa DataTables en todas las tablas con la clase .custom-table
   $('.custom-table').DataTable({
     language: {
       url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
@@ -1139,125 +1223,96 @@ $(document).ready(function() {
   }
   window.addEventListener('load', handleHash, false);
   window.addEventListener('hashchange', handleHash, false);
-  
-  // Función común para manejar clics en los items del Dashboard
+
+  // Función para manejar clic en los items del Dashboard
   function handleDashboardItemClick(e, element){
     e.preventDefault();
     var name = $(element).data('item-name');
     var type = $(element).data('item-type');
     var itemId = $(element).data('item-id');
 
-    // Mostrar en el DOM
+    // Muestra en el DOM
     $('#dashboardItemName').text(name);
     $('#dashboardItemType').text(type);
     $('#eliminarItemBtn').data('item-id', itemId);
 
     // Si es un tipo que admite encuesta
-    if (type === "Evaluación de Clientes" || type === "Evaluación de Semáforo") {
-        // Construye la URL de la encuesta (reemplaza ITEMUUID con itemId)
-        var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
+    if (["Evaluación de Clientes", "Evaluación de Semáforo", "CSAT", "CES", "Sentiment", "Response Rate"].includes(type)) {
+      var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
 
-        // Mostrar/actualizar link de "Responder Encuesta"
-        $('#surveyLink')
-            .attr('href', surveyUrl)
-            .show();
+      // Link "Responder"
+      $('#surveyLink').attr('href', surveyUrl).show().text('Responder');
 
-        // Botón para copiar la URL
-        $('#copySurveyBtn')
-            .off('click')
-            .on('click', function() {
-                navigator.clipboard.writeText(surveyUrl)
-                .then(function() {
-                    alert('URL copiada al portapapeles!');
-                })
-                .catch(function(err) {
-                    alert('Error al copiar la URL: ' + err);
-                });
-            })
-            .show();
+      // Botón "Copiar URL"
+      $('#copySurveyBtn').off('click').on('click', function() {
+        navigator.clipboard.writeText(surveyUrl)
+          .then(function(){ alert('URL copiada al portapapeles!'); })
+          .catch(function(err){ alert('Error al copiar la URL: ' + err); });
+      }).show();
 
-        // Botón para ver el QR de la encuesta
-        $('#showSurveyQRBtn')
-            .off('click')
-            .on('click', function() {
-                // Abrimos la ruta /survey_qrcode/<itemId> en otra pestaña
-                window.open('/survey_qrcode/' + itemId, '_blank');
-            })
-            .show();
+      // Botón "Ver QR"
+      $('#showSurveyQRBtn').off('click').on('click', function() {
+        window.open('/survey_qrcode/' + itemId, '_blank');
+      }).show();
 
-        // Mostrar contenedor de estadísticas y renderizar la tabla
-        $('#dashboardItemStats').show();
-        renderLast10DaysTable(itemId, type);
+      // Mostrar contenedor de estadísticas y renderizar la tabla inicial
+      $('#dashboardItemStats').show();
+      renderLast10DaysTable(itemId, type);
 
     } else {
-        // Ocultar si no es un ítem que admita encuesta
-        $('#surveyLink').hide();
-        $('#copySurveyBtn').hide();
-        $('#showSurveyQRBtn').hide();
-        $('#dashboardItemStats').hide();
+      // Ocultar
+      $('#surveyLink, #copySurveyBtn, #showSurveyQRBtn').hide();
+      $('#dashboardItemStats').hide();
     }
 
-    // Cambiar sección a "Detalle de Ítem"
+    // Cambiar a la sección de detalle
     showSection('dashboardItemDetailSection');
   }
 
-  // Event handler para dashboard items en el sidebar fijo
+  // Listeners para ítems en sidebar
   $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
-      handleDashboardItemClick(e, this);
-      // Cerrar offcanvas si está abierto (solo para pantallas pequeñas)
-      var offcanvasElement = document.getElementById('offcanvasSidebar');
-      if (offcanvasElement) {
-        var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-        if (offcanvas) {
-          offcanvas.hide();
-        }
-      }
+    handleDashboardItemClick(e, this);
+    // Si en móvil, cerrar el offcanvas
+    var offcanvasElement = document.getElementById('offcanvasSidebar');
+    if (offcanvasElement) {
+      var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if (offcanvas) offcanvas.hide();
+    }
   });
-
-  // Event handler para dashboard items en el offcanvas sidebar
   $('#dashboardItemsContainerOffcanvas').on('click', '.dashboard-item-link', function(e) {
-      handleDashboardItemClick(e, this);
-      // Cerrar offcanvas
-      var offcanvasElement = document.getElementById('offcanvasSidebar');
-      if (offcanvasElement) {
-        var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-        if (offcanvas) {
-          offcanvas.hide();
-        }
-      }
+    handleDashboardItemClick(e, this);
+    var offcanvasElement = document.getElementById('offcanvasSidebar');
+    if (offcanvasElement) {
+      var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if (offcanvas) offcanvas.hide();
+    }
   });
 
-  // 3) Copiar URL al portapapeles
+  // 3) Función copiar URL
   window.copyURL = function(url) {
-    navigator.clipboard.writeText(url).then(function(){
-      alert('URL copiada al portapapeles!');
-    }).catch(function(err){
-      alert('Error al copiar la URL: ' + err);
-    });
+    navigator.clipboard.writeText(url)
+      .then(function(){ alert('URL copiada al portapapeles!'); })
+      .catch(function(err){ alert('Error al copiar URL: ' + err); });
   };
 
-  // 4) Toggle sidebar (collapse on large screens)
+  // 4) Toggle sidebar (colapsar en pantallas grandes)
   var sidebar = document.getElementById('sidebar');
   var toggleBtn = document.getElementById('sidebarToggle');
   if (sidebar && toggleBtn) {
     toggleBtn.addEventListener('click', function() {
       sidebar.classList.toggle('collapsed');
-      if (sidebar.classList.contains('collapsed')) {
-        this.innerHTML = '<i class="bi bi-chevron-right"></i>';
-      } else {
-        this.innerHTML = '<i class="bi bi-chevron-left"></i>';
-      }
+      this.innerHTML = sidebar.classList.contains('collapsed')
+        ? '<i class="bi bi-chevron-right"></i>'
+        : '<i class="bi bi-chevron-left"></i>';
     });
   }
 
-  // 5) Selección en masa de Etiquetas
+  // 5) Selección masiva de Etiquetas
   var selectAllTagsCheckbox = document.getElementById('select_all');
   if (selectAllTagsCheckbox) {
     selectAllTagsCheckbox.addEventListener('click', function() {
       var checkboxes = document.querySelectorAll('input[name="selected_tags"]');
-      checkboxes.forEach(function(ch) {
-        ch.checked = selectAllTagsCheckbox.checked;
-      });
+      checkboxes.forEach(ch => { ch.checked = selectAllTagsCheckbox.checked; });
     });
   }
   var confirmDeleteBulkBtn = document.getElementById('confirmDeleteBulkBtn');
@@ -1270,48 +1325,45 @@ $(document).ready(function() {
   // 6) Exportar Etiquetas
   window.exportSelectedTags = function() {
     var selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
-    if (selectedTags.length === 0) {
-      alert('Por favor, selecciona al menos una etiqueta para exportar.');
+    if (!selectedTags.length) {
+      alert('Selecciona al menos una etiqueta para exportar.');
       return;
     }
-    var tagIds = Array.from(selectedTags).map(function(tag){ return tag.value; });
+    var tagIds = Array.from(selectedTags).map(tag => tag.value);
     fetch('{{ url_for("export_tags") }}', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token() }}'
-      },
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
       body: JSON.stringify({ tag_ids: tagIds })
     })
-    .then(function(response){
-      if (!response.ok) {
-        return response.json().then(function(data){ throw new Error(data.error); });
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(data => { throw new Error(data.error); });
       }
-      return response.blob();
+      return res.blob();
     })
-    .then(function(blob){
+    .then(blob => {
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.style.display='none';
-      a.href=url;
-      a.download='tags_export.xlsx';
+      a.href = url;
+      a.download = 'tags_export.xlsx';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     })
-    .catch(function(error){
-      console.error('Error:', error);
-      alert('Hubo un error al exportar las etiquetas: ' + error.message);
+    .catch(err => {
+      console.error('Error:', err);
+      alert('Error exportando: ' + err.message);
     });
   };
 
-  // 7) Selección en masa Pulzcards
+  // 7) Selección masiva de Pulzcards
   var selectAllPulzcardsCheckbox = document.getElementById('select_all_pulzcards');
   if (selectAllPulzcardsCheckbox) {
     selectAllPulzcardsCheckbox.addEventListener('click', function(){
       var checkboxes = document.querySelectorAll('input[name="selected_pulzcards"]');
-      checkboxes.forEach(function(ch){ ch.checked = selectAllPulzcardsCheckbox.checked; });
+      checkboxes.forEach(ch => { ch.checked = selectAllPulzcardsCheckbox.checked; });
     });
   }
   var confirmDeleteBulkPulzcardsBtn = document.getElementById('confirmDeleteBulkPulzcardsBtn');
@@ -1324,53 +1376,46 @@ $(document).ready(function() {
   // 8) Exportar Pulzcards
   window.exportSelectedPulzcards = function() {
     var selected = document.querySelectorAll('input[name="selected_pulzcards"]:checked');
-    if (selected.length === 0) {
-      alert('Por favor, selecciona al menos una Pulzcard para exportar.');
+    if (!selected.length) {
+      alert('Selecciona al menos una Pulzcard para exportar.');
       return;
     }
-    var pulz_ids = Array.from(selected).map(function(el){ return el.value; });
+    var pulz_ids = Array.from(selected).map(el => el.value);
     fetch('{{ url_for("export_pulzcards") }}', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token() }}'
-      },
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
       body: JSON.stringify({ pulz_ids: pulz_ids })
     })
-    .then(function(response){
-      if (!response.ok) {
-        return response.json().then(function(data){ throw new Error(data.error); });
+    .then(res => {
+      if(!res.ok) {
+        return res.json().then(data=>{throw new Error(data.error);});
       }
-      return response.blob();
+      return res.blob();
     })
-    .then(function(blob){
+    .then(blob => {
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.style.display='none';
-      a.href=url;
-      a.download='pulzcards_export.xlsx';
+      a.href = url;
+      a.download = 'pulzcards_export.xlsx';
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     })
-    .catch(function(error){
-      console.error('Error:', error);
-      alert('Hubo un error al exportar las Pulzcards: ' + error.message);
+    .catch(err => {
+      console.error('Error:', err);
+      alert('Error exportando pulzcards: ' + err.message);
     });
   };
 
-  // 9) Dashboard Items (mostrar detalles)
-  // Ya manejado con los eventos separados arriba
-
-  // Crear Item (Ajax)
+  // 9) Crear Item Dashboard (Ajax)
   $('#agregarItemForm').submit(function(e){
     e.preventDefault();
     var itemName = $('#itemNameInput').val().trim();
     var itemType = $('#itemTypeSelect').val();
-
-    if (!itemName || !itemType) {
-      alert('Por favor, completa todos los campos antes de continuar.');
+    if(!itemName || !itemType){
+      alert('Completa todos los campos.');
       return;
     }
     $.ajax({
@@ -1378,17 +1423,12 @@ $(document).ready(function() {
       method: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({ name: itemName, item_type: itemType }),
-      headers: {
-        'X-CSRFToken': '{{ csrf_token() }}'
-      },
-      success: function(response){
+      headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+      success: function(resp){
         var newItem = '<li>'+
-          '<a href="#dashboardItemDetailSection" '+
-             'class="nav-link sub-link dashboard-item-link" '+
-             'data-item-id="'+response.uuid+'" '+
-             'data-item-name="'+itemName+'" '+
-             'data-item-type="'+itemType+'">'+
-             '<i class="bi bi-dot"></i><span class="text-label ms-1">'+itemName+'</span>'+
+          '<a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" ' +
+            'data-item-id="'+resp.uuid+'" data-item-name="'+itemName+'" data-item-type="'+itemType+'">' +
+            '<i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">' + itemName + '</span>' +
           '</a></li>';
         $('#dashboardItemsContainer').append(newItem);
         $('#dashboardItemsContainerOffcanvas').append(newItem);
@@ -1396,9 +1436,7 @@ $(document).ready(function() {
         $('#itemNameInput').val('');
         $('#itemTypeSelect').val('');
       },
-      error: function(){
-        alert('Hubo un error al crear el ítem, intenta nuevamente.');
-      }
+      error: function(){ alert('Error al crear ítem.'); }
     });
   });
 
@@ -1406,12 +1444,11 @@ $(document).ready(function() {
   $('#eliminarItemBtn').on('click', function(){
     var itemId = $(this).data('item-id');
     if(!itemId){
-      console.error('No se encontró item-id');
+      console.error('No item-id');
       return;
     }
-    var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
-    confirmDeleteModal.show();
-
+    var confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
+    confirmModal.show();
     $('#deleteDashboardItemForm').off('submit').on('submit', function(e){
       e.preventDefault();
       $.ajax({
@@ -1419,21 +1456,15 @@ $(document).ready(function() {
         method: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({ uuid: itemId }),
-        headers: {
-          'X-CSRFToken': '{{ csrf_token() }}'
-        },
-        success: function(response){
-          // Remover del sidebar fijo
+        headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+        success: function(){
           $('.dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
-          // Remover del offcanvas sidebar
           $('.offcanvas #dashboardItemsContainerOffcanvas .dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
           showSection('miPerfilSection');
-          confirmDeleteModal.hide();
-          alert('Ítem eliminado exitosamente.');
+          confirmModal.hide();
+          alert('Ítem eliminado.');
         },
-        error: function(){
-          alert('Error al eliminar el ítem.');
-        }
+        error: function(){ alert('Error al eliminar ítem.'); }
       });
     });
   });
@@ -1443,39 +1474,45 @@ $(document).ready(function() {
 
   function renderLast10DaysTable(itemUUID, itemType){
     var ratingsHeader = document.getElementById('ratingsHeader');
-    Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(function(th){
-      th.remove();
-    });
-    var rowIds=[
-      'rating10Row','rating9Row','rating8Row','rating7Row','rating6Row',
-      'rating5Row','rating4Row','rating3Row','rating2Row','rating1Row',
-      'totalRow'
-    ];
+    // Limpiar columnas
+    Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
+    // Limpiar filas
+    var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row',
+                  'rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
     rowIds.forEach(function(rowId){
-      var row=document.getElementById(rowId);
+      var row = document.getElementById(rowId);
       while(row.children.length>1){
         row.removeChild(row.lastChild);
       }
     });
 
     $.ajax({
-      url: '{{ url_for("get_ratings_data") }}',
+      url:'{{ url_for("get_ratings_data") }}',
       type:'GET',
-      data:{ item_uuid:itemUUID },
-      success:function(response){
-        if(response.error){
-          console.error("Error:", response.error);
+      data:{
+        item_uuid: itemUUID,
+        start_date: $('#startDate').val(),
+        end_date: $('#endDate').val()
+      },
+      success:function(resp){
+        if(resp.error){
+          console.error("Error:", resp.error);
           return;
         }
-        globalRatingsData=response.ratings;
-        globalDates=response.dates;
-        globalDetails=response.details;
+        globalRatingsData = resp.ratings;
+        globalDates = resp.dates;
+        globalDetails = resp.details;
+
+        // Agregar encabezado con las fechas
         globalDates.forEach(function(dateStr){
           var th=document.createElement('th');
           th.textContent=dateStr;
           ratingsHeader.appendChild(th);
         });
+        // Llenar la tabla
         fillTableWithCounts(globalRatingsData);
+
+        // Renderizar gráfico por defecto "count"
         renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
       },
       error:function(xhr,status,error){
@@ -1486,8 +1523,8 @@ $(document).ready(function() {
 
   function fillTableWithCounts(ratingsData){
     for(var val=10; val>=1; val--){
-      var row=document.getElementById('rating'+val+'Row');
-      var countArray=ratingsData[val.toString()]||[];
+      var row = document.getElementById('rating'+val+'Row');
+      var countArray = ratingsData[val.toString()]||[];
       countArray.forEach(function(cnt){
         var td=document.createElement('td');
         td.textContent=cnt;
@@ -1498,7 +1535,7 @@ $(document).ready(function() {
     var length=(ratingsData["1"]||[]).length;
     var dayTotals=new Array(length).fill(0);
     for(var rating=1; rating<=10; rating++){
-      var arr=ratingsData[rating.toString()]||[];
+      var arr = ratingsData[rating.toString()]||[];
       arr.forEach(function(cnt, i){
         dayTotals[i]+=cnt;
       });
@@ -1510,32 +1547,82 @@ $(document).ready(function() {
     });
   }
 
+  // Cálculo de indicadores
   function computeDataByIndicator(ratingsData, dates, indicator){
     var length=dates.length;
     var resultArray=new Array(length).fill(0);
+
     for(var i=0; i<length; i++){
       var total=0, sumRatings=0, promoters=0, passives=0, detractors=0;
       for(var rating=1; rating<=10; rating++){
-        var counts=ratingsData[rating.toString()]||[];
-        var c=counts[i]||0;
-        total+=c;
-        sumRatings+=(rating*c);
+        var c = (ratingsData[rating.toString()]||[])[i]||0;
+        total += c;
+        sumRatings += rating*c;
         if(rating>=9) promoters+=c;
         else if(rating>=7) passives+=c;
         else detractors+=c;
       }
-      if(indicator==="count"){
-        resultArray[i]=total;
-      } else if(indicator==="average"){
-        if(total>0) resultArray[i]=sumRatings/total; else resultArray[i]=0;
-      } else if(indicator==="nps"){
-        if(total>0) resultArray[i]=((promoters-detractors)/total)*100; else resultArray[i]=0;
-      } else if(indicator==="promoters"){
-        if(total>0) resultArray[i]=(promoters/total)*100; else resultArray[i]=0;
-      } else if(indicator==="passives"){
-        if(total>0) resultArray[i]=(passives/total)*100; else resultArray[i]=0;
-      } else if(indicator==="detractors"){
-        if(total>0) resultArray[i]=(detractors/total)*100; else resultArray[i]=0;
+
+      if(indicator === "csat"){
+        // CSAT = (Promotores / total) * 100
+        var csat=0;
+        if(total>0) csat=(promoters/total)*100;
+        resultArray[i] = csat;
+      }
+      else if(indicator === "ces"){
+        // CES = sumRatings(1-5) / total
+        // Reusamos sumRatings y total, pero si tu rating es 1..10, ajusta tu lógica
+        // Ejemplo: tomamos rating 1..5 como "esfuerzo"
+        var sumEsfuerzo=0; 
+        var totEsf=0;
+        for(var r=1; r<=5; r++){
+          var c2=(ratingsData[r.toString()]||[])[i]||0;
+          sumEsfuerzo += r*c2;
+          totEsf += c2;
+        }
+        if(totEsf>0) resultArray[i] = sumEsfuerzo/totEsf; 
+        else resultArray[i] = 0;
+      }
+      else if(indicator === "response_rate"){
+        // Tasa de Respuesta
+        // asumiendo response.total_sent si existe...
+        // (Ajustar según la estructura real)
+        // Ej:
+        var totalSent=0; 
+        if(globalRatingsData && globalRatingsData.total_sent){
+          totalSent = globalRatingsData.total_sent[i]||0;
+        }
+        if(totalSent>0) resultArray[i]=(total/totalSent)*100; 
+        else resultArray[i]=0;
+      }
+      else if(indicator === "sentiment"){
+        // Asume un valor 'sentiment' en globalDetails
+        var sentiments=globalDetails[dates[i]]||[];
+        var sentimentSum=0, sentimentCount=0;
+        sentiments.forEach(function(resp){
+          if(resp.sentiment !== undefined){
+            sentimentSum += resp.sentiment;
+            sentimentCount++;
+          }
+        });
+        if(sentimentCount>0) resultArray[i] = sentimentSum/sentimentCount;
+        else resultArray[i] = 0;
+      }
+      else {
+        // "count", "average", "nps", ...
+        switch(indicator){
+          case "count":
+            resultArray[i] = total;
+            break;
+          case "average":
+            resultArray[i] = total>0? (sumRatings/total) : 0;
+            break;
+          case "nps":
+            resultArray[i] = total>0 ? ((promoters-detractors)/total)*100 : 0;
+            break;
+          default:
+            resultArray[i] = 0;
+        }
       }
     }
     return resultArray;
@@ -1543,66 +1630,127 @@ $(document).ready(function() {
 
   function computeStackedData(ratingsData, dates){
     var length=dates.length;
-    var promotersArray=new Array(length).fill(0);
-    var passivesArray=new Array(length).fill(0);
-    var detractorsArray=new Array(length).fill(0);
-    for(var i=0; i<length; i++){
-      var total=0, pro=0, pas=0, det=0;
+    var promotersArray = new Array(length).fill(0);
+    var passivesArray = new Array(length).fill(0);
+    var detractorsArray = new Array(length).fill(0);
+
+    for(var i=0;i<length;i++){
+      var pro=0, pas=0, det=0, total=0;
       for(var rating=1; rating<=10; rating++){
-        var arr=ratingsData[rating.toString()]||[];
-        var count=arr[i]||0;
-        total+=count;
-        if(rating>=9) pro+=count;
-        else if(rating>=7) pas+=count;
-        else det+=count;
+        var c=(ratingsData[rating.toString()]||[])[i]||0;
+        total+=c;
+        if(rating>=9) pro+=c;
+        else if(rating>=7) pas+=c;
+        else det+=c;
       }
-      if(total>0){
-        promotersArray[i]=(pro/total)*100;
-        passivesArray[i]=(pas/total)*100;
-        detractorsArray[i]=(det/total)*100;
-      }
+      promotersArray[i]=pro;
+      passivesArray[i]=pas;
+      detractorsArray[i]=det;
     }
     return {
-      promotersArray:promotersArray,
-      passivesArray:passivesArray,
-      detractorsArray:detractorsArray
+      promotersArray: promotersArray,
+      passivesArray: passivesArray,
+      detractorsArray: detractorsArray
     };
   }
 
   function renderChart(ratingsData, dates, detailsByDay, itemType, indicator){
+    // Si "tabla de evaluaciones"
+    if(indicator==="table"){
+      document.getElementById('chartContainer').style.display='none';
+      document.getElementById('tableContainer').style.display='block';
+      return;
+    } else {
+      document.getElementById('chartContainer').style.display='block';
+      document.getElementById('tableContainer').style.display='none';
+    }
+
     if(indicator==="stacked"){
       renderStackedChart(ratingsData, dates);
       return;
     }
-    var dataArray=computeDataByIndicator(ratingsData, dates, indicator);
+
+    var dataArray = computeDataByIndicator(ratingsData, dates, indicator);
+
     var labelMap={
       count:"Cantidad de Evaluaciones",
       average:"Promedio de Puntajes",
       nps:"NPS",
       promoters:"% Promotores",
       passives:"% Neutros",
-      detractors:"% Detractores"
+      detractors:"% Detractores",
+      csat:"CSAT (Satisfacción del Cliente)",
+      ces:"CES (Esfuerzo del Cliente)",
+      response_rate:"Tasa de Respuesta",
+      sentiment:"Análisis de Sentimientos"
     };
-    var datasetLabel=labelMap[indicator]||"Indicador";
+    var datasetLabel = labelMap[indicator] || "Indicador";
+
     var data={
-      labels:dates,
-      datasets:[{
-        label:datasetLabel,
-        data:dataArray,
-        borderColor:'rgba(75,192,192,1)',
-        backgroundColor:'rgba(75,192,192,0.2)',
-        fill:true
+      labels: dates,
+      datasets: [{
+        label: datasetLabel,
+        data: dataArray,
+        borderColor: 'rgba(75,192,192,1)',
+        backgroundColor: 'rgba(75,192,192,0.2)',
+        fill: true,
+        tension: 0.4
       }]
     };
+
     var config={
       type:'line',
       data:data,
+      plugins: [ChartDataLabels],
       options:{
         responsive:true,
         plugins:{
           title:{
             display:true,
             text:"Indicador: "+datasetLabel
+          },
+          tooltip:{
+            callbacks:{
+              label:function(context){
+                if(indicator==="sentiment"){
+                  return 'Sentimiento: '+context.parsed.y.toFixed(2);
+                }
+                // Para average y count no mostrar porcentaje
+                if(indicator==="average" || indicator==="count"){
+                  return context.parsed.y.toFixed(1);
+                }
+                return context.parsed.y;
+              }
+            }
+          },
+          datalabels:{
+            anchor:'end',
+            align:'top',
+            formatter:function(value, ctx){
+              if(value===0){ return ''; }
+              // "count" y "average" se muestran como valor no porcentaje
+              let lbl=ctx.dataset.label.toLowerCase();
+              if(lbl==="cantidad de evaluaciones"||lbl==="promedio de puntajes"|| lbl==="csat (satisfacción del cliente)"||lbl==="ces (esfuerzo del cliente)"){
+                // En average, un decimal
+                if(lbl==="promedio de puntajes") return "E: "+value.toFixed(1);
+                // En count, 0 decimales
+                if(lbl==="cantidad de evaluaciones") return "E: "+value.toFixed(0);
+                // csat, ces
+                if(lbl.indexOf("csat")!==-1||lbl.indexOf("ces")!==-1){
+                  return "E: "+value.toFixed(1)+"%";
+                }
+              }
+              else if(lbl==="sentiment (análisis de sentimientos)"){
+                return value.toFixed(2);
+              }
+              else {
+                // nps, response_rate, etc -> porcentaje
+                return value.toFixed(1)+"%";
+              }
+              return value;
+            },
+            color:'black',
+            font:{ weight:'bold' }
           }
         },
         onClick:function(evt,elements){
@@ -1614,56 +1762,91 @@ $(document).ready(function() {
           }
         },
         scales:{
-          y:{beginAtZero:true}
+          y:{
+            beginAtZero:true,
+            title:{
+              display:true,
+              text: (indicator==="count" || indicator==="average") ? "Evaluaciones" : "Valor"
+            }
+          }
         }
       }
     };
+
     var ctx=document.getElementById('myChart').getContext('2d');
-    if(window.myChartInstance) {
+    if(window.myChartInstance){
       window.myChartInstance.destroy();
     }
-    window.myChartInstance=new Chart(ctx,config);
+    window.myChartInstance=new Chart(ctx, config);
   }
 
   function renderStackedChart(ratingsData, dates){
     var computed=computeStackedData(ratingsData, dates);
     var data={
-      labels:dates,
+      labels: dates,
       datasets:[
         {
-          label:"Promotores (%)",
+          label:"Promotores",
           data:computed.promotersArray,
           backgroundColor:"rgba(75,192,192,0.8)"
         },
         {
-          label:"Neutros (%)",
+          label:"Neutros",
           data:computed.passivesArray,
           backgroundColor:"rgba(255,206,86,0.8)"
         },
         {
-          label:"Detractores (%)",
+          label:"Detractores",
           data:computed.detractorsArray,
           backgroundColor:"rgba(255,99,132,0.8)"
         }
       ]
     };
+
+    var totalEvaluations=computed.promotersArray.map((p,i)=> p+computed.passivesArray[i]+computed.detractorsArray[i]);
+
     var config={
       type:'bar',
       data:data,
+      plugins:[ChartDataLabels],
       options:{
         responsive:true,
         plugins:{
           title:{
             display:true,
             text:"Barras Apiladas (Promotores/Neutros/Detractores)"
+          },
+          tooltip:{
+            callbacks:{
+              label:function(context){
+                return context.dataset.label+': '+context.parsed.y;
+              }
+            }
+          },
+          datalabels:{
+            anchor:'center',
+            align:'center',
+            formatter:function(value, ctx){
+              if(value===0){ return ''; }
+              var total=totalEvaluations[ctx.dataIndex];
+              var pct=((value/total)*100).toFixed(1)+"%";
+              return "E: "+value+"\n"+pct;
+            },
+            color:'white',
+            font:{ weight:'bold' }
           }
         },
         scales:{
-          x:{stacked:true},
-          y:{stacked:true,beginAtZero:true,max:100}
+          x:{ stacked:true },
+          y:{
+            stacked:true,
+            beginAtZero:true,
+            title:{display:true, text:'Cantidad de Evaluaciones'}
+          }
         }
       }
     };
+
     var ctx=document.getElementById('myChart').getContext('2d');
     if(window.myChartInstance){
       window.myChartInstance.destroy();
@@ -1674,6 +1857,7 @@ $(document).ready(function() {
   function showResponsesForDay(dateStr, responses){
     var detailsTitle=document.getElementById('detailsTitle');
     detailsTitle.textContent="Detalles del día: "+dateStr;
+
     var tbody=document.getElementById('dayDetailsBody');
     tbody.innerHTML="";
     if(!responses.length){
@@ -1698,31 +1882,80 @@ $(document).ready(function() {
     document.getElementById('dayDetailsContainer').style.display='block';
   }
 
-  // Evento para <select id="chartIndicatorSelect">
-  var chartIndicatorSelect=document.getElementById('chartIndicatorSelect');
+  // Manejar cambio de indicador en el select
+  var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
   if(chartIndicatorSelect){
-    chartIndicatorSelect.addEventListener('change',function(){
+    chartIndicatorSelect.addEventListener('change', function(){
       if(!globalRatingsData || !globalDates || !globalDetails) return;
       var indicator=this.value;
       renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
     });
   }
 
-  // Botones Tabla vs Gráfico
-  var showTableBtn=document.getElementById('showTableBtn');
-  var showChartBtn=document.getElementById('showChartBtn');
-  var tableContainer=document.getElementById('tableContainer');
-  var chartContainer=document.getElementById('chartContainer');
-  if(showTableBtn && showChartBtn && tableContainer && chartContainer){
-    showTableBtn.addEventListener('click', function(){
-      tableContainer.style.display='block';
-      chartContainer.style.display='none';
+  // 11) Filtrar por rango de fechas
+  $('#filterDateBtn').on('click', function(){
+    var startDate=$('#startDate').val();
+    var endDate=$('#endDate').val();
+    if(!startDate||!endDate){
+      alert('Selecciona ambos rangos de fechas');
+      return;
+    }
+    if(startDate>endDate){
+      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+      return;
+    }
+    // Recargar datos
+    $.ajax({
+      url:'{{ url_for("get_ratings_data") }}',
+      type:'GET',
+      data:{
+        item_uuid: $('#eliminarItemBtn').data('item-id'),
+        start_date: startDate,
+        end_date: endDate
+      },
+      success:function(resp){
+        if(resp.error){
+          console.error("Error:", resp.error);
+          return;
+        }
+        globalRatingsData=resp.ratings;
+        globalDates=resp.dates;
+        globalDetails=resp.details;
+        // Limpiar tabla
+        var ratingsHeader=document.getElementById('ratingsHeader');
+        Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th=>th.remove());
+        var rowIds=['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
+        rowIds.forEach(function(rowId){
+          var row=document.getElementById(rowId);
+          while(row.children.length>1){ row.removeChild(row.lastChild); }
+        });
+        // Agregar las columnas de fechas
+        globalDates.forEach(function(dateStr){
+          var th=document.createElement('th');
+          th.textContent=dateStr;
+          ratingsHeader.appendChild(th);
+        });
+        fillTableWithCounts(globalRatingsData);
+        var currentIndicator=$('#chartIndicatorSelect').val();
+        renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", currentIndicator);
+      },
+      error:function(xhr,status,error){
+        console.error('Error:', error);
+      }
     });
-    showChartBtn.addEventListener('click', function(){
-      tableContainer.style.display='none';
-      chartContainer.style.display='block';
-    });
-  }
+  });
+
+  // 12) Descargar gráfico como imagen
+  $('#downloadChartBtn').on('click', function(){
+    if(window.myChartInstance){
+      var link=document.createElement('a');
+      link.href=window.myChartInstance.toBase64Image();
+      link.download='grafico_dashboard.png';
+      link.click();
+    } else {
+      alert('No hay gráfico para descargar.');
+    }
+  });
 
 });
 </script>

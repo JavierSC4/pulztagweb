@@ -1547,69 +1547,70 @@ def delete_dashboard_item():
 @app.route('/get_ratings_data', methods=['GET'])
 @login_required
 def get_ratings_data():
-    """
-    Devuelve un JSON con:
-      {
-        "ratings": { "1": [...], "2": [...], ..., "10": [...] },
-        "dates": ["YYYY-MM-DD", ..., "YYYY-MM-DD"],
-        "details": {
-          "YYYY-MM-DD": [
-            {"rating": 7, "comment": "Algún comentario"},
-            ...
-          ],
-          ...
-        }
-      }
-    """
     item_uuid = request.args.get('item_uuid')
     if not item_uuid:
         return jsonify({"error": "Falta item_uuid"}), 400
 
-    # Verificar que el item exista y pertenezca al usuario actual
+    # Verificar que el ítem exista para el usuario actual
     item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
     if not item:
         return jsonify({"error": "Item no encontrado"}), 404
 
-    # Últimos 10 días
-    today = datetime.utcnow().date()
-    dates = [(today - timedelta(days=i)) for i in range(10)]
-    dates.sort()
+    # Leer fechas desde la query string
+    start_date_str = request.args.get('start_date', '')
+    end_date_str = request.args.get('end_date', '')
 
-    # Diccionario para totales de rating 1..10
-    ratingsData = {str(r): [0]*10 for r in range(1, 11)}
+    if start_date_str and end_date_str:
+        # Si el usuario ha especificado un rango de fechas
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            if start_date > end_date:
+                return jsonify({"error": "La fecha de inicio no puede ser posterior a la fecha de fin."}), 400
+        except ValueError:
+            return jsonify({"error": "Formato de fecha inválido. Use YYYY-MM-DD"}), 400
 
-    # Diccionario para detalles (día -> lista de {rating, comment})
+        # Construir la lista de días entre start_date y end_date (ambos inclusive)
+        days_count = (end_date - start_date).days
+        dates = [start_date + timedelta(days=i) for i in range(days_count + 1)]
+    else:
+        # Si no hay fechas, mostrar los últimos 10 días
+        today = datetime.utcnow().date()
+        dates = [(today - timedelta(days=i)) for i in range(10)]
+        dates.sort()
+
+    # Crear estructuras para ratings 1..10 y detalles
+    # Usamos len(dates) para indexar correctamente
+    ratingsData = {str(r): [0]*len(dates) for r in range(1, 11)}
     detailsByDay = {d.strftime('%Y-%m-%d'): [] for d in dates}
 
-    # Rango de fechas
+    # Fechas de inicio/fin para la query (end_date se maneja con +1 día)
     start_datetime = datetime.combine(dates[0], datetime.min.time())
     end_datetime = datetime.combine(dates[-1] + timedelta(days=1), datetime.min.time())
 
-    # Filtrar las respuestas en ese rango
-    responses = SurveyResponse.query.filter(
-        SurveyResponse.item_id == item.id,
-        SurveyResponse.timestamp >= start_datetime,
-        SurveyResponse.timestamp < end_datetime
-    ).all()
+    # Filtrar respuestas
+    responses = (SurveyResponse.query
+                 .filter(SurveyResponse.item_id == item.id,
+                         SurveyResponse.timestamp >= start_datetime,
+                         SurveyResponse.timestamp < end_datetime)
+                 .all())
 
     # Sumar totales y guardar detalles
     for resp in responses:
         resp_date = resp.timestamp.date()
         if resp_date in dates:
-            day_index = dates.index(resp_date)
+            day_index = dates.index(resp_date)      # posición en el array
             rating_str = str(resp.rating)
-            # Incrementar conteo
             if rating_str in ratingsData:
                 ratingsData[rating_str][day_index] += 1
 
-            # Guardar detalle (rating, comentario)
             date_key = resp_date.strftime('%Y-%m-%d')
             detailsByDay[date_key].append({
                 "rating": resp.rating,
                 "comment": resp.comment or "Sin Comentario"
             })
 
-    # Convertir fechas a string p.e. YYYY-MM-DD
+    # Convertir fechas a string para el JSON
     sorted_dates_str = [d.strftime('%Y-%m-%d') for d in dates]
 
     return jsonify({
