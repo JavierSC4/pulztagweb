@@ -102,6 +102,39 @@ body {
     </div>
 
     <ul class="nav flex-column pt-2" id="sidebarMenu">
+      <!-- Dashboard -->
+      <li class="nav-item mt-2">
+        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu"
+            aria-expanded="false" aria-controls="dashboardSubmenu" title="Dashboard">
+          <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
+        </a>
+        <ul class="collapse list-unstyled ps-0" id="dashboardSubmenu">
+          <li>
+            <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
+              <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
+            </a>
+          </li>
+          <div id="dashboardItemsContainer">
+            {% if dashboard_items %}
+              {% for item in dashboard_items %}
+              <li>
+                <a href="#dashboardItemDetailSection"
+                    class="nav-link sub-link dashboard-item-link"
+                    data-item-id="{{ item.uuid }}"
+                    data-item-name="{{ item.name }}"
+                    data-item-type="{{ item.item_type }}">
+                  <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
+                </a>
+              </li>
+              {% endfor %}
+            {% else %}
+              <li>
+                <span class="text-muted ms-3">Sin items disponibles</span>
+              </li>
+            {% endif %}
+          </div>
+        </ul>
+      </li>
       <!-- Pulzcards -->
       <li class="nav-item mt-2">
         <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
@@ -169,40 +202,6 @@ body {
         </ul>
       </li>
 
-      <!-- Dashboard -->
-      <li class="nav-item mt-2">
-        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu"
-           aria-expanded="false" aria-controls="dashboardSubmenu" title="Dashboard">
-          <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
-        </a>
-        <ul class="collapse list-unstyled ps-0" id="dashboardSubmenu">
-          <li>
-            <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
-              <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
-            </a>
-          </li>
-          <div id="dashboardItemsContainer">
-            {% if dashboard_items %}
-              {% for item in dashboard_items %}
-              <li>
-                <a href="#dashboardItemDetailSection"
-                   class="nav-link sub-link dashboard-item-link"
-                   data-item-id="{{ item.uuid }}"
-                   data-item-name="{{ item.name }}"
-                   data-item-type="{{ item.item_type }}">
-                  <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
-                </a>
-              </li>
-              {% endfor %}
-            {% else %}
-              <li>
-                <span class="text-muted ms-3">Sin items disponibles</span>
-              </li>
-            {% endif %}
-          </div>
-        </ul>
-      </li>
-
       <hr class="my-10">
 
       <!-- Mi Perfil -->
@@ -222,6 +221,41 @@ body {
     </div>
     <div class="offcanvas-body p-0">
       <ul class="nav flex-column pt-2" id="offcanvasSidebarMenu">
+
+        <!-- Dashboard -->
+        <li class="nav-item mt-2">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenuOffcanvas"
+             aria-expanded="false" aria-controls="dashboardSubmenuOffcanvas" title="Dashboard">
+            <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
+          </a>
+          <ul class="collapse list-unstyled ps-0" id="dashboardSubmenuOffcanvas">
+            <li>
+              <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
+                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
+              </a>
+            </li>
+            <div id="dashboardItemsContainerOffcanvas">
+              {% if dashboard_items %}
+                {% for item in dashboard_items %}
+                <li>
+                  <a href="#dashboardItemDetailSection"
+                     class="nav-link sub-link dashboard-item-link"
+                     data-item-id="{{ item.uuid }}"
+                     data-item-name="{{ item.name }}"
+                     data-item-type="{{ item.item_type }}">
+                    <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
+                  </a>
+                </li>
+                {% endfor %}
+              {% else %}
+                <li>
+                  <span class="text-muted ms-3">Sin items disponibles</span>
+                </li>
+              {% endif %}
+            </div>
+          </ul>
+        </li>
+        
         <!-- Pulzcards -->
         <li class="nav-item mt-2">
           <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
@@ -288,41 +322,6 @@ body {
             </li>
           </ul>
         </li>
-
-        <!-- Dashboard -->
-        <li class="nav-item mt-2">
-          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenuOffcanvas"
-             aria-expanded="false" aria-controls="dashboardSubmenuOffcanvas" title="Dashboard">
-            <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Dashboard</span>
-          </a>
-          <ul class="collapse list-unstyled ps-0" id="dashboardSubmenuOffcanvas">
-            <li>
-              <a href="#" class="nav-link sub-link" data-bs-toggle="modal" data-bs-target="#agregarItemModal">
-                <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Agregar Item</span>
-              </a>
-            </li>
-            <div id="dashboardItemsContainerOffcanvas">
-              {% if dashboard_items %}
-                {% for item in dashboard_items %}
-                <li>
-                  <a href="#dashboardItemDetailSection"
-                     class="nav-link sub-link dashboard-item-link"
-                     data-item-id="{{ item.uuid }}"
-                     data-item-name="{{ item.name }}"
-                     data-item-type="{{ item.item_type }}">
-                    <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
-                  </a>
-                </li>
-                {% endfor %}
-              {% else %}
-                <li>
-                  <span class="text-muted ms-3">Sin items disponibles</span>
-                </li>
-              {% endif %}
-            </div>
-          </ul>
-        </li>
-
         <hr class="my-10">
 
         <!-- Mi Perfil -->
