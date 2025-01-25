@@ -817,6 +817,7 @@ body {
         <h2 class="mb-0" id="dashboardItemName"></h2>
         <small class="text-muted" id="dashboardItemType"></small>
       </div>
+      <h4 class="mb-3 text-center">Estadísticas de Valoraciones</h4>
       <hr class="my-4">
       <!-- Contenedor de botones, alineados a la derecha -->
       <div class="d-flex align-items-center justify-content-end gap-3 flex-wrap" id="dashboardItemActions">
@@ -827,21 +828,15 @@ body {
               id="surveyLink"
               title="Responder"
               target="_blank">
-              <i class="bi bi-check2-circle"></i>
+              <i class="fa-solid fa-reply"></i>
               <span class="d-none d-sm-inline ms-1">Responder</span>
             </a>
-            <!-- Botón: Descargar Gráfico -->
-            <button class="btn btn-sm btn-info action-btn d-flex align-items-center" id="downloadChartBtn" title="Descargar Gráfico">
-              <i class="bi bi-download"></i>
-              <span class="d-none d-sm-inline ms-1">Descargar</span>
-            </button>
-
             <!-- Botón: Copiar URL -->
             <button class="btn btn-sm btn-info action-btn d-flex align-items-center"
                     id="copySurveyBtn"
                     title="Copiar URL">
-              <i class="bi bi-clipboard"></i>
-              <span class="d-none d-sm-inline ms-1">Copiar</span>
+              <i class="fa-solid fa-clone"></i>
+              <span class="d-none d-sm-inline ms-1">Copiar URL</span>
             </button>
 
             <!-- Botón: Ver QR -->
@@ -851,12 +846,16 @@ body {
               <i class="fas fa-qrcode"></i>
               <span class="d-none d-sm-inline ms-1">QR</span>
             </button>
-
+            <!-- Botón: Descargar Gráfico -->
+            <button class="btn btn-sm btn-info action-btn d-flex align-items-center" id="downloadChartBtn" title="Descargar Gráfico">
+              <i class="fa-solid fa-download"></i>
+              <span class="d-none d-sm-inline ms-1">Descargar Gráfico</span>
+            </button>
             <!-- Botón: Eliminar -->
             <button class="btn btn-sm btn-danger action-btn d-flex align-items-center"
                     id="eliminarItemBtn"
                     title="Eliminar">
-              <i class="bi bi-trash-fill"></i>
+              <i class="fa-solid fa-trash"></i>
               <span class="d-none d-sm-inline ms-1">Eliminar</span>
             </button>
           </div>
@@ -864,14 +863,13 @@ body {
       </div>
 
       <div id="dashboardItemStats" style="display:none;">
-        <h4 class="mb-3">Estadísticas de Valoraciones</h4>
         <!-- Filtro de rango de fechas -->
-        <div class="mb-3">
-          <label for="dateRangePicker" class="form-label">Selecciona rango de fechas:</label>
-          <input type="date" id="startDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
-          <span class="mx-2">a</span>
-          <input type="date" id="endDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
-          <button class="btn btn-sm btn-primary ms-2" id="filterDateBtn">Filtrar</button>
+        <div class="mb-3 d-flex flex-nowrap justify-content-end align-items-center gap-2">
+          <label for="dateRangePicker" class="form-label mb-0"></label>
+          <input type="date" id="startDate" class="form-control form-control-sm" style="width: auto;">
+          <span>a</span>
+          <input type="date" id="endDate" class="form-control form-control-sm" style="width: auto;">
+          <button class="btn btn-sm btn-secondary action-btn d-flex align-items-center" id="filterDateBtn">Filtrar</button>
         </div>
 
         <!-- Selección de indicador con 'Tabla de Evaluaciones' al final -->
@@ -1241,7 +1239,11 @@ $(document).ready(function() {
       var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
 
       // Link "Responder"
-      $('#surveyLink').attr('href', surveyUrl).show().text('Responder');
+      $('#surveyLink')
+        .attr('href', surveyUrl)
+        .show()
+        .find('span')
+        .text('Responder');
 
       // Botón "Copiar URL"
       $('#copySurveyBtn').off('click').on('click', function() {
