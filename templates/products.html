@@ -2,329 +2,1168 @@
 
 {% extends 'base.html' %}
 
+{% block head %}
+    {{ super() }}
+    <!-- AOS CSS para animaciones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pvEf1cJqHlZebZQoOSbkn/Oc+PntgOlc4E9sE+FknxLllNYduOqZ8kWeP3qaTScP93fpSK5EtXnO39hMzXwR0w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+
+        h5 {
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+        }
+        /* Estilos personalizados para la sección de productos */
+        .titulo-seccion {
+            margin-top: 50px; /* Espacio superior */
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .product-description {
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        /* Estilos para las tarjetas */
+        .card {
+            transition: transform 0.3s ease;
+            border-radius: 10px; /* Radio de borde uniforme */
+            position: relative;
+            height: 100%; /* Asegura que las tarjetas tengan la misma altura */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden; /* Para manejar bordes redondeados en hijos */
+        }
+
+        .card-title {
+            color: #08567d;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Ajustes para el cuerpo de la tarjeta */
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 20px; /* Espacio inferior para evitar superposiciones */
+        }
+
+        /* Precio en la tarjeta */
+        .price-tag {
+            font-size: 0.9em; /* Tamaño de fuente más legible */
+            font-weight: bold;
+            color: #03B8FF;
+            position: static;
+            margin-bottom: 5px; /* Espacio entre el precio y el botón */
+        }
+
+        /* Botón "Comprar Ahora" */
+        .btn-outline-info.btn-sm {
+            font-size: 0.8rem; /* Texto más pequeño */
+            padding: 0.25rem 0.5rem; /* Padding más pequeño */
+            border-radius: 5px; /* Bordes más redondeados */
+        }
+
+        /* Contenedor para Precio y Botón con línea separadora */
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #dee2e6; /* Línea separadora */
+            padding-top: 10px; /* Espaciado arriba de la línea */
+        }
+
+        /* Precio en el Modal */
+        .modal-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #03B8FF;
+            margin-bottom: 10px; /* Espacio debajo del precio en el modal */
+        }
+
+        /* Estilos para el botón de cierre del modal */
+        .modal-header .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #fff; /* Color de la 'X' */
+            cursor: pointer;
+        }
+
+        /* Ajustar el tamaño de las imágenes en el modal */
+        .modal-img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 10px; /* Consistente con la tarjeta */
+        }
+
+        /* Ajustar el tamaño de las imágenes en las tarjetas */
+        .card-img-top {
+            height: 300px;
+            object-fit: cover;
+            border-top-left-radius: 10px; /* Coincide con .card */
+            border-top-right-radius: 10px; /* Coincide con .card */
+        }
+
+        /* Responsividad: Ajustes para pantallas pequeñas */
+        @media (max-width: 576px) {
+            .modal-img {
+                max-height: 576px; /* Más pequeño en móviles */
+            }
+            .modal-price {
+                font-size: 1em;
+            }
+            .btn-outline-info.btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+            .price-tag {
+                font-size: 0.8em;
+            }
+            .card-img-top {
+                height: 150px;
+            }
+        }
+
+        /* Estilo global para todos los encabezados de modales */
+        .modal-header {
+            background-color: rgb(0, 195, 255);
+            color: #fff; /* Contraste para el texto */
+        }
+
+        /* Asegurar que el icono dentro del botón de cierre tenga el color correcto */
+        .modal-header .close-modal i {
+            color: #fff;
+        }
+
+        /* Transición suave para contenidos de modales */
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+    </style>
+{% endblock %}
+
 {% block title %}Nuestros Productos - PulztagWeb{% endblock %}
+
 {% block content %}
-<div class="text-center mb-5">
-        <h2 class="titulo-seccion">
-            Una Herramienta Única para Experiencias Interactivas
-        </h2>
-    <p class="lead mb-5">
-            Con nuestras Etiquetas NFC, actualiza la información de tus campañas sin necesidad de reimprimir materiales, ahorrando tiempo y recursos.
-        </p>
+<div class="container my-5">
+    <h2 class="titulo-seccion">
+        Una Herramienta Única para Experiencias Interactivas
+    </h2>
+    <p class="lead text-center mb-5">
+        Con nuestras Etiquetas NFC, actualiza la información de tus campañas sin necesidad de reimprimir materiales, ahorrando tiempo y recursos.
+    </p>
 
-        <!-- Grid de Productos -->
-        <div class="row" style="padding: 60px 20px; background-color: #ffffffbf; text-align: center;">
-            <!-- Producto 1 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Etiqueta de Sticker de RR.SS. NFC Antimetal.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/etiqueta_redes_sociales_nfc.png') }}" class="card-img-top" alt="Etiqueta Redes Sociales NFC" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse1">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 20/25/30/35 mm, etc.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Holograma + capa de Epoxy + capa Antimetal</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir información de URL y redes sociales, tarjeta de presentación digital, etc.</li>
-                            </ul>
-                        </div>                        
-
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
-                            </button>
+    <!-- Grid de Productos -->
+    <div class="row g-4">
+        <!-- Producto 1 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel1" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto1_1.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta Redes Sociales NFC 1" loading="lazy">
                         </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto1_2.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta Redes Sociales NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto1_3.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta Redes Sociales NFC 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto1_4.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta Redes Sociales NFC 4" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Etiqueta de Sticker de RR.SS. NFC Antimetal.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal1">
+                            Comprar Ahora
+                        </a>
                     </div>
                 </div>
             </div>
-            <!-- Producto 2 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Tarjetas PVC Inteligentes NFC.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/tarjetas_pvc_inteligentes_nfc.png') }}" class="card-img-top" alt="Tarjetas PVC Inteligentes NFC" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse2">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/ABS/Metal/Papel, etc.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir URL & conexión a redes sociales, identificación, pago sin efectivo, etc.</li>
-                            </ul>
-                        </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+        <!-- Modal Producto 1 -->
+        <div class="modal fade" id="modal1" tabindex="-1" aria-labelledby="modal1Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal1Label">Etiqueta de Sticker de RR.SS. NFC Antimetal.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel1" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto1_1.png') }}" class="d-block w-100 modal-img" alt="Etiqueta Redes Sociales NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto1_2.png') }}" class="d-block w-100 modal-img" alt="Etiqueta Redes Sociales NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto1_3.png') }}" class="d-block w-100 modal-img" alt="Etiqueta Redes Sociales NFC 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto1_4.png') }}" class="d-block w-100 modal-img" alt="Etiqueta Redes Sociales NFC 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel1" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel1" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
                             </button>
                         </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> Diámetro 20/25/30/35 mm, etc.<br>
+                            <strong>Materiales:</strong> PVC/PET/Holograma + capa de Epoxy + capa Antimetal<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Compartir información de URL y redes sociales, tarjeta de presentación digital, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Nuestra etiqueta de sticker de RR.SS. NFC Antimetal está diseñada para resistir interferencias metálicas, ofreciendo una conectividad NFC fiable en diversas superficies. Ideal para compartir enlaces de redes sociales, información de contacto y más de manera interactiva y moderna.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
-            <!-- Producto 3 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Soporte de Menú de Acrílico con QR Code y NFC.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/soporte_menu_qr_nfc.png') }}" class="card-img-top" alt="Soporte de Menú QR NFC" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse3">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 105 * 70 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Acrílico plástico + inserto NFC</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: URL de menú NFC, guía de la ciudad, promoción en redes sociales, pago sin efectivo, etc.</li>
-                            </ul>
-                        </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$5.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
-                            </button>
+        <!-- Producto 2 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel2" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_1.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 1" loading="lazy">
                         </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_2.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_3.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_4.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 4" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_5.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 5" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto2_6.png') }}" class="d-block w-100 card-img-top" alt="Tarjetas PVC Inteligentes NFC 6" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel2" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel2" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Tarjetas PVC Inteligentes NFC.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal2">
+                            Comprar Ahora
+                        </a>
                     </div>
                 </div>
             </div>
-            <!-- Producto 4 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Pulseras Tejidas NFC Personalizables.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/pulseras_tejidas_nfc.jpg') }}" class="card-img-top" alt="Pulseras Tejidas RFID" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse4">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 15 * 350 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Tela/tejido/madera ecológica</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Festivales, eventos, conciertos, fiestas, conferencias, etc.</li>
-                            </ul>
-                        </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$4.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+        <!-- Modal Producto 2 -->
+        <div class="modal fade" id="modal2" tabindex="-1" aria-labelledby="modal2Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal2Label">Tarjetas PVC Inteligentes NFC.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel2" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_1.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_2.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_3.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_4.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 4" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_5.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 5" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto2_6.png') }}" class="d-block w-100 modal-img" alt="Tarjetas PVC Inteligentes NFC 6" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel2" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel2" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
                             </button>
                         </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> 85.60 * 54.00 mm o personalizado<br>
+                            <strong>Materiales:</strong> PVC/PET/Madera/ABS/Metal/Papel, etc.<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Compartir URL & conexión a redes sociales, identificación, pago sin efectivo, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Descripción detallada del Producto 2. Explica sus características, beneficios y aplicaciones de manera clara y concisa.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
-            <!-- Producto 5 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Pulsera NFC de silicona ecológica.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/pulsera_silicona.png') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse5">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56 MHz.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 240*15*3 mm, 8 agujeros.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Silicona ecológica.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir en redes sociales, parques acuáticos, pueblos vacacionales, carnavales, gimnasios, bares, etc.</li>
-                            </ul>
-                        </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
-                            </button>
+        <!-- Producto 3 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel3" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto3_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Soporte de Menú QR NFC 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto3_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Soporte de Menú QR NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto3_3.jpeg') }}" class="d-block w-100 card-img-top" alt="Soporte de Menú QR NFC 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto3_4.jpeg') }}" class="d-block w-100 card-img-top" alt="Soporte de Menú QR NFC 4" loading="lazy">
                         </div>
                     </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel3" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel3" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
                 </div>
-            </div>   
-            <!-- Producto 6 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Etiqueta NFC de Redes Sociales Epoxy.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/etiqueta_nfc_redes_sociales.png') }}" class="card-img-top" alt="Etiqueta NFC Redes Sociales" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse6">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 20/25/30/35 mm, etc.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: Epoxy recubierto/Papel/PVC/PET/Holograma</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Compartir información de URL & redes sociales, pago sin efectivo, etc.</li>
-                            </ul>
-                        </div>
-
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
-                            </button>
-                        </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Soporte de Menú de Acrílico con QR Code y NFC.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$5.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal3">
+                            Comprar Ahora
+                        </a>
                     </div>
                 </div>
             </div>
-            <!-- Producto 7 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Tarjetas de Madera NFC Empresariales Personalizables.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/tarjetas_madera_nfc.png') }}" class="card-img-top" alt="Tarjetas de Madera NFC" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse7">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/Papel, etc.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Tarjeta de presentación, compartir en redes sociales, etc.</li>
-                            </ul>
-                        </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$5.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+        <!-- Modal Producto 3 -->
+        <div class="modal fade" id="modal3" tabindex="-1" aria-labelledby="modal3Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal3Label">Soporte de Menú de Acrílico con QR Code y NFC.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel3" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto3_1c.jpeg') }}" class="d-block w-100 modal-img" alt="Soporte de Menú QR NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto3_2.jpeg') }}" class="d-block w-100 modal-img" alt="Soporte de Menú QR NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto3_3.jpeg') }}" class="d-block w-100 modal-img" alt="Soporte de Menú QR NFC 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto3_4.jpeg') }}" class="d-block w-100 modal-img" alt="Soporte de Menú QR NFC 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel3" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel3" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
                             </button>
                         </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$5.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> 105 * 70 mm o personalizado<br>
+                            <strong>Materiales:</strong> Acrílico plástico + inserto NFC<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> URL de menú NFC, guía de la ciudad, promoción en redes sociales, pago sin efectivo, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Nuestra etiqueta de sticker de RR.SS. NFC Antimetal está diseñada para resistir interferencias metálicas, ofreciendo una conectividad NFC fiable en diversas superficies. Ideal para compartir enlaces de redes sociales, información de contacto y más de manera interactiva y moderna.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
-            </div> 
-            <!-- Producto 8 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Tarjeta PVC Reescribible Blanca o Negra Personalizable.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/tarjeta_pvc.jpg') }}" class="card-img-top" alt="Tarjeta PVC NTAG216" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse8">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: 85.60 * 54.00 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC/PET/Madera/Papel, etc.</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Tarjeta de presentación, compartir en redes sociales, etc.</li>
-                            </ul>
-                        </div>
+            </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
-                            </button>
+        <!-- Producto 4 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel4" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto4_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Pulseras Tejidas NFC 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto4_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Pulseras Tejidas NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto4_3.jpeg') }}" class="d-block w-100 card-img-top" alt="Pulseras Tejidas NFC 3" loading="lazy">
                         </div>
                     </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel4" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel4" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
                 </div>
-            </div>        
-            <!-- Producto 9 -->
-            <div class="col-lg-4">
-                <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;">
-                    <h4 class="card-title text-primary">Tarjetas Redondas NFC de PVC Duro NTAG personalizables.</h4>
-                    <div style="margin: 10px;"></div>
-                    <img src="{{ url_for('static', filename='images/productos/tarjeta_redonda_pvc_nfc.png') }}" class="card-img-top" alt="Tarjeta Redonda PVC NFC" style="object-fit: cover; height: 200px;">
-                    <div class="card-body d-flex flex-column">
-                        <!-- Sección Colapsable -->
-                        <div class="collapse text-start" id="collapse9">
-                            <ul class="list-unstyled mb-4">
-                                <h6 class="card-title text-primary mb-4 mt-2 product-description">
-                                    Detalle técnico
-                                </h6>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Soporte: OEM/ODM</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Frecuencia: 13.56MHz</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Opciones de Tamaño: Diámetro 25 mm o personalizado</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Materiales: PVC duro</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>MOQ (Cantidad Mínima de Pedido): 100 unidades</li>
-                                <li><i class="fas fa-check-circle text-info me-2"></i>Aplicaciones: Juegos, tarjeta de presentación digital, URL & conexión a redes sociales, identificación.</li>
-                            </ul>
-                        </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Pulseras Tejidas NFC Personalizables.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$4.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal4">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary">
-                                Desde <span class="fw-bold">$2.990</span> (IVA inc.)
-                            </a>
-                            <button class="btn btn-link p-0 text-decoration-none toggle-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
-                                <i class="fa-regular fa-square-caret-down square-caret-down-icon"></i>
+        <!-- Modal Producto 4 -->
+        <div class="modal fade" id="modal4" tabindex="-1" aria-labelledby="modal4Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal4Label">Pulseras Tejidas NFC Personalizables.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel4" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto4_1.jpeg') }}" class="d-block w-100 modal-img" alt="Pulseras Tejidas NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto4_2.jpeg') }}" class="d-block w-100 modal-img" alt="Pulseras Tejidas NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto4_3.jpeg') }}" class="d-block w-100 modal-img" alt="Pulseras Tejidas NFC 3" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel4" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel4" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
                             </button>
                         </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$4.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM.<br>
+                            <strong>Frecuencia:</strong> 13.56 MHz.<br>
+                            <strong>Opciones de Tamaño:</strong> 15 * 350 mm o personalizado<br>
+                            <strong>Materiales:</strong> Tela/tejido/madera ecológica<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Festivales, eventos, conciertos, fiestas, conferencias, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Pulseras Tejidas NFC Personalizables ideales para eventos y promociones. Conectan tus campañas al próximo nivel de manera interactiva.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producto 5 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel5" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto5_1.png') }}" class="d-block w-100 card-img-top" alt="Pulsera de Silicona NFC 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto5_2.png') }}" class="d-block w-100 card-img-top" alt="Pulsera de Silicona NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto5_3.png') }}" class="d-block w-100 card-img-top" alt="Pulsera de Silicona NFC 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto5_4.png') }}" class="d-block w-100 card-img-top" alt="Pulsera de Silicona NFC 4" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel5" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel5" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Pulsera NFC de silicona ecológica.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal5">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Producto 5 -->
+        <div class="modal fade" id="modal5" tabindex="-1" aria-labelledby="modal5Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal5Label">Pulsera NFC de silicona ecológica.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel5" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto5_1.png') }}" class="d-block w-100 modal-img" alt="Pulsera de Silicona NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto5_2.png') }}" class="d-block w-100 modal-img" alt="Pulsera de Silicona NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto5_3.png') }}" class="d-block w-100 modal-img" alt="Pulsera de Silicona NFC 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto5_4.png') }}" class="d-block w-100 modal-img" alt="Pulsera de Silicona NFC 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel5" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel5" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM.<br>
+                            <strong>Frecuencia:</strong> 13.56 MHz.<br>
+                            <strong>Opciones de Tamaño:</strong> 240*15*3 mm, 8 agujeros.<br>
+                            <strong>Materiales:</strong> Silicona ecológica.<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Compartir en redes sociales, parques acuáticos, pueblos vacacionales, carnavales, gimnasios, bares, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Pulseras Tejidas NFC Personalizables ideales para eventos y promociones. Conectan tus campañas al próximo nivel de manera interactiva.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producto 6 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel6" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto6_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Etiqueta NFC Redes Sociales 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto6_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Etiqueta NFC Redes Sociales 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto6_3.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta NFC Redes Sociales 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto6_4.png') }}" class="d-block w-100 card-img-top" alt="Etiqueta NFC Redes Sociales 4" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel6" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel6" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Etiqueta NFC de Redes Sociales Epoxy.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal6">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Producto 6 -->
+        <div class="modal fade" id="modal6" tabindex="-1" aria-labelledby="modal6Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal6Label">Etiqueta NFC de Redes Sociales Epoxy.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel6" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto6_1.jpeg') }}" class="d-block w-100 modal-img" alt="Etiqueta NFC Redes Sociales 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto6_2.jpeg') }}" class="d-block w-100 modal-img" alt="Etiqueta NFC Redes Sociales 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto6_3.png') }}" class="d-block w-100 modal-img" alt="Etiqueta NFC Redes Sociales 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto6_4.png') }}" class="d-block w-100 modal-img" alt="Etiqueta NFC Redes Sociales 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel6" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel6" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> Diámetro 20/25/30/35 mm, etc.<br>
+                            <strong>Materiales:</strong> Epoxy recubierto/Papel/PVC/PET/Holograma<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Compartir información de URL & redes sociales, pago sin efectivo, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Descripción detallada del Producto 6. Explica sus características, beneficios y aplicaciones de manera clara y concisa.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producto 7 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel7" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto7_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjetas de Madera NFC 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto7_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjetas de Madera NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto7_3.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjetas de Madera NFC 3" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel7" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel7" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Tarjetas de Madera NFC Empresariales Personalizables.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$5.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal7">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Producto 7 -->
+        <div class="modal fade" id="modal7" tabindex="-1" aria-labelledby="modal7Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal7Label">Tarjetas de Madera NFC Empresariales Personalizables.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel7" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto7_1.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjetas de Madera NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto7_2.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjetas de Madera NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto7_3.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjetas de Madera NFC 3" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel7" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel7" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$5.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> 85.60 * 54.00 mm o personalizado<br>
+                            <strong>Materiales:</strong> PVC/PET/Madera/Papel, etc.<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Tarjeta de presentación, compartir en redes sociales, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Descripción detallada del Producto 7. Explica sus características, beneficios y aplicaciones de manera clara y concisa.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producto 8 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel8" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto8_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta PVC NTAG216 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto8_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta PVC NTAG216 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto8_3.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta PVC NTAG216 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto8_4.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta PVC NTAG216 4" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel8" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel8" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Tarjeta PVC Reescribible Blanca o Negra Personalizable.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal8">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Producto 8 -->
+        <div class="modal fade" id="modal8" tabindex="-1" aria-labelledby="modal8Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal8Label">Tarjeta PVC Reescribible Blanca o Negra Personalizable.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel8" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto8_1.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta PVC NTAG216 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto8_2.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta PVC NTAG216 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto8_3.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta PVC NTAG216 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto8_4.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta PVC NTAG216 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel8" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel8" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> 85.60 * 54.00 mm o personalizado<br>
+                            <strong>Materiales:</strong> PVC/PET/Madera/Papel, etc.<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Tarjeta de presentación, compartir en redes sociales, etc.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Descripción detallada del Producto 8. Explica sus características, beneficios y aplicaciones de manera clara y concisa.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Producto 9 -->
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+            <div class="card h-100 shadow-sm border-0">
+                <!-- Carrusel de Imágenes -->
+                <div id="carousel9" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ url_for('static', filename='images/productos/producto9_1.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta Redonda PVC NFC 1" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto9_2.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta Redonda PVC NFC 2" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto9_3.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta Redonda PVC NFC 3" loading="lazy">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="{{ url_for('static', filename='images/productos/producto9_4.jpeg') }}" class="d-block w-100 card-img-top" alt="Tarjeta Redonda PVC NFC 4" loading="lazy">
+                        </div>
+                    </div>
+                    <!-- Controles del Carrusel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel9" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel9" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-primary">Tarjetas Redondas NFC de PVC Duro NTAG personalizables.</h5>
+                    
+                    <!-- Contenedor para Precio y Botón -->
+                    <div class="btn-container">
+                        <!-- Precio -->
+                        <p class="price-tag">$2.990 (IVA inc.)</p>
+                        
+                        <!-- Botón para Abrir el Modal -->
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#modal9">
+                            Comprar Ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Producto 9 -->
+        <div class="modal fade" id="modal9" tabindex="-1" aria-labelledby="modal9Label" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modal9Label">Tarjetas Redondas NFC de PVC Duro NTAG personalizables.</h5>
+                        <button type="button" class="close-modal" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Carrusel de Imágenes en el Modal -->
+                        <div id="modalCarousel9" class="carousel slide mb-4">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="{{ url_for('static', filename='images/productos/producto9_1.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta Redonda PVC NFC 1" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto9_2.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta Redonda PVC NFC 2" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto9_3.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta Redonda PVC NFC 3" loading="lazy">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="{{ url_for('static', filename='images/productos/producto9_4.jpeg') }}" class="d-block w-100 modal-img" alt="Tarjeta Redonda PVC NFC 4" loading="lazy">
+                                </div>
+                            </div>
+                            <!-- Controles del Carrusel -->
+                            <button class="carousel-control-prev" type="button" data-bs-target="#modalCarousel9" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Anterior</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#modalCarousel9" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Siguiente</span>
+                            </button>
+                        </div>
+
+                        <!-- Precio en el Modal -->
+                        <p class="modal-price">$2.990 (IVA inc.)</p>
+
+                        <!-- Información Detallada del Producto -->
+                        <p class="modal-description">
+                            <strong>Soporte:</strong> OEM/ODM<br>
+                            <strong>Frecuencia:</strong> 13.56MHz<br>
+                            <strong>Opciones de Tamaño:</strong> Diámetro 25 mm o personalizado<br>
+                            <strong>Materiales:</strong> PVC duro<br>
+                            <strong>MOQ (Cantidad Mínima de Pedido):</strong> 100 unidades<br>
+                            <strong>Aplicaciones:</strong> Juegos, tarjeta de presentación digital, URL & conexión a redes sociales, identificación.
+                        </p>
+                        <p class="modal-description">
+                            <strong>Descripción:</strong> Descripción detallada del Producto 9. Explica sus características, beneficios y aplicaciones de manera clara y concisa.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ url_for('order') }}" class="btn btn-primary">Realizar Pedido</a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <style>
-        .titulo-seccion {
-            margin-top: 50px; /* Añade espacio superior */
-        }
-    </style>
-    <!-- Estilos CSS para el Chevron -->
-    <style>
-        /* Estilo para hacer el chevron más grande y celeste */
-        .square-caret-down-icon {
-            font-size: 1.5rem; /* Aumenta el tamaño del ícono */
-            color: #03c0ff; /* Color celeste (Bootstrap's text-info) */
-            transition: transform 0.3s ease;
-        }
-    </style>
+
+    <!-- AOS JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'slide',
+                once: true
+            });
+        });
+    </script>
+    
 {% endblock %}

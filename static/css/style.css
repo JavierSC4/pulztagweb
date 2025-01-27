@@ -552,7 +552,7 @@ a:hover {
     height: 100%;
 }
 .hero-section .overlay {
-    background: rgba(0, 0, 0, 0.303);
+    background: rgba(65, 65, 65, 0.729);
     background-size: cover;
     position: absolute;
     top: 0;
@@ -562,7 +562,7 @@ a:hover {
     z-index: 2;
 }
 .overlay {
-    background: rgba(18, 37, 51, 0.527); /* Color oscuro con opacidad */
+    background: rgba(65, 65, 65, 0.729); /* Color oscuro con opacidad */
     background-size: cover;
     position: absolute;
     top: 0;
@@ -765,7 +765,7 @@ a:hover {
     min-height: calc(100vh - (altura_del_navbar + altura_del_footer));
 }
 #sidebar {
-    width: 160px;
+    width: 150px;
     min-height: 100%;
     margin-left: -50px;
     padding: 0;
@@ -776,7 +776,7 @@ a:hover {
     height: calc(100vh - 90px - 60px);
 }
 #sidebar.collapsed {
-    width: 68px;
+    width: 60px;
 }
 #sidebar.collapsed .user-fullname {
     display: none;
@@ -894,14 +894,14 @@ a:hover {
 .action-bar-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .action-bar {
     display: flex;
-    gap: 10px;
+    gap:5px;
     background-color: #767c822c;
-    padding: 10px 15px;
-    border-radius: 10px;
+    padding: 5px 5px;
+    border-radius: 0px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     align-items: center;

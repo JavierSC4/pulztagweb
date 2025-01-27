@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container my-5">
     <!-- Sección de Encabezado -->
-    <div class="text-center mb-5">
+    <div class="text-center mb-2">
         <h2 class="titulo-seccion">Crea tu Nuevo Ítem NFC</h2>
         <p class="lead">Elige entre nuestras <strong>soluciones NFC personalizadas</strong> y comienza a compartir información de manera innovadora y eficiente.</p>
     </div>
@@ -15,49 +15,65 @@
     <!-- Opciones de Creación -->
     <section class="services-section">
         <div class="row justify-content-center">
-            <!-- Opción Pulzcard -->
-            <div class="col-md-5 col-lg-4 mb-4">
-                <a href="{{ url_for('pulzcard') }}" class="text-decoration-none">
-                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <img src="{{ url_for('static', filename='images/pulzcard_form.png') }}" class="card-img-top rounded-top" alt="Pulzcard">
-                        <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Pulzcard (Tarjeta de Contacto Inteligente)</h6>
-                            <p class="card-text mb-4">
-                                Crea una <strong>Pulzcard</strong> con tu información de contacto, ideal para networking y marketing personal.
-                            </p>
-                            <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-primary">Crea tu Pulzcard</a>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
             <!-- Opción Etiqueta -->
-            <div class="col-md-5 col-lg-4 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <a href="{{ url_for('create_tag') }}" class="text-decoration-none">
                     <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <img src="{{ url_for('static', filename='images/tags_form.png') }}" class="card-img-top rounded-top" alt="Etiqueta">
+                        <h6 class="card-title fw-bold text-center">Etiqueta NFC Interactiva</h6>
+                        <img src="{{ url_for('static', filename='images/tags_form_v2.png') }}" class="card-img-top rounded-top" alt="Etiqueta">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Etiqueta NFC Interactiva</h6>
                             <p class="card-text mb-4">
                                 Diseña una <strong>etiqueta NFC</strong> que redirija a URLs específicas y potencie tu contenido digital.
                             </p>
-                            <a href="{{ url_for('create_tag') }}" class="btn btn-outline-primary">Crea tu Etiqueta</a>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear tu Etiqueta</a>
+                            <!-- <a href="{{ url_for('create_tag') }}" class="btn btn-outline-primary">Crea tu Etiqueta</a> -->
                         </div>
                     </div>
                 </a>
             </div>
-
+            <!-- Opción Encuestas -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <a href="{{ url_for('profile') }}" class="text-decoration-none">
+                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
+                        <h6 class="card-title fw-bold text-center">Encuestas Personalizadas</h6>
+                        <img src="{{ url_for('static', filename='images/encuestas_v2.png') }}" class="card-img-top rounded-top" alt="Encuestas">
+                        <div class="card-body text-center">
+                            <p class="card-text mb-4">
+                                Crea y gestiona <strong>encuestas personalizadas</strong> para obtener feedback valioso de tus clientes.
+                            </p>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear Nueva Encuesta</a>
+                        </div>
+                    </div>
+                </a>
+            </div>
             <!-- Opción Storetag -->
-            <div class="col-md-5 col-lg-4 mb-4">
+            <div class="col-md-6 col-lg-3 mb-4">
                 <a href="{{ url_for('create_bodega') }}" class="text-decoration-none">
                     <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <img src="{{ url_for('static', filename='images/storetag_form.png') }}" class="card-img-top rounded-top" alt="Storetag">
+                        <h6 class="card-title fw-bold text-center">Storetag (Inventario NFC)</h6>
+                        <img src="{{ url_for('static', filename='images/storetag_form_v2.png') }}" class="card-img-top rounded-top" alt="Storetag">
                         <div class="card-body text-center">
-                            <h6 class="card-title fw-bold">Storetag (Inventario NFC)</h6>
                             <p class="card-text mb-4">
-                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas y inventarios
+                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas y inventarios.
                             </p>
-                            <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-primary">Crea tu Storetag</a>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crea tu Storetag</a>
+                            <!-- <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-primary">Crea tu Storetag</a> -->
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Opción Pulzcard -->
+            <div class="col-md-6 col-lg-3 mb-4">
+                <a href="{{ url_for('pulzcard') }}" class="text-decoration-none">
+                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
+                        <h6 class="card-title fw-bold text-center">Tarjetas de Contacto vCard</h6>
+                        <img src="{{ url_for('static', filename='images/pulzcard_form_v2.png') }}" class="card-img-top rounded-top" alt="Pulzcard">
+                        <div class="card-body text-center">
+                            <p class="card-text mb-4">
+                                Crea una <strong>Pulzcard</strong> con tu información de contacto, ideal para networking y marketing personal.
+                            </p>
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear tu Pulztag</a>
+                            <!-- <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-primary">Crea tu Pulzcard</a> -->
                         </div>
                     </div>
                 </a>
