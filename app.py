@@ -42,6 +42,7 @@ import logging
 # ============================================
 
 from extensions import mail, db, migrate, bcrypt, login_manager, oauth
+from admin_views import SurveyResponseAdminView  # Asegúrate de que la ruta es correcta
 from models import User, Pulzcard, Tag, Bodega, Caja, Producto, SecureModelView, DashboardItem, SurveyResponse
 from forms import (
     RegistrationForm, LoginForm, UpdateAccountForm,
@@ -142,6 +143,10 @@ admin.add_view(SecureModelView(Tag, db.session))  # Asegúrate de incluir Tag
 admin.add_view(SecureModelView(Bodega, db.session))
 admin.add_view(SecureModelView(Caja, db.session))
 admin.add_view(SecureModelView(Producto, db.session))  # Si deseas ver Productos en admin
+admin.add_view(SecureModelView(DashboardItem, db.session))
+
+# Agregar la vista personalizada para SurveyResponse
+admin.add_view(SurveyResponseAdminView(SurveyResponse, db.session))
 
 # Configurar el serializador
 s = URLSafeTimedSerializer(app.secret_key)

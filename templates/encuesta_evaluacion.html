@@ -59,8 +59,8 @@ Encuesta NPS - Evaluación (Rectángulos)
       display: none;
   }
   .rating-bar label {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       background: #f0f0f0;
       border-radius: 6px;
       cursor: pointer;
@@ -137,7 +137,7 @@ Encuesta NPS - Evaluación (Rectángulos)
   }
   .comment-textarea {
       width: 100%;
-      min-height: 80px;
+      min-height: 150px;
       border: 1px solid #ccc;
       border-radius: 4px;
       padding: 0.5rem;
@@ -149,7 +149,7 @@ Encuesta NPS - Evaluación (Rectángulos)
   .submit-button {
       margin-top: 1.5rem;
       width: 100%;
-      background: #00b806;
+      background: #2eb800;
       color: #fff;
       border: none;
       border-radius: 5px;
@@ -163,6 +163,11 @@ Encuesta NPS - Evaluación (Rectángulos)
       background: #00a005;
       transform: scale(1.02);
   }
+  .logo-img {
+      max-width: 300px; /* Ajusta el tamaño del logo */
+      height: auto; /* Mantiene la proporción */
+      margin-bottom: 1rem; /* Espacio debajo del logo */
+  }
 </style>
 {% endblock %}
 
@@ -170,6 +175,12 @@ Encuesta NPS - Evaluación (Rectángulos)
 
 <!-- Card principal -->
 <div class="survey-card mt-4">
+  <!-- Logo -->
+  <img 
+    src="{{ url_for('static', filename='images/logochaintextblack_2.png') }}" 
+    alt="Logo" 
+    class="logo-img"
+  />
   <h2>¿Qué tan probable es que nos recomiendes?</h2>
   <p>Selecciona tu nivel de satisfacción en una escala de 1 a 10</p>
 

@@ -176,14 +176,14 @@ class DashboardItem(db.Model):
 
 class SurveyResponse(db.Model):
     __tablename__ = 'survey_responses'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     item_id = db.Column(db.Integer, db.ForeignKey('dashboard_items.id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
-    comment = db.Column(db.String(500), nullable=True)  # Comentario opcional
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    comment = db.Column(db.Text, nullable=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     
     # Relación con DashboardItem usando back_populates
-    item = db.relationship('DashboardItem', back_populates='responses', lazy=True)
+    item = db.relationship('DashboardItem', back_populates='responses')
 
     def __repr__(self):
         return f"<SurveyResponse(item_id='{self.item_id}', rating={self.rating})>"
