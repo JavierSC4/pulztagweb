@@ -2086,6 +2086,99 @@ document.addEventListener("DOMContentLoaded", function () {
     const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
 
     let lastDisplayedContainer = "chart"; // Por defecto, el gráfico es lo primero visible.
+    let trendLineVisible = false; // Estado de la línea de tendencia
+    let trendLineDataset = null; // Dataset de la línea de tendencia
+
+    // Crear el botón "Tendencia" y posicionarlo arriba a la derecha del gráfico
+    const trendLineBtn = document.createElement("button");
+    trendLineBtn.textContent = "Tendencia";
+    trendLineBtn.className = "btn btn-secondary btn-sm position-absolute";
+    trendLineBtn.style.top = "10px";
+    trendLineBtn.style.right = "10px";
+    trendLineBtn.style.zIndex = "1000";
+    chartContainer.style.position = "relative"; // Asegurar que el contenedor tiene posición relativa
+    chartContainer.appendChild(trendLineBtn);
+
+    function calculateTrendLine(data) {
+        const n = data.length;
+        if (n < 2) return [];
+
+        const x = Array.from({ length: n }, (_, i) => i + 1);
+        const y = data;
+
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
+        const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+
+        return x.map(xi => slope * xi + intercept);
+    }
+
+    function calculateStackedTrendLine(datasets, labels) {
+        const n = labels.length;
+        if (n < 2) return [];
+
+        const x = Array.from({ length: n }, (_, i) => i + 1);
+        const y = labels.map((_, i) =>
+            datasets.reduce((sum, dataset) => {
+                if (!dataset.hidden) return sum + dataset.data[i];
+                return sum;
+            }, 0)
+        );
+
+        return calculateTrendLine(y);
+    }
+
+    function updateTrendLine(chart) {
+        if (!chart) return;
+
+        // Calcular los datos de la línea de tendencia
+        let trendData;
+        if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
+            trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
+        } else {
+            trendData = calculateTrendLine(chart.data.datasets[0].data);
+        }
+
+        if (!trendLineDataset) {
+            // Crear la línea de tendencia si no existe
+            trendLineDataset = {
+                type: "line", // Definir la línea de tendencia como un gráfico de tipo línea
+                label: "Tendencia",
+                data: trendData,
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 0, // Sin puntos
+                fill: false
+            };
+            chart.data.datasets.push(trendLineDataset);
+        } else {
+            // Actualizar los datos de la línea de tendencia
+            trendLineDataset.data = trendData;
+        }
+
+        chart.update();
+    }
+
+    function toggleTrendLine(chart) {
+        if (!chart) return;
+
+        if (trendLineVisible) {
+            // Ocultar línea de tendencia
+            chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
+            trendLineDataset = null;
+        } else {
+            // Mostrar línea de tendencia y actualizar datos
+            updateTrendLine(chart);
+        }
+
+        trendLineVisible = !trendLineVisible;
+        chart.update();
+    }
 
     function showOnlyOneContainer(containerToShow) {
         if (containerToShow === "chart") {
@@ -2141,6 +2234,29 @@ document.addEventListener("DOMContentLoaded", function () {
             showOnlyOneContainer("chart");
         }
     });
+
+    // Evento del botón "Tendencia"
+    trendLineBtn.addEventListener("click", function () {
+        if (window.myChartInstance) {
+            toggleTrendLine(window.myChartInstance);
+        }
+    });
+
+    // Evento para actualizar la línea de tendencia al hacer clic en la leyenda
+    if (window.myChartInstance) {
+        window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
+            const index = legendItem.datasetIndex;
+            const dataset = window.myChartInstance.data.datasets[index];
+            dataset.hidden = !dataset.hidden;
+
+            // Recalcular la línea de tendencia
+            if (trendLineVisible) {
+                updateTrendLine(window.myChartInstance);
+            }
+
+            window.myChartInstance.update();
+        };
+    }
 
     // Asegurar que solo uno esté visible al cargar la página
     showOnlyOneContainer(lastDisplayedContainer);
