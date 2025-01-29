@@ -13,6 +13,10 @@ body {
   background-position: center;
 }
 
+.small-text {
+  font-size: 15px; /* Puedes ajustar este valor */
+}
+
 .d-flex {
   display: flex !important;
 }
@@ -45,7 +49,7 @@ body {
 
   /* Ajustar el padding del contenido principal en pantallas pequeñas */
   #mainContent {
-    padding: 10px;
+    padding: 0px;
   }
 
   /* Ajustar el tamaño del botón del navbar en móviles */
@@ -73,29 +77,53 @@ body {
   margin-right: 5px;
 }
 
-/* Ajustar contenedor de gráficos */
+@media (max-width: 767.98px) {
+  .action-btn span {
+    display: none !important;
+  }
+}
+
+/* Aumentar margen entre el selector y el gráfico */
+#chartIndicatorSelect {
+  margin-bottom: 0px !important; /* Puedes ajustar este valor */
+}
+
+/* Ajustar el contenedor del gráfico */
 #chartContainer {
-  margin: 10px auto; /* Reducir el margen superior/inferior */
+  margin: 0px auto; /* Reducir el margen superior/inferior */
   padding: 0;        /* Eliminar relleno */
-  width: 95%;        /* Utilizar el 95% del ancho de la pantalla */
+  width: 100%;        /* Utilizar el 95% del ancho de la pantalla */
   max-width: 1200px; /* Límite máximo para pantallas grandes */
   height: auto;      /* Altura dinámica */
 }
 
-/* Ajustar altura del gráfico dependiendo del ancho */
+/* Ajustar el gráfico */
 #myChart {
-  aspect-ratio: 16 / 9; /* Proporción de 16:9 para pantallas grandes */
+  width: 100%;
+  height: 500px; /* Aumentar altura en pantallas grandes */
 }
 
-/* Ajustes específicos para pantallas pequeñas */
+/* Ajustes para pantallas pequeñas */
 @media (max-width: 768px) {
   #chartContainer {
     width: 98%; /* Ampliar más el ancho para aprovechar el espacio */
+    height: auto; /* Asegurar altura dinámica */
   }
 
   #myChart {
-    aspect-ratio: 4 / 3; /* Cambiar a 4:3 para pantallas pequeñas */
+    height: 400px; /* Aumentar altura en pantallas pequeñas */
   }
+}
+
+#ratingsTable thead th {
+  font-size: 14px; /* Tamaño base */
+  font-weight: bold; /* Negrita */
+  white-space: nowrap; /* Evita saltos de línea */
+}
+
+#ratingsTable tbody td, 
+#ratingsTable tbody th {
+  font-size: 14px; /* Puedes ajustarlo */
 }
 
 .table-responsive {
@@ -131,6 +159,24 @@ body {
 .custom-table tbody tr:hover {
   background-color: #f1f1f1;
 }
+  #dayDetailsContainer table {
+    table-layout: fixed; /* Hacer que la tabla tenga un ancho fijo */
+    width: 100%; /* Utiliza todo el ancho disponible */
+  }
+
+  #dayDetailsContainer th:first-child,
+  #dayDetailsContainer td:first-child {
+    width: 170px; /* Ajusta el ancho según el contenido del encabezado */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  }
+
+  #dayDetailsContainer th:last-child,
+  #dayDetailsContainer td:last-child {
+    width: auto; /* Deja que esta columna ocupe el espacio restante */
+    word-wrap: break-word; /* Permite el ajuste del texto */
+    text-align: start;
+  }
+
 </style>
 {% endblock %}
 
@@ -464,11 +510,39 @@ body {
                 <td>
                   <input type="checkbox" name="selected_pulzcards" value="{{ card.card_id }}" form="bulkDeletePulzcardForm">
                 </td>
-                <td>{{ card.card_name }}</td>
-                <td>{{ card.first_name }} {{ card.last_name }}</td>
-                <td>{{ card.organization }}</td>
-                <td>{{ card.email }}</td>
-                <td>{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                  {% if card.card_name|length > 15 %}
+                    {{ card.card_name[:15] }}...
+                  {% else %}
+                    {{ card.card_name }}
+                  {% endif %}
+                </td>
+                
+                <td>
+                  {% if (card.first_name ~ ' ' ~ card.last_name)|length > 15 %}
+                    {{ (card.first_name ~ ' ' ~ card.last_name)[:15] }}...
+                  {% else %}
+                    {{ card.first_name }} {{ card.last_name }}
+                  {% endif %}
+                </td>
+                
+                <td>
+                  {% if card.organization|length > 15 %}
+                    {{ card.organization[:15] }}...
+                  {% else %}
+                    {{ card.organization }}
+                  {% endif %}
+                </td>
+                
+                <td>
+                  {% if card.email|length > 20 %}
+                    {{ card.email[:20] }}...
+                  {% else %}
+                    {{ card.email }}
+                  {% endif %}
+                </td>
+                
+                <td class="small-text">{{ card.created_at.strftime('%d/%m/%Y %H:%M') }}</td>
                 <td>
                   <div class="d-none d-md-flex gap-2">
                     <a href="{{ url_for('pulzcard_card', card_id=card.card_id) }}"
@@ -624,24 +698,31 @@ body {
               <tr>
                 <td>
                   <input type="checkbox" name="selected_tags" value="{{ tag.tag_id }}" form="bulkDeleteForm">
+                <td>
+                  {% if tag.tag_name|length > 25 %}
+                    {{ tag.tag_name[:25] }}...
+                  {% else %}
+                    {{ tag.tag_name }}
+                  {% endif %}
                 </td>
-                <td>{{ tag.tag_name }}</td>
                 <td>
                   <a href="{{ tag.redirect_url }}" target="_blank">
-                  {% if tag.redirect_url|length > 30 %}
-                    {{ tag.redirect_url|slice(0,30) }}...
-                  {% else %}
-                    {{ tag.redirect_url }}
-                  {% endif %}
+                    {% if tag.redirect_url|length > 25 %}
+                      {{ tag.redirect_url[:25] }}...
+                    {% else %}
+                      {{ tag.redirect_url }}
+                    {% endif %}
                   </a>
                 </td>
                 <td>
                   {% set generated_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True) %}
-                  {% if generated_url|length > 30 %}
-                    <a href="{{ generated_url }}" target="_blank">{{ generated_url|slice(0,30) }}...</a>
-                  {% else %}
-                    <a href="{{ generated_url }}" target="_blank">{{ generated_url }}</a>
-                  {% endif %}
+                  <a href="{{ generated_url }}" target="_blank">
+                    {% if generated_url|length > 25 %}
+                      {{ generated_url[:25] }}...
+                    {% else %}
+                      {{ generated_url }}
+                    {% endif %}
+                  </a>
                 </td>
                 <td>{{ tag.vistas }}</td>
                 <td>
@@ -828,6 +909,13 @@ body {
               <i class="fa-solid fa-reply"></i>
               <span class="d-none d-sm-inline ms-1">Responder</span>
             </a>
+            <!-- Botón: Pantalla Completa -->
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
+                    id="fullscreenToggleBtn"
+                    title="Ver en Pantalla Completa">
+              <i class="fa-solid fa-expand"></i>
+              <span class="d-none d-sm-inline ms-1">Pantalla Completa</span>
+            </button>
             <!-- Botón: Copiar URL -->
             <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
                     id="copySurveyBtn"
@@ -855,6 +943,22 @@ body {
               <i class="fa-solid fa-trash"></i>
               <span class="d-none d-sm-inline ms-1">Eliminar</span>
             </button>
+          </div>
+        </div>
+      </div>
+      <!-- Modal de Pantalla Completa -->
+      <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="fullscreenModalLabel">Vista Completa</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center align-items-center">
+              <div id="fullscreenContent" class="w-100 h-100">
+                <!-- Aquí se insertará dinámicamente la tabla o el gráfico -->
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -890,7 +994,7 @@ body {
 
         <div id="tableContainer" style="display:none;">
           <table class="table table-bordered table-striped table-hover text-center" id="ratingsTable">
-            <thead class="table-dark">
+            <thead class="table-info">
               <tr id="ratingsHeader">
                 <th>Valoración</th>
               </tr>
@@ -910,11 +1014,11 @@ body {
             </tbody>
           </table>
         </div>
-
+        
         <div id="dayDetailsContainer" style="display:none; margin-top: 20px;">
           <h5 id="detailsTitle"></h5>
-          <table class="table table-bordered">
-            <thead>
+          <table class="table table-bordered table-striped table-hover text-center">
+            <thead class="table-info">
               <tr>
                 <th>Evaluación (1 a 10)</th>
                 <th>Comentario</th>
@@ -1704,82 +1808,89 @@ $(document).ready(function() {
         tension: 0.4
       }]
     };
-
-    var config={
-      type:'line',
-      data:data,
-      plugins: [ChartDataLabels],
-      options:{
-        responsive:true,
-        plugins:{
-          title:{
-            display:true,
-            text:"Indicador: "+datasetLabel
-          },
-          tooltip:{
-            callbacks:{
-              label:function(context){
-                if(indicator==="sentiment"){
-                  return 'Sentimiento: '+context.parsed.y.toFixed(2);
+    var config = {
+        type: 'line', // O el tipo de gráfico que estés usando
+        data: data,
+        plugins: [ChartDataLabels],
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: "Indicador: " + datasetLabel,
+                    align: 'start', // Alinea el título a la izquierda
+                    padding: {
+                        top: 0, // Espaciado superior opcional
+                        bottom: 30 // Espaciado inferior opcional
+                    },
+                    font: {
+                        size: 20, // Tamaño de fuente (ajusta según tu preferencia)
+                        weight: 'bold', // Negrita para el título
+                        family: 'Arial' // Familia de fuente (opcional)
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom', // 📌 Mueve la leyenda a la parte inferior
+                    align: 'center' // 📌 Centra la leyenda horizontalmente
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            if (indicator === "sentiment") {
+                                return 'Sentimiento: ' + context.parsed.y.toFixed(2);
+                            }
+                            if (indicator === "average" || indicator === "count") {
+                                return context.parsed.y.toFixed(1);
+                            }
+                            return context.parsed.y;
+                        }
+                    }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: function (value, ctx) {
+                        if (value === 0) { return ''; }
+                        let lbl = ctx.dataset.label.toLowerCase();
+                        if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
+                            if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
+                            if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
+                            if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
+                                return "E: " + value.toFixed(1) + "%";
+                            }
+                        }
+                        else if (lbl === "sentiment (análisis de sentimientos)") {
+                            return value.toFixed(2);
+                        }
+                        else {
+                            return value.toFixed(1) + "%";
+                        }
+                        return value;
+                    },
+                    color: 'black',
+                    font: { weight: 'bold' }
                 }
-                // Para average y count no mostrar porcentaje
-                if(indicator==="average" || indicator==="count"){
-                  return context.parsed.y.toFixed(1);
-                }
-                return context.parsed.y;
-              }
-            }
-          },
-          datalabels:{
-            anchor:'end',
-            align:'top',
-            formatter:function(value, ctx){
-              if(value===0){ return ''; }
-              // "count" y "average" se muestran como valor no porcentaje
-              let lbl=ctx.dataset.label.toLowerCase();
-              if(lbl==="cantidad de evaluaciones"||lbl==="promedio de puntajes"|| lbl==="csat (satisfacción del cliente)"||lbl==="ces (esfuerzo del cliente)"){
-                // En average, un decimal
-                if(lbl==="promedio de puntajes") return "E: "+value.toFixed(1);
-                // En count, 0 decimales
-                if(lbl==="cantidad de evaluaciones") return "E: "+value.toFixed(0);
-                // csat, ces
-                if(lbl.indexOf("csat")!==-1||lbl.indexOf("ces")!==-1){
-                  return "E: "+value.toFixed(1)+"%";
-                }
-              }
-              else if(lbl==="sentiment (análisis de sentimientos)"){
-                return value.toFixed(2);
-              }
-              else {
-                // nps, response_rate, etc -> porcentaje
-                return value.toFixed(1)+"%";
-              }
-              return value;
             },
-            color:'black',
-            font:{ weight:'bold' }
-          }
-        },
-        onClick:function(evt,elements){
-          if(elements && elements.length){
-            var idx=elements[0].index;
-            var selectedDate=dates[idx];
-            var dayResponses=detailsByDay[selectedDate]||[];
-            showResponsesForDay(selectedDate, dayResponses);
-          }
-        },
-        scales:{
-          y:{
-            beginAtZero:true,
-            title:{
-              display:true,
-              text: (indicator==="count" || indicator==="average") ? "Evaluaciones" : "Valor"
+            onClick: function (evt, elements) {
+                if (elements && elements.length) {
+                    var idx = elements[0].index;
+                    var selectedDate = dates[idx];
+                    var dayResponses = detailsByDay[selectedDate] || [];
+                    showResponsesForDay(selectedDate, dayResponses);
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: (indicator === "count" || indicator === "average") ? "Evaluaciones" : "Valor"
+                    }
+                }
             }
-          }
         }
-      }
     };
-
     var ctx=document.getElementById('myChart').getContext('2d');
     if(window.myChartInstance){
       window.myChartInstance.destroy();
@@ -1965,5 +2076,75 @@ $(document).ready(function() {
   });
 
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const fullscreenBtn = document.getElementById("fullscreenToggleBtn");
+    const fullscreenModal = new bootstrap.Modal(document.getElementById("fullscreenModal"));
+    const fullscreenContent = document.getElementById("fullscreenContent");
+    const chartContainer = document.getElementById("chartContainer");
+    const tableContainer = document.getElementById("tableContainer");
+    const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
+
+    let lastDisplayedContainer = "chart"; // Por defecto, el gráfico es lo primero visible.
+
+    function showOnlyOneContainer(containerToShow) {
+        if (containerToShow === "chart") {
+            chartContainer.style.display = "block";
+            tableContainer.style.display = "none";
+            lastDisplayedContainer = "chart";
+        } else if (containerToShow === "table") {
+            tableContainer.style.display = "block";
+            chartContainer.style.display = "none";
+            lastDisplayedContainer = "table";
+        }
+    }
+
+    fullscreenBtn.addEventListener("click", function () {
+        fullscreenContent.innerHTML = ""; // Limpiar contenido previo
+
+        if (lastDisplayedContainer === "chart") {
+            const clonedChartContainer = chartContainer.cloneNode(true);
+            clonedChartContainer.style.height = "100%";
+            clonedChartContainer.style.width = "100%";
+            fullscreenContent.appendChild(clonedChartContainer);
+
+            const oldCanvas = clonedChartContainer.querySelector("canvas");
+            const newCanvas = document.createElement("canvas");
+            newCanvas.id = "fullscreenChart";
+            oldCanvas.replaceWith(newCanvas);
+
+            setTimeout(() => {
+                const ctx = newCanvas.getContext("2d");
+                if (window.myChartInstance) {
+                    new Chart(ctx, window.myChartInstance.config);
+                }
+            }, 200);
+        } else if (lastDisplayedContainer === "table") {
+            const clonedTable = tableContainer.cloneNode(true);
+            clonedTable.style.height = "100%";
+            clonedTable.style.width = "100%";
+            fullscreenContent.appendChild(clonedTable);
+        }
+
+        fullscreenModal.show();
+    });
+
+    document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
+        showOnlyOneContainer(lastDisplayedContainer);
+    });
+
+    // Evento al cambiar el indicador del gráfico
+    chartIndicatorSelect.addEventListener("change", function () {
+        if (chartIndicatorSelect.value === "table") {
+            showOnlyOneContainer("table");
+        } else {
+            showOnlyOneContainer("chart");
+        }
+    });
+
+    // Asegurar que solo uno esté visible al cargar la página
+    showOnlyOneContainer(lastDisplayedContainer);
+});
+
 </script>
 {% endblock %}
