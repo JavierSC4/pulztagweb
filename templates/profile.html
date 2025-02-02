@@ -72,6 +72,38 @@ body {
   }
 }
 
+.btn-primary {
+  background-color: #e7e7e774;
+  border-color: #ffffff;
+}
+.btn-primary:hover {
+    background-color: #e6e6e6;
+    border-color: #b6b6b6;
+}
+.btn-primary:active, 
+.btn-primary:focus {
+    background-color: #d6d6d6 !important; /* Color de fondo cuando se presiona */
+    border-color: #a6a6a6 !important; /* Color del borde cuando se presiona */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Efecto de sombreado */
+}
+#dashboardItemActions .btn,
+#dashboardItemActions .btn * {
+  color: rgb(122, 122, 122) !important;
+}
+#dashboardItemStats .btn,
+#dashboardItemStats .btn * {
+  color: rgb(122, 122, 122) !important;
+}
+#miPerfilSection .btn,
+#miPerfilSection .btn * {
+  color: rgb(122, 122, 122) !important;
+}
+
+#dashboardItemActions .btn-danger,
+#dashboardItemActions .btn-danger * {
+  color: white !important;
+}
+
 /* Estilos para los botones de acción */
 .action-btn {
   margin-right: 5px;
@@ -81,6 +113,24 @@ body {
   .action-btn span {
     display: none !important;
   }
+}
+
+.dashboard-section {
+  /* Fondo y borde */
+  background-color: #f8f9fa;  /* Color de fondo similar al header de tablas de Bootstrap */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  
+  /* Espaciado */
+  padding: 1rem;
+  margin-bottom: 1rem;
+
+  /* Layout en flex, similar a la sección de botones (ajusta según lo necesites) */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end; /* Alinea los elementos a la derecha */
+  gap: 1rem; /* Espacio entre elementos */
 }
 
 /* Aumentar margen entre el selector y el gráfico */
@@ -182,9 +232,9 @@ body {
 
 {% block content %}
 <!-- NAVBAR superior con botón para abrir off-canvas en pantallas pequeñas -->
-<nav class="navbar navbar-expand-md navbar-light bg-white border-bottom d-md-none">
+<nav class="navbar navbar-expand-md navbar-light border-bottom d-md-none">
   <div class="container-fluid">
-    <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
+    <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
       <i class="bi bi-list"></i> Menú
     </button>
   </div>
@@ -895,51 +945,37 @@ body {
         <h2 class="mb-0" id="dashboardItemName"></h2>
         <small class="text-muted" id="dashboardItemType"></small>
       </div>
-      <h4 class="mb-3 text-center">Estadísticas de Valoraciones</h4>
-      <hr class="my-4">
-      <!-- Contenedor de botones, alineados a la derecha -->
-      <div class="d-flex align-items-center justify-content-end gap-3 flex-wrap" id="dashboardItemActions">
+      <div class="dashboard-section flex-right" id="dashboardItemActions">
         <div class="action-bar-wrapper">
           <div class="action-bar">
-            <!-- Enlace (ahora <a>) para Responder -->
+            <!-- Botones: Responder, Pantalla Completa, Copiar URL, Ver QR, Descargar Gráfico, Eliminar -->
             <a class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-              id="surveyLink"
-              title="Responder"
-              target="_blank">
+               id="surveyLink" title="Responder" target="_blank">
               <i class="fa-solid fa-reply"></i>
               <span class="d-none d-sm-inline ms-1">Responder</span>
             </a>
-            <!-- Botón: Pantalla Completa -->
             <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="fullscreenToggleBtn"
-                    title="Ver en Pantalla Completa">
+                    id="fullscreenToggleBtn" title="Ver en Pantalla Completa">
               <i class="fa-solid fa-expand"></i>
               <span class="d-none d-sm-inline ms-1">Pantalla Completa</span>
             </button>
-            <!-- Botón: Copiar URL -->
             <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="copySurveyBtn"
-                    title="Copiar URL">
+                    id="copySurveyBtn" title="Copiar URL">
               <i class="fa-solid fa-clone"></i>
               <span class="d-none d-sm-inline ms-1">Copiar URL</span>
             </button>
-
-            <!-- Botón: Ver QR -->
             <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="showSurveyQRBtn"
-                    title="Ver QR">
+                    id="showSurveyQRBtn" title="Ver QR">
               <i class="fas fa-qrcode"></i>
               <span class="d-none d-sm-inline ms-1">QR</span>
             </button>
-            <!-- Botón: Descargar Gráfico -->
-            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="downloadChartBtn" title="Descargar Gráfico">
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
+                    id="downloadChartBtn" title="Descargar Gráfico">
               <i class="fa-solid fa-download"></i>
               <span class="d-none d-sm-inline ms-1">Descargar Gráfico</span>
             </button>
-            <!-- Botón: Eliminar -->
             <button class="btn btn-sm btn-danger action-btn d-flex align-items-center"
-                    id="eliminarItemBtn"
-                    title="Eliminar">
+                    id="eliminarItemBtn" title="Eliminar">
               <i class="fa-solid fa-trash"></i>
               <span class="d-none d-sm-inline ms-1">Eliminar</span>
             </button>
@@ -970,7 +1006,7 @@ body {
           <input type="date" id="startDate" class="form-control form-control-sm" style="width: auto;">
           <span>a</span>
           <input type="date" id="endDate" class="form-control form-control-sm" style="width: auto;">
-          <button class="btn btn-sm btn-secondary action-btn d-flex align-items-center" id="filterDateBtn">Filtrar</button>
+          <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="filterDateBtn"><i class="bi bi-list"></i> Filtrar</button>
         </div>
 
         <!-- Selección de indicador con 'Tabla de Evaluaciones' al final -->
@@ -984,7 +1020,7 @@ body {
             <option value="response_rate">Tasa de Respuesta</option>
             <option value="sentiment">Análisis de Sentimientos</option>
             <option value="stacked">Gráfico Barras Apiladas</option>
-            <option value="table">Tabla de Evaluaciones</option><!-- Nuevo -->
+            <option value="table">Tabla de Evaluaciones</option>
           </select>
         </div>
 
@@ -2092,7 +2128,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Crear el botón "Tendencia" y posicionarlo arriba a la derecha del gráfico
     const trendLineBtn = document.createElement("button");
     trendLineBtn.textContent = "Tendencia";
-    trendLineBtn.className = "btn btn-secondary btn-sm position-absolute";
+    trendLineBtn.className = "btn btn-primary btn-sm position-absolute";
     trendLineBtn.style.top = "10px";
     trendLineBtn.style.right = "10px";
     trendLineBtn.style.zIndex = "1000";

@@ -7,41 +7,157 @@
     <!-- Meta para asegurar responsividad -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Google Fonts: Poppins para una tipografía moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- AOS CSS para animaciones -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
     
     <style>
-      /* Se recomienda mover estos estilos a un archivo CSS externo para mejor mantenibilidad */
+      /* Fuentes y configuración base */
+      body {
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+      }
+      a {
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+      a:hover {
+        opacity: 0.85;
+      }
+
+      /* Hero Section */
       .hero-section {
         position: relative;
         overflow: hidden;
+        height: 85vh;  /* Altura ajustada */
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;  /* Centrado por defecto para pantallas pequeñas */
       }
-      .video-container {
+      .hero-section .video-container {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+        z-index: 1;
       }
-      .overlay {
-        background-color: rgba(0, 0, 0, 0.713);
+      .hero-section video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
-      .titulo-seccion {
-        font-size: 2em;
-        font-weight: bold;
+      .hero-section .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 100%);
+        z-index: 2;
+      }
+      /* Contenedor del contenido del hero */
+      .hero-section .content {
+        position: relative;
+        z-index: 3;
+        background: rgba(0, 0, 0, 0.55);
+        padding: 30px 40px;
+        border-radius: 10px;
         text-align: center;
-        margin-top: 40px;
-        margin-bottom: 30px;
+        max-width: 600px;
       }
+      .hero-section h1 {
+        color: #ffffff;
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+      }
+      .hero-section .text-highlight {
+        color: #ffd700;
+        display: block;
+        font-size: 2rem;
+        margin-top: 10px;
+      }
+      .hero-section p.subtitle {
+        font-size: 1.2rem;
+        margin: 20px 0;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+      }
+      .hero-section p.quote {
+        font-style: italic;
+        font-size: 1.1rem;
+        color: #ffd700;
+        margin-top: 25px;
+      }
+      .hero-section .btn-stack {
+        margin-top: 30px;
+      }
+      .hero-section .btn-stack a {
+        border-radius: 30px;
+        padding: 12px 30px;
+        margin: 5px;
+      }
+
+      /* Para pantallas grandes, posicionamos el contenido a la izquierda */
+      @media (min-width: 992px) {
+        .hero-section {
+          justify-content: flex-start;  /* Ubica el contenido hacia la izquierda */
+        }
+        .hero-section .content {
+          height: 100%;  /* Hace que el contenedor tenga el alto total del hero */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;  /* Centrado verticalmente dentro del contenedor */
+          align-items: flex-start;  /* Alineado a la izquierda */
+          text-align: left;
+          padding-left: 40px;  /* Espacio extra a la izquierda */
+        }
+      }
+
+      /* Sección Propuesta de Valor */
       .quote {
         font-style: italic;
-        font-size: 1.4em;
+        font-size: 1.2em;
         color: #ffd700;
-        margin-top: 20px;
+        margin-top: 50px;
       }
+      .propuesta-valor p {
+        font-size: 1.1rem;
+        line-height: 1.7;
+      }
+
+      /* Tarjetas (Cards) de la sección CEM */
+      .card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      }
+      .card-img-top {
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+      }
+
+      /* Sección CTA Final */
+      .cta-section {
+        background: linear-gradient(135deg, #1e90ff, #00bcd4);
+      }
+
+      /* Responsividad para pantallas pequeñas */
       @media (max-width: 768px) {
-        .hero-section {
-          /* Ajustes responsivos en caso de necesitar ocultar el video o reducir la altura */
+        .hero-section h1 {
+          font-size: 2.2rem;
+        }
+        .hero-section .text-highlight {
+          font-size: 1.5rem;
         }
       }
     </style>
@@ -51,84 +167,77 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section position-relative overflow-hidden">
-    <!-- Video de Fondo (carga condicional para dispositivos > 768px) -->
-    <div class="video-container d-none d-md-block"> 
-        <video id="hero-video" autoplay muted loop playsinline preload="auto" class="w-100 h-100 object-fit-cover">
+<section class="hero-section">
+    <!-- Video de Fondo (solo en dispositivos grandes) -->
+    <div class="video-container d-none d-md-block">
+        <video id="hero-video" autoplay muted loop playsinline preload="auto">
             <source src="{{ url_for('static', filename='videos/longvideo.mp4') }}" type="video/mp4">
             Tu navegador no soporta videos HTML5. Por favor, actualiza a un navegador moderno.
         </video>
     </div>
     <!-- Overlay -->
-    <div class="overlay position-absolute top-0 start-0 w-100 h-100"></div>
-
-    <!-- Contenido del Hero -->
-    <div class="container position-relative z-3">
-        <div class="row align-items-center min-vh-100 text-center text-lg-start">
-            <div class="col-lg-6 col-md-10 offset-lg-1 px-3">
-                <h1 class="title display-4 fw-bold mb-2">
-                    Eleva la Experiencia de tus Clientes
-                    <span class="text-highlight d-block mb-4">con Tecnología Interactiva</span>
-                </h1>
-                <p class="subtitle lead text-white mb-4">
-                    Gestiona, optimiza y personaliza todas las interacciones con tus clientes en una única plataforma integral.
-                </p>
-                <!-- Integración de la Frase de Marketing -->
-                <p class="quote">"La Mejor Publicidad es un cliente Satisfecho." Philip Kotler</p>
-                <div class="btn-stack d-flex justify-content-center justify-content-lg-start flex-wrap gap-2">
-                    <a href="{{ url_for('create_item') }}" 
-                       class="btn btn-lg fw-bold text-dark" 
-                       style="background-color: #ffd700;"
-                       title="Crea tu primer Item NFC y comienza gratis">
-                       Comienza ahora Gratis
-                    </a>
-                    <a href="{{ url_for('contact') }}" 
-                       class="btn btn-outline-light btn-lg fw-bold"
-                       title="Contáctanos para más información">
-                       Contáctanos
-                    </a>
-                </div>
-            </div>
+    <div class="overlay"></div>
+    <!-- Contenido del Hero (se mantiene fade-up para efecto desde abajo) -->
+    <div class="content" data-aos="fade-up">
+        <h1 class="fw-bold">
+            Eleva la Experiencia de tus Clientes
+            <span class="text-highlight">con Tecnología Interactiva</span>
+        </h1>
+        <p class="subtitle">
+            Gestiona, optimiza y personaliza todas las interacciones en una plataforma integral.
+        </p>
+        <p class="quote">"La Mejor Publicidad es un cliente Satisfecho." - Philip Kotler</p>
+        <div class="btn-stack">
+            <a href="{{ url_for('create_item') }}"
+               class="btn btn-lg fw-bold"
+               style="background-color: #ffd700; color: #333;"
+               title="Crea tu primer Item NFC y comienza gratis">
+               Comienza ahora Gratis
+            </a>
+            <a href="{{ url_for('contact') }}"
+               class="btn btn-outline-light btn-lg fw-bold"
+               title="Contáctanos para más información">
+               Contáctanos
+            </a>
         </div>
     </div>
 </section>
 
 <!-- Sección Propuesta de Valor -->
-<section id="propuesta-valor" class="my-4 py-5" style="background-color: #ffffffbf; text-align: center;">
-    <div class="container" style="max-width: 800px;">
-        <h2 class="titulo-seccion">Una Herramienta Única para Experiencias Interactivas</h2>
-        <p class="mb-4" style="font-size: 1.2em; color: #555; line-height: 1.6;">
-            Fusionamos tecnologías innovadoras como <strong>NFC, códigos QR, RFID y biometría</strong> 
-            en una sola plataforma, creando soluciones personalizadas que conectan a las personas 
-            con experiencias únicas y resultados medibles.
+<section id="propuesta-valor" class="propuesta-valor my-5 py-5" style="background-color: rgba(255,255,255,0.95);">
+    <div class="container">
+        <h2 class="titulo-seccion text-center" data-aos="fade-in">Una Herramienta Única para Experiencias Interactivas</h2>
+        <p class="mb-4 text-center" data-aos="fade-in" data-aos-delay="100" style="font-size: 1.2rem; color: #555;">
+            Fusionamos tecnologías innovadoras como <strong>NFC, códigos QR, RFID y biometría</strong>
+            en una sola plataforma, creando soluciones personalizadas que conectan a las personas con experiencias únicas y resultados medibles.
         </p>
-        <div class="d-flex justify-content-center flex-wrap gap-4">
+        <div class="d-flex justify-content-center flex-wrap gap-4" data-aos="fade-in" data-aos-delay="100">
             <!-- Beneficio 1 -->
-            <div style="min-width: 220px; max-width: 250px;">
+            <div class="text-center" style="min-width: 220px; max-width: 250px;">
                 <i class="fa-solid fa-network-wired" style="font-size: 3rem; color: #ff5957; margin-bottom: 15px;"></i>
                 <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Tecnología Avanzada</h3>
-                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
-                    Integración fluida de NFC, QR y más, con el respaldo de IA y AIDC.
+                <p style="font-size: 0.95em; color: #777;">
+                    Integración fluida de NFC, QR y más, respaldado por IA y AIDC.
                 </p>
             </div>
             <!-- Beneficio 2 -->
-            <div style="min-width: 220px; max-width: 250px;">
+            <div class="text-center" style="min-width: 220px; max-width: 250px;">
                 <i class="fa-solid fa-chart-line" style="font-size: 3rem; color: #57a0ff; margin-bottom: 15px;"></i>
                 <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Resultados Medibles</h3>
-                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
+                <p style="font-size: 0.95em; color: #777;">
                     Optimiza procesos y obtén métricas claras para decisiones estratégicas.
                 </p>
             </div>
             <!-- Beneficio 3 -->
-            <div style="min-width: 220px; max-width: 250px;">
+            <div class="text-center" style="min-width: 220px; max-width: 250px;">
                 <i class="fa-solid fa-face-smile-wink" style="font-size: 3rem; color: #41db30; margin-bottom: 15px;"></i>
                 <h3 style="font-size: 1.15em; color: #333; margin-bottom: 10px;">Personalización Real</h3>
-                <p style="font-size: 0.95em; color: #777; line-height: 1.4;">
+                <p style="font-size: 0.95em; color: #777;">
                     Experiencias interactivas adaptadas a cada cliente, sector y necesidad.
                 </p>
             </div>
         </div>
-        <div class="mt-4">
+        <div class="text-center mt-4" data-aos="fade-in" data-aos-delay="100">
             <a href="{{ url_for('services') }}"
                class="btn btn-primary btn-lg"
                title="Descubre más sobre nuestros servicios">
@@ -139,57 +248,54 @@
 </section>
 
 <!-- Sección CEM -->
-<section id="CEM" class="my-4 py-5" style="background-color: #ffffffbf; text-align: center;">
+<section id="CEM" class="my-5 py-5" style="background-color: rgba(255,255,255,0.95);">
     <div class="container">
-        <h2 class="titulo-seccion">¿Qué es la Plataforma CEM?</h2>
-        <p class="lead text-center mb-5">
+        <h2 class="titulo-seccion text-center" data-aos="fade-in">¿Qué es la Plataforma CEM?</h2>
+        <p class="lead text-center mb-5" data-aos="fade-in" data-aos-delay="100">
             Nuestra Plataforma Integral de Gestión de la Experiencia del Cliente (CEM) centraliza todas las herramientas necesarias para gestionar y mejorar cada interacción con tus clientes.
         </p>
-        <!-- Agregar clase de gutter responsiva 'g-lg-4' para pantallas grandes -->
-        <div class="row g-lg-4">
+        <div class="row g-4">
             <!-- Card 1: Encuestas -->
-            <div class="col-md-4 mb-4" data-aos-delay="100">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/graf.png') }}" 
                          class="card-img-top" 
                          alt="Encuestas de Satisfacción"
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Encuestas de Satisfacción y Feedback</h5>
                         <p class="card-text">
-                            Obtén feedback valioso de tus clientes mediante encuestas personalizadas y mide su satisfacción de manera clara y avanzada con gráficos y tablas interactivas.
+                            Obtén feedback valioso de tus clientes mediante encuestas personalizadas y mide su satisfacción con gráficos interactivos.
                         </p>
                     </div>
                 </div>
             </div>
-            
             <!-- Card 2: Administración de URLs -->
-            <div class="col-md-4 mb-4" data-aos-delay="100">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/administracion_urls.png') }}" 
                          class="card-img-top" 
                          alt="Administración de URLs"
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Administración de URLs</h5>
                         <p class="card-text">
-                            Gestiona URLs dedicadas para atención al cliente, acceso a productos y evaluación de servicios.
+                            Gestiona URLs para atención al cliente, acceso a productos y evaluación de servicios de manera intuitiva.
                         </p>
                     </div>
                 </div>
             </div>
-            
             <!-- Card 3: Pulzcards -->
-            <div class="col-md-4 mb-4" data-aos-delay="200">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/pulzcard_dashboard.png') }}" 
                          class="card-img-top" 
-                         alt="Gestión de Pulzcards" 
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         alt="Gestión de Pulzcards"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Gestión de Tarjetas de Contacto Inteligentes</h5>
                         <p class="card-text">
                             Crea y administra tarjetas virtuales con información de contacto y códigos QR personalizados.
@@ -197,16 +303,15 @@
                     </div>
                 </div>
             </div>
-            
             <!-- Card 4: Etiquetas NFC -->
-            <div class="col-md-4 mb-4" data-aos-delay="300">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/apps_index.jpg') }}" 
                          class="card-img-top" 
                          alt="Gestión de Etiquetas NFC"
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Etiquetas NFC Interactivas</h5>
                         <p class="card-text">
                             Administra etiquetas NFC y códigos QR personalizados, con importación y exportación avanzadas.
@@ -214,16 +319,15 @@
                     </div>
                 </div>
             </div>
-            
             <!-- Card 5: Bodegas -->
-            <div class="col-md-4 mb-4" data-aos-delay="400">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/bodegas.jpg') }}" 
                          class="card-img-top" 
                          alt="Gestión de Bodegas"
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Gestión de Inventario</h5>
                         <p class="card-text">
                             Administra y controla tus bodegas de manera eficiente, gestionando inventarios, ubicaciones y operaciones logísticas.
@@ -231,34 +335,32 @@
                     </div>
                 </div>
             </div>
-            
             <!-- Card 6: Dashboard de Indicadores -->
-            <div class="col-md-4 mb-4" data-aos-delay="500">
-                <div class="card h-100 shadow-sm border-0">
+            <div class="col-md-4" data-aos="fade-in" data-aos-delay="100">
+                <div class="card h-100 shadow-sm">
                     <img src="{{ url_for('static', filename='images/kpi.jpg') }}" 
                          class="card-img-top" 
                          alt="Dashboard de Indicadores"
-                         style="object-fit: cover; height: 200px; width: 100%;"
+                         style="height: 200px; object-fit: cover;"
                          loading="lazy">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">Dashboard de Indicadores</h5>
                         <p class="card-text">
-                            Visualiza y analiza los indicadores clave de rendimiento (KPI) de tu negocio en tiempo real, facilitando la toma de decisiones estratégicas.
+                            Visualiza y analiza los indicadores clave de rendimiento (KPI) en tiempo real para decisiones estratégicas.
                         </p>
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
 </section>
 
 <!-- CTA Final -->
-<section class="cta-section bg-info text-white py-5 mt-4">
-    <div class="container text-center">
+<section class="cta-section py-5 mt-4">
+    <div class="container text-center" data-aos="fade-in">
         <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
         <p class="lead mb-4">
-            Únete a las empresas que ya están optimizando sus interacciones con clientes gracias a nuestra Plataforma CEM.
+            Únete a las empresas que ya están optimizando sus interacciones gracias a nuestra Plataforma CEM.
         </p>
         <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg" title="Contáctanos ahora">Contáctanos</a>
     </div>

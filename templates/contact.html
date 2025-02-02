@@ -6,9 +6,12 @@
 
 {% block content %}
 
-<h2 class="titulo-seccion">Contáctanos</h2>
-<p class="text-center mb-5">Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.</p>
-
+<div class="text-center mb-5" data-aos="fade-up">
+    <h2 class="titulo-seccion">Contáctanos</h2>
+    <p class="lead">
+        Estamos aquí para ayudarte. Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.
+    </p>
+</div>
 <div class="row justify-content-center">
     <div class="col-md-8">
         <form method="POST" action="{{ url_for('contact') }}">
@@ -30,9 +33,6 @@
     </div>
 </div>
 
-<!-- Línea de Separación -->
-<hr class="my-5">
-
 <!-- Información de Contacto Section -->
 <section class="cta-section bg-info text-white py-5 mt-4">
     <div class="container text-center">
@@ -48,10 +48,4 @@
 
 <!-- Línea de Separación -->
 <hr class="my-5">
-
-<style>
-    .titulo-seccion {
-        margin-top: 50px; /* Añade espacio superior */
-    }
-</style>
 {% endblock %}

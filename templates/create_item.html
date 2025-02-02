@@ -1,146 +1,123 @@
-<!-- templates/create_item.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Crear Item - PulztagWeb{% endblock %}
 
+{% block head %}
+  {{ super() }}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .card {
+      transition: transform 0.3s ease;
+      border-radius: 15px;
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .card-img-top {
+      height: 300px;
+      object-fit: cover;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+    }
+    .card-title {
+      color: #08567d;
+      font-size: 1.2rem;
+      margin-bottom: 0;
+    }
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;  /* Alinea el botón a la derecha */
+      align-items: center;
+      border-top: 1px solid #dee2e6;
+      padding-top: 15px;
+      margin-top: 15px;           /* Aumenta un poco el espacio superior */
+    }
+    .btn-outline-secondary.btn-sm {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 5px;
+    }
+    .card-body h5 {
+      text-align: center;
+    }
+  </style>
+{% endblock %}
+
 {% block content %}
 <div class="container my-5">
-    <!-- Sección de Encabezado -->
-    <div class="text-center mb-2">
-        <h2 class="titulo-seccion">Crea tu Nuevo Ítem NFC</h2>
-        <p class="lead">Elige entre nuestras <strong>soluciones NFC personalizadas</strong> y comienza a compartir información de manera innovadora y eficiente.</p>
-    </div>
-
-    <!-- Opciones de Creación -->
-    <section class="services-section">
-        <div class="row justify-content-center">
-            <!-- Opción Etiqueta -->
-            <div class="col-md-6 col-lg-3 mb-4">
-                <a href="{{ url_for('create_tag') }}" class="text-decoration-none">
-                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <h6 class="card-title fw-bold text-center">Etiqueta NFC Interactiva</h6>
-                        <img src="{{ url_for('static', filename='images/tags_form_v2.png') }}" class="card-img-top rounded-top" alt="Etiqueta">
-                        <div class="card-body text-center">
-                            <p class="card-text mb-4">
-                                Diseña una <strong>etiqueta NFC</strong> que redirija a URLs específicas y potencie tu contenido digital.
-                            </p>
-                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear tu Etiqueta</a>
-                            <!-- <a href="{{ url_for('create_tag') }}" class="btn btn-outline-primary">Crea tu Etiqueta</a> -->
-                        </div>
-                    </div>
-                </a>
+  <div class="text-center">
+    <h2 class="titulo-seccion mb-4">Crea tu Nuevo Ítem NFC</h2>
+    <p class="lead mb-4">
+      Elige entre nuestras <strong>soluciones NFC personalizadas</strong> y comienza a compartir información de manera innovadora y eficiente.
+    </p>
+  </div>
+  <section class="services-section">
+    <div class="row justify-content-center">
+      <!-- Opción Etiqueta NFC Interactiva -->
+      <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{{ url_for('static', filename='images/tags_form_v2.png') }}" class="card-img-top" alt="Etiqueta NFC Interactiva">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-primary">Etiqueta NFC Interactiva</h5>
+            <div class="btn-container">
+              <a href="{{ url_for('create_tag') }}" class="btn btn-outline-secondary btn-sm">Crear tu Etiqueta</a>
             </div>
-            <!-- Opción Encuestas -->
-            <div class="col-md-6 col-lg-3 mb-4">
-                <a href="{{ url_for('profile') }}" class="text-decoration-none">
-                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <h6 class="card-title fw-bold text-center">Encuestas Personalizadas</h6>
-                        <img src="{{ url_for('static', filename='images/encuestas_v2.png') }}" class="card-img-top rounded-top" alt="Encuestas">
-                        <div class="card-body text-center">
-                            <p class="card-text mb-4">
-                                Crea y gestiona <strong>encuestas personalizadas</strong> para obtener feedback valioso de tus clientes.
-                            </p>
-                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear Nueva Encuesta</a>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Opción Storetag -->
-            <div class="col-md-6 col-lg-3 mb-4">
-                <a href="{{ url_for('create_bodega') }}" class="text-decoration-none">
-                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <h6 class="card-title fw-bold text-center">Storetag (Inventario NFC)</h6>
-                        <img src="{{ url_for('static', filename='images/storetag_form_v2.png') }}" class="card-img-top rounded-top" alt="Storetag">
-                        <div class="card-body text-center">
-                            <p class="card-text mb-4">
-                                Configura una <strong>Storetag</strong> para administrar y optimizar la gestión de tus bodegas y inventarios.
-                            </p>
-                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crea tu Storetag</a>
-                            <!-- <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-primary">Crea tu Storetag</a> -->
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <!-- Opción Pulzcard -->
-            <div class="col-md-6 col-lg-3 mb-4">
-                <a href="{{ url_for('pulzcard') }}" class="text-decoration-none">
-                    <div class="card mb-4 service-background" style="max-width: 100%; margin: auto;" data-aos="fade-up">
-                        <h6 class="card-title fw-bold text-center">Tarjetas de Contacto vCard</h6>
-                        <img src="{{ url_for('static', filename='images/pulzcard_form_v2.png') }}" class="card-img-top rounded-top" alt="Pulzcard">
-                        <div class="card-body text-center">
-                            <p class="card-text mb-4">
-                                Crea una <strong>Pulzcard</strong> con tu información de contacto, ideal para networking y marketing personal.
-                            </p>
-                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Crear tu Pulztag</a>
-                            <!-- <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-primary">Crea tu Pulzcard</a> -->
-                        </div>
-                    </div>
-                </a>
-            </div>
+          </div>
         </div>
-    </section>
+      </div>
+      <!-- Opción Encuestas Personalizadas -->
+      <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{{ url_for('static', filename='images/encuestas_v2.png') }}" class="card-img-top" alt="Encuestas Personalizadas">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-primary">Encuestas Personalizadas</h5>
+            <div class="btn-container">
+              <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary btn-sm">Crear Nueva Encuesta</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Opción Storetag (Inventario NFC) -->
+      <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{{ url_for('static', filename='images/storetag_form_v2.png') }}" class="card-img-top" alt="Storetag (Inventario NFC)">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-primary">Storetag (Inventario NFC)</h5>
+            <div class="btn-container">
+              <a href="{{ url_for('create_bodega') }}" class="btn btn-outline-secondary btn-sm">Crea tu Storetag</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Opción Tarjetas de Contacto vCard -->
+      <div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{{ url_for('static', filename='images/pulzcard_form_v2.png') }}" class="card-img-top" alt="Tarjetas de Contacto vCard">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-primary">Tarjetas de Contacto vCard</h5>
+            <div class="btn-container">
+              <a href="{{ url_for('pulzcard') }}" class="btn btn-outline-secondary btn-sm">Crear tu Pulzcard</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 {% endblock %}
 
-{% block styles %}
-<style>
-    /* Título de la sección */
-    .titulo-seccion {
-        font-size: 2.2em;
-        font-weight: bold;
-        color: #013445;
-        margin-bottom: 30px;
-    }
-
-    /* Ajuste del tamaño de las tarjetas */
-    .service-card {
-        max-width: 90%;
-        margin: auto;
-        border: 1px solid #e0f7ff;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .service-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Imagen más pequeña */
-    .card-img-top {
-        height: 150px;
-        object-fit: cover;
-    }
-
-    /* Padding reducido en el cuerpo de la tarjeta */
-    .card-body {
-        padding: 1rem;
-    }
-
-    .card-title {
-        font-size: 1rem;
-    }
-
-    .card-text {
-        font-size: 0.9rem;
-    }
-
-    .btn-outline-primary {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.8rem;
-    }
-</style>
-{% endblock %}
-
 {% block scripts %}
-<!-- Librería AOS para Animaciones -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-<script>
-    AOS.init({
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
         duration: 800,
         easing: 'slide',
         once: true
+      });
     });
-</script>
+  </script>
 {% endblock %}

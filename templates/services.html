@@ -2,19 +2,41 @@
 
 {% extends 'base.html' %}
 
+{% block head %}
+    {{ super() }}
+    <!-- Meta para asegurar responsividad -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google Fonts: Poppins para una tipografía moderna -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS CSS para animaciones -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    
+    <style>
+      /* Estilos base para alinear con index.html */
+      body {
+          font-family: 'Poppins', sans-serif;
+          color: #333;
+      }
+    </style>
+{% endblock %}
+
 {% block title %}Nuestros Servicios - PulztagWeb{% endblock %}
 
 {% block content %}
 <div class="container my-5">
 
     <!-- Sección de Encabezado -->
-    <div class="text-center mb-5">
+    <div class="text-center mb-5" data-aos="fade-up">
         <h2 class="titulo-seccion">Nuestros Servicios</h2>
-        <p class="lead">Descubre cómo nuestra Plataforma CEM puede transformar la experiencia de tus clientes a través de soluciones innovadoras y personalizadas.</p>
+        <p class="lead">
+            Descubre cómo nuestra Plataforma CEM puede transformar la experiencia de tus clientes a través de soluciones innovadoras y personalizadas.
+        </p>
     </div>
 
     <!-- Sección de Introducción a CEM -->
-    <section class="introduction-section mb-5" style="padding: 60px 20px; background-color: #ffffffbf; text-align: center;">
+    <section class="introduction-section mb-5" style="padding: 60px 20px; background-color: rgba(255,255,255,0.95); text-align: center;" data-aos="fade-up">
         <div class="row align-items-center">
             <!-- Texto a la Izquierda en Desktop -->
             <div class="col-md-6 order-md-1">
@@ -31,12 +53,12 @@
     </section>
 
     <!-- Sección de Servicios por Componentes de CEM -->
-    <section class="services-section" style="padding: 20px; background-color: #ffffffbf; text-align: center;">
+    <section class="services-section" style="padding: 20px; background-color: rgba(255,255,255,0.95); text-align: center;" data-aos="fade-in">
         <h2 class="titulo-seccion">Servicios Basados en Nuestra Plataforma CEM</h2>
         <div class="row">
             <!-- Servicio 1: Administración de URLs -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-link fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Administración de URLs</h5>
@@ -56,7 +78,7 @@
             </div>
             <!-- Servicio 2: Gestión de Pulzcards -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-id-badge fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Gestión de Pulzcards</h5>
@@ -76,7 +98,7 @@
             </div>
             <!-- Servicio 3: Gestión de Etiquetas (Tags) -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-tags fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Gestión de Etiquetas (Tags)</h5>
@@ -96,7 +118,7 @@
             </div>
             <!-- Servicio 4: Gestión de Inventario -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-warehouse fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Gestión de Inventario</h5>
@@ -116,7 +138,7 @@
             </div>
             <!-- Servicio 5: Administración de Productos -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Administración de Productos</h5>
@@ -136,7 +158,7 @@
             </div>
             <!-- Servicio 6: Análisis de Datos -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-chart-pie fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Análisis de Datos</h5>
@@ -156,7 +178,7 @@
             </div>
             <!-- Servicio 7: Fidelización de Clientes -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-heart fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Fidelización de Clientes</h5>
@@ -176,7 +198,7 @@
             </div>
             <!-- Servicio 8: Integración de Sistemas -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-cogs fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Integración de Sistemas</h5>
@@ -196,7 +218,7 @@
             </div>
             <!-- Servicio 9: Soporte y Mantenimiento -->
             <div class="col-md-4 mb-4">
-                <div class="card service-card h-100 border-0" data-aos="fade-up">
+                <div class="card service-card h-100 border-0" data-aos="fade-in">
                     <div class="card-body d-flex flex-column">
                         <i class="fas fa-life-ring fa-3x text-primary mb-3"></i>
                         <h5 class="card-title">Soporte y Mantenimiento</h5>
@@ -217,41 +239,8 @@
         </div>
     </section>
 
-    <!-- Sección de Testimonios y Casos de Éxito
-    <section class="testimonials-section py-5 bg-light">
-        <div class="container">
-            <h2 class="text-center mb-4">Lo que Dicen Nuestros Clientes</h2>
-            <div class="row">
-                !-- Testimonio 1 --
-                <div class="col-md-4 mb-4">
-                    <div class="testimonial-card p-4 shadow-sm rounded">
-                        <p class="mb-3">"La Plataforma CEM de Pulztag ha revolucionado nuestra manera de interactuar con los clientes, mejorando significativamente su satisfacción y lealtad."</p>
-                        <h5 class="text-primary">Ana Martínez</h5>
-                        <small>Gerente de Ventas - Empresa DEF</small>
-                    </div>
-                </div>
-                !-- Testimonio 2 --
-                <div class="col-md-4 mb-4">
-                    <div class="testimonial-card p-4 shadow-sm rounded">
-                        <p class="mb-3">"Gracias a la gestión de Pulzcards y etiquetas, hemos optimizado nuestros procesos internos y ofrecemos una experiencia de cliente más personalizada."</p>
-                        <h5 class="text-primary">Luis Rodríguez</h5>
-                        <small>Director de Operaciones - Empresa GHI</small>
-                    </div>
-                </div>
-                !-- Testimonio 3 --
-                <div class="col-md-4 mb-4">
-                    <div class="testimonial-card p-4 shadow-sm rounded">
-                        <p class="mb-3">"El análisis de datos proporcionado por la Plataforma CEM nos ha permitido tomar decisiones estratégicas basadas en información real y actualizada."</p>
-                        <h5 class="text-primary">Carla Fernández</h5>
-                        <small>Analista de Datos - Empresa JKL</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
     <!-- Sección de Llamado a la Acción Final -->
-    <section class="cta-section bg-info text-white py-5 mt-4">
+    <section class="cta-section bg-info text-white py-5 mt-4" data-aos="fade-in">
         <div class="container text-center">
             <h2 class="mb-4">¿Listo para Transformar la Experiencia de tus Clientes?</h2>
             <p class="lead mb-4">
@@ -275,40 +264,29 @@
             once: true
         });
     </script>
-<style>
-    .titulo-seccion {
-        margin-top: 50px; /* Añade espacio superior */
-    }
-</style>
-<style>
-/* Efecto hover en las tarjetas */
-.service-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.service-card:hover {
-    transform: translateY(-5px); /* Efecto de elevación */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
-}
-
-/* Personalización del ícono en hover */
-.service-card a.btn-outline-primary i {
-    color: #9b9b9c; /* Color inicial del ícono */
-    transition: color 0.3s ease;
-}
-
-.service-card:hover a.btn-outline-primary i {
-    color: #fe6565; /* Cambia el color del ícono en hover */
-}
-
-/* Personalización del botón en hover */
-.service-card a.btn-outline-primary:hover {
-    background-color: #f8f8f8; /* Cambia el color de fondo */
-    border-color: #fe6565; /* Color del borde */
-    color: #ff0000; /* Color del texto */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
-    transform: scale(1.03); /* Efecto ligero de aumento */
-}
-</style>
+    <style>
+      /* Efectos hover en las tarjetas de servicio */
+      .service-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .service-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+      .service-card a.btn-outline-primary i {
+          color: #334348;
+          transition: color 0.3s ease;
+      }
+      .service-card:hover a.btn-outline-primary i {
+          color: #3343486a;
+      }
+      .service-card a.btn-outline-primary:hover {
+          background-color: #f8f8f8;
+          border-color: #334348;
+          color: #334348;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          transform: scale(1.03);
+      }
+    </style>
 {% endblock %}
 {% endblock %}

@@ -57,12 +57,12 @@ h6 {
 }
 
 .titulo-seccion {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #2c6682;
-    text-align: center;
-    margin-top: 25px;
-    margin-bottom: 45px;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    color: #334348de;
+    align-items: center;
 }
 
 /* Solo para la página o sección de login */
@@ -172,15 +172,15 @@ h6 {
     width: 100%;
 }
 .nav-link:hover {
-    color: #03B8FF !important;
+    color: #334348de !important;
     transform: translateY(-2px);
     background-color: rgba(3, 192, 255, 0.1);
 }
 .nav-link.active {
-    color: #03c0ff !important;
-    font-weight: 600;
+    color: #334348de !important;
+    font-weight: 300;
     background-color: rgba(3, 192, 255, 0.2);
-    border-bottom: 3px solid #03c0ff;
+    border-bottom: 3px solid #334348de;
 }
 
 /* Dropdown Menús */
@@ -192,7 +192,7 @@ h6 {
     transition: background-color 0.3s, color 0.3s;
 }
 .dropdown-item:hover {
-    background-color: #03c0ff;
+    background-color: #a2a0a0;
     color: #ffffff;
 }
 
@@ -247,17 +247,17 @@ footer div {
 /* 6. BOTONES */
 /****************************************************************************/
 .btn-primary {
-    background-color: #03B8FF;
-    border-color: #0b396dbd;
+    background-color: #334348de;
+    border-color: #334348de;
 }
 .btn-primary:hover {
-    background-color: #02a8d1;
-    border-color: #03FFFB;
+    background-color: #3343486a;
+    border-color: #3343486a;
 }
 
 /* Botones personalizados */
 .btn-custom-white {
-    background: linear-gradient(to bottom, #9cd6fd, transparent);
+    background: linear-gradient(to bottom, #3343486a, transparent);
     color: #ffffff;
     border: 2px solid #ffffff;
     transition: background 0.3s, color 0.3s;
@@ -281,22 +281,22 @@ footer div {
 
 /* Botones outline (Agregar Contacto, Compartir URL) */
 .btn-outline-primary {
-    border-color: #03c0ff;
-    color: #03c0ff;
+    border-color: #334348de;
+    color: #334348de;
 }
 .btn-outline-primary:hover {
-    background-color: #e0f7ff;
-    color: #0290b8;
-    border-color: #0290b8;
+    background-color: #ffffff;
+    color: #3343486a;
+    border-color: #3343486a;
 }
 .btn-outline-secondary {
-    border-color: #03c0ff;
-    color: #03c0ff;
+    border-color: #334348de;
+    color: #334348de;
 }
 .btn-outline-secondary:hover {
-    background-color: #e0f7ff;
-    color: #0290b8;
-    border-color: #0290b8;
+    background-color: #ffffff;
+    color: #3343486a;
+    border-color: #3343486a;
 }
 
 /****************************************************************************/
@@ -622,7 +622,7 @@ a:hover {
         display: none; /* Ocultar video en móviles */
     }
     .overlay {
-        background: rgba(18, 37, 51, 0.257);
+        background: rgba(51, 18, 44, 0.257);
     }
 
     /* Ajustes para formularios en móvil */
@@ -856,7 +856,7 @@ a:hover {
 .user-fullname {
     font-weight: bold;
     font-size: 1.1rem;
-    color: #03c0ff;
+    color: #2c6682;
 }
 .sub-link {
     margin: 2px;
@@ -894,16 +894,14 @@ a:hover {
 .action-bar-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 10px;
+    background-color: #ffa00600;
 }
 .action-bar {
     display: flex;
     gap:5px;
-    background-color: #767c822c;
-    padding: 5px 5px;
+    background-color: #00000000;
+    padding: 3px 3px;
     border-radius: 0px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
     align-items: center;
 }
 .action-btn {
@@ -913,7 +911,7 @@ a:hover {
     gap: 5px;
     padding: 8px 15px;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 450;
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -965,7 +963,7 @@ img.img-fluid {
     text-decoration: none;
 }
 .contact-icon:hover {
-    color: #2980b9;
+    color: #2c6682;
     transform: scale(1.2);
 }
 
@@ -986,12 +984,12 @@ img.img-fluid {
 .btn-outline-primary,
 .btn-outline-secondary,
 .text-primary.text-decoration-none {
-    color: #03B8FF !important;
+    color: #334348de !important;
 }
 .text-primary:hover,
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
-    color: #2F2C2C !important;
+    color: #3343486a !important;
 }
 
 /****************************************************************************/

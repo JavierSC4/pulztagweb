@@ -13,10 +13,13 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-NC88XS28');</script>
 <!-- End Google Tag Manager -->
-
-<h2 class="titulo-seccion">Realiza tu Pedido</h2>
-<p class="text-center mb-5">Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.</p>
-
+<!-- Sección de Encabezado -->
+<div class="text-center mb-5" data-aos="fade-up">
+    <h2 class="titulo-seccion">Realiza tu Pedido</h2>
+    <p class="lead">
+        Completa el formulario a continuación para realizar tu pedido de dispositivos NFC personalizados.
+    </p>
+</div>
 <div class="row justify-content-center">
     <div class="col-md-8 mb-4">
         <form method="POST" action="{{ url_for('order') }}" enctype="multipart/form-data" id="orderForm">
@@ -193,11 +196,6 @@
         });
     });
 </script>
-<style>
-    .titulo-seccion {
-        margin-top: 50px; /* Añade espacio superior */
-    }
-</style>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
