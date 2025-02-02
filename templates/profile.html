@@ -394,7 +394,7 @@ body {
                      data-item-id="{{ item.uuid }}"
                      data-item-name="{{ item.name }}"
                      data-item-type="{{ item.item_type }}">
-                    <i class="fa-solid fa-angles-right"></i><span class="text-label ms-1">{{ item.name }}</span>
+                    <i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">{{ item.name }}</span>
                   </a>
                 </li>
                 {% endfor %}
@@ -1323,7 +1323,7 @@ agregarEtiquetaModal.show();
 
 <script>
 // ----------------------------------------------------------------------------------
-// Al cargar DOM
+// Al cargar el DOM
 $(document).ready(function() {
   // 1) Inicializa DataTables en todas las tablas con la clase .custom-table
   $('.custom-table').DataTable({
@@ -1332,7 +1332,7 @@ $(document).ready(function() {
     }
   });
 
-  // 2) Control de secciones con hash
+  // 2) Control de secciones mediante el hash de la URL
   function showSection(section) {
     var sections = [
       'miPerfilSection',
@@ -1359,90 +1359,89 @@ $(document).ready(function() {
   window.addEventListener('load', handleHash, false);
   window.addEventListener('hashchange', handleHash, false);
 
-  // Función para manejar clic en los items del Dashboard
-  function handleDashboardItemClick(e, element){
+  // 2.1) Listener delegado para cerrar el off-canvas automáticamente al pulsar enlaces
+  // que NO sean los que usan data-bs-toggle="collapse" (es decir, los que no tienen la función de desplegar subítems)
+  $('#offcanvasSidebar').on('click', 'a', function(e) {
+    var href = $(this).attr('href');
+    // Si el enlace tiene data-bs-toggle="collapse", se utiliza para desplegar subítems: no se cierra.
+    if ($(this).attr('data-bs-toggle') === 'collapse') {
+      return;
+    }
+    // Si el href es un ancla (por ejemplo, "#etiquetasSection")
+    if (href && href.startsWith('#')) {
+      // Si el hash actual ya es igual al href, forzamos la actualización de la sección
+      if (location.hash === href) {
+        handleHash();
+      } else {
+        location.hash = href;
+      }
+    }
+    // Luego, cerrar el off‑canvas
+    var offcanvasElement = document.getElementById('offcanvasSidebar');
+    if (offcanvasElement) {
+      var offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      if (offcanvasInstance) {
+        offcanvasInstance.hide();
+      }
+    }
+  });
+  // 3) Función para manejar el clic en los ítems del Dashboard
+  function handleDashboardItemClick(e, element) {
     e.preventDefault();
     var name = $(element).data('item-name');
     var type = $(element).data('item-type');
     var itemId = $(element).data('item-id');
 
-    // Muestra en el DOM
+    // Actualiza la sección de detalle con el nombre, tipo y el id del ítem
     $('#dashboardItemName').text(name);
     $('#dashboardItemType').text(type);
     $('#eliminarItemBtn').data('item-id', itemId);
 
-    // Si es un tipo que admite encuesta
+    // Si el tipo admite encuesta (para mostrar acciones como "Responder", "Copiar URL", etc.)
     if (["Evaluación de Clientes", "Evaluación de Semáforo", "CSAT", "CES", "Sentiment", "Response Rate"].includes(type)) {
       var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
-
-      // Link "Responder"
       $('#surveyLink')
         .attr('href', surveyUrl)
         .show()
         .find('span')
         .text('Responder');
-
-      // Botón "Copiar URL"
       $('#copySurveyBtn').off('click').on('click', function() {
         navigator.clipboard.writeText(surveyUrl)
           .then(function(){ alert('URL copiada al portapapeles!'); })
           .catch(function(err){ alert('Error al copiar la URL: ' + err); });
       }).show();
-
-      // Botón "Ver QR"
       $('#showSurveyQRBtn').off('click').on('click', function() {
         window.open('/survey_qrcode/' + itemId, '_blank');
       }).show();
-
-      // Mostrar contenedor de estadísticas y renderizar la tabla inicial
       $('#dashboardItemStats').show();
       renderLast10DaysTable(itemId, type);
-
-
     } else {
-      // Ocultar
       $('#surveyLink, #copySurveyBtn, #showSurveyQRBtn').hide();
       $('#dashboardItemStats').hide();
     }
 
-    // Cambiar a la sección de detalle
+    // Cambia a la sección de detalle
     showSection('dashboardItemDetailSection');
 
-    // Cerrar el off-canvas si está abierto
-    var offcanvasElement = document.getElementById('offcanvasSidebar');
-    if (offcanvasElement) {
-      var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-      if (offcanvas) offcanvas.hide();
-    }
+    // Si se pulsa sobre un subítem (sin data-bs-toggle="collapse") el off-canvas se cierra por el listener delegado
   }
 
-  // Listeners para ítems en sidebar
+  // Listeners para los ítems del sidebar (en pantalla grande y en off-canvas)
   $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
     handleDashboardItemClick(e, this);
-    // Si en móvil, cerrar el offcanvas
-    var offcanvasElement = document.getElementById('offcanvasSidebar');
-    if (offcanvasElement) {
-      var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-      if (offcanvas) offcanvas.hide();
-    }
   });
   $('#dashboardItemsContainerOffcanvas').on('click', '.dashboard-item-link', function(e) {
     handleDashboardItemClick(e, this);
-    var offcanvasElement = document.getElementById('offcanvasSidebar');
-    if (offcanvasElement) {
-      var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-      if (offcanvas) offcanvas.hide();
-    }
   });
 
-  // 3) Función copiar URL
+  // 4) Función para copiar URL al portapapeles
   window.copyURL = function(url) {
     navigator.clipboard.writeText(url)
       .then(function(){ alert('URL copiada al portapapeles!'); })
       .catch(function(err){ alert('Error al copiar URL: ' + err); });
   };
 
-  // 4) Toggle sidebar (colapsar en pantallas grandes)
+  // 5) Toggle del sidebar (colapsar en pantallas grandes)
   var sidebar = document.getElementById('sidebar');
   var toggleBtn = document.getElementById('sidebarToggle');
   if (sidebar && toggleBtn) {
@@ -1454,7 +1453,7 @@ $(document).ready(function() {
     });
   }
 
-  // 5) Selección masiva de Etiquetas
+  // 6) Selección masiva de Etiquetas
   var selectAllTagsCheckbox = document.getElementById('select_all');
   if (selectAllTagsCheckbox) {
     selectAllTagsCheckbox.addEventListener('click', function() {
@@ -1469,7 +1468,7 @@ $(document).ready(function() {
     });
   }
 
-  // 6) Exportar Etiquetas
+  // 7) Exportar Etiquetas
   window.exportSelectedTags = function() {
     var selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
     if (!selectedTags.length) {
@@ -1491,7 +1490,7 @@ $(document).ready(function() {
     .then(blob => {
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.style.display='none';
+      a.style.display = 'none';
       a.href = url;
       a.download = 'tags_export.xlsx';
       document.body.appendChild(a);
@@ -1505,7 +1504,7 @@ $(document).ready(function() {
     });
   };
 
-  // 7) Selección masiva de Pulzcards
+  // 8) Selección masiva de Pulzcards
   var selectAllPulzcardsCheckbox = document.getElementById('select_all_pulzcards');
   if (selectAllPulzcardsCheckbox) {
     selectAllPulzcardsCheckbox.addEventListener('click', function(){
@@ -1520,7 +1519,7 @@ $(document).ready(function() {
     });
   }
 
-  // 8) Exportar Pulzcards
+  // 9) Exportar Pulzcards
   window.exportSelectedPulzcards = function() {
     var selected = document.querySelectorAll('input[name="selected_pulzcards"]:checked');
     if (!selected.length) {
@@ -1542,7 +1541,7 @@ $(document).ready(function() {
     .then(blob => {
       var url = window.URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.style.display='none';
+      a.style.display = 'none';
       a.href = url;
       a.download = 'pulzcards_export.xlsx';
       document.body.appendChild(a);
@@ -1556,12 +1555,12 @@ $(document).ready(function() {
     });
   };
 
-  // 9) Crear Item Dashboard (Ajax)
-  $('#agregarItemForm').submit(function(e){
+  // 10) Crear Item Dashboard (Ajax)
+  $('#agregarItemForm').submit(function(e) {
     e.preventDefault();
     var itemName = $('#itemNameInput').val().trim();
     var itemType = $('#itemTypeSelect').val();
-    if(!itemName || !itemType){
+    if (!itemName || !itemType) {
       alert('Completa todos los campos.');
       return;
     }
@@ -1570,20 +1569,39 @@ $(document).ready(function() {
       method: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({ name: itemName, item_type: itemType }),
-      headers: {'X-CSRFToken': '{{ csrf_token() }}'},
-      success: function(resp){
-        var newItem = '<li>'+
-          '<a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" ' +
-            'data-item-id="'+resp.uuid+'" data-item-name="'+itemName+'" data-item-type="'+itemType+'">' +
-            '<i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">' + itemName + '</span>' +
-          '</a></li>';
-        $('#dashboardItemsContainer').append(newItem);
-        $('#dashboardItemsContainerOffcanvas').append(newItem);
+      headers: { 'X-CSRFToken': '{{ csrf_token() }}' },
+      success: function(resp) {
+        // Construye el HTML del nuevo item con su ícono
+        var newItemHtml = '<li>' +
+            '<a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" ' +
+            'data-item-id="'+ resp.uuid +'" data-item-name="'+ itemName +'" data-item-type="'+ itemType +'">' +
+            '<i class="fa-solid fa-square-poll-vertical"></i>' +
+            '<span class="text-label ms-1">' + itemName + '</span>' +
+            '</a></li>';
+        
+        // Se agrega el nuevo item a ambos contenedores (sidebar y off‑canvas)
+        $('#dashboardItemsContainer').append(newItemHtml);
+        $('#dashboardItemsContainerOffcanvas').append(newItemHtml);
+        
+        // Se cierra el modal y se limpian los campos
         $('#agregarItemModal').modal('hide');
         $('#itemNameInput').val('');
         $('#itemTypeSelect').val('');
+        
+        // Simula el clic en el nuevo item para cargar su dashboard (vista principal de la encuesta)
+        // Esto hace que se invoque el handler handleDashboardItemClick,
+        // que se encarga de actualizar los elementos (gráficos, tablas, etc.)
+        var $newItemLink = $('#dashboardItemsContainer .dashboard-item-link').last();
+        if ($newItemLink.length) {
+          $newItemLink.trigger('click');
+        } else {
+          // En caso de no encontrar el elemento, se actualiza el hash
+          location.hash = '#dashboardItemDetailSection';
+        }
       },
-      error: function(){ alert('Error al crear ítem.'); }
+      error: function() {
+        alert('Error al crear ítem.');
+      }
     });
   });
 
@@ -1616,8 +1634,8 @@ $(document).ready(function() {
     });
   });
 
-  // 10) Renderizar tabla y gráfico
-  var globalRatingsData=null, globalDates=null, globalDetails=null;
+  // 11) Renderizar tabla y gráfico
+  var globalRatingsData = null, globalDates = null, globalDetails = null;
 
   function renderLast10DaysTable(itemUUID, itemType){
     var ratingsHeader = document.getElementById('ratingsHeader');
@@ -1628,7 +1646,7 @@ $(document).ready(function() {
                   'rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
     rowIds.forEach(function(rowId){
       var row = document.getElementById(rowId);
-      while(row.children.length>1){
+      while(row.children.length > 1){
         row.removeChild(row.lastChild);
       }
     });
@@ -1652,8 +1670,8 @@ $(document).ready(function() {
 
         // Agregar encabezado con las fechas
         globalDates.forEach(function(dateStr){
-          var th=document.createElement('th');
-          th.textContent=dateStr;
+          var th = document.createElement('th');
+          th.textContent = dateStr;
           ratingsHeader.appendChild(th);
         });
         // Llenar la tabla
@@ -1662,110 +1680,97 @@ $(document).ready(function() {
         // Renderizar gráfico por defecto "count"
         renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
       },
-      error:function(xhr,status,error){
+      error:function(xhr, status, error){
         console.error('Error al obtener datos:', error);
       }
     });
   }
 
   function fillTableWithCounts(ratingsData){
-    for(var val=10; val>=1; val--){
-      var row = document.getElementById('rating'+val+'Row');
-      var countArray = ratingsData[val.toString()]||[];
+    for(var val = 10; val >= 1; val--){
+      var row = document.getElementById('rating' + val + 'Row');
+      var countArray = ratingsData[val.toString()] || [];
       countArray.forEach(function(cnt){
-        var td=document.createElement('td');
-        td.textContent=cnt;
+        var td = document.createElement('td');
+        td.textContent = cnt;
         row.appendChild(td);
       });
     }
-    var totalRow=document.getElementById('totalRow');
-    var length=(ratingsData["1"]||[]).length;
-    var dayTotals=new Array(length).fill(0);
-    for(var rating=1; rating<=10; rating++){
-      var arr = ratingsData[rating.toString()]||[];
+    var totalRow = document.getElementById('totalRow');
+    var length = (ratingsData["1"] || []).length;
+    var dayTotals = new Array(length).fill(0);
+    for(var rating = 1; rating <= 10; rating++){
+      var arr = ratingsData[rating.toString()] || [];
       arr.forEach(function(cnt, i){
-        dayTotals[i]+=cnt;
+        dayTotals[i] += cnt;
       });
     }
     dayTotals.forEach(function(t){
-      var td=document.createElement('td');
-      td.textContent=t;
+      var td = document.createElement('td');
+      td.textContent = t;
       totalRow.appendChild(td);
     });
   }
 
   // Cálculo de indicadores
   function computeDataByIndicator(ratingsData, dates, indicator){
-    var length=dates.length;
-    var resultArray=new Array(length).fill(0);
+    var length = dates.length;
+    var resultArray = new Array(length).fill(0);
 
-    for(var i=0; i<length; i++){
-      var total=0, sumRatings=0, promoters=0, passives=0, detractors=0;
-      for(var rating=1; rating<=10; rating++){
-        var c = (ratingsData[rating.toString()]||[])[i]||0;
+    for(var i = 0; i < length; i++){
+      var total = 0, sumRatings = 0, promoters = 0, passives = 0, detractors = 0;
+      for(var rating = 1; rating <= 10; rating++){
+        var c = (ratingsData[rating.toString()] || [])[i] || 0;
         total += c;
-        sumRatings += rating*c;
-        if(rating>=9) promoters+=c;
-        else if(rating>=7) passives+=c;
-        else detractors+=c;
+        sumRatings += rating * c;
+        if(rating >= 9) promoters += c;
+        else if(rating >= 7) passives += c;
+        else detractors += c;
       }
 
       if(indicator === "csat"){
-        // CSAT = (Promotores / total) * 100
-        var csat=0;
-        if(total>0) csat=(promoters/total)*100;
+        var csat = 0;
+        if(total > 0) csat = (promoters / total) * 100;
         resultArray[i] = csat;
       }
       else if(indicator === "ces"){
-        // CES = sumRatings(1-5) / total
-        // Reusamos sumRatings y total, pero si tu rating es 1..10, ajusta tu lógica
-        // Ejemplo: tomamos rating 1..5 como "esfuerzo"
-        var sumEsfuerzo=0; 
-        var totEsf=0;
-        for(var r=1; r<=5; r++){
-          var c2=(ratingsData[r.toString()]||[])[i]||0;
-          sumEsfuerzo += r*c2;
+        var sumEsfuerzo = 0; 
+        var totEsf = 0;
+        for(var r = 1; r <= 5; r++){
+          var c2 = (ratingsData[r.toString()] || [])[i] || 0;
+          sumEsfuerzo += r * c2;
           totEsf += c2;
         }
-        if(totEsf>0) resultArray[i] = sumEsfuerzo/totEsf; 
-        else resultArray[i] = 0;
+        resultArray[i] = totEsf > 0 ? sumEsfuerzo / totEsf : 0;
       }
       else if(indicator === "response_rate"){
-        // Tasa de Respuesta
-        // asumiendo response.total_sent si existe...
-        // (Ajustar según la estructura real)
-        // Ej:
-        var totalSent=0; 
+        var totalSent = 0; 
         if(globalRatingsData && globalRatingsData.total_sent){
-          totalSent = globalRatingsData.total_sent[i]||0;
+          totalSent = globalRatingsData.total_sent[i] || 0;
         }
-        if(totalSent>0) resultArray[i]=(total/totalSent)*100; 
-        else resultArray[i]=0;
+        resultArray[i] = totalSent > 0 ? (total / totalSent) * 100 : 0;
       }
       else if(indicator === "sentiment"){
-        // Asume un valor 'sentiment' en globalDetails
-        var sentiments=globalDetails[dates[i]]||[];
-        var sentimentSum=0, sentimentCount=0;
+        var sentiments = globalDetails[dates[i]] || [];
+        var sentimentSum = 0, sentimentCount = 0;
         sentiments.forEach(function(resp){
           if(resp.sentiment !== undefined){
             sentimentSum += resp.sentiment;
             sentimentCount++;
           }
         });
-        if(sentimentCount>0) resultArray[i] = sentimentSum/sentimentCount;
-        else resultArray[i] = 0;
+        resultArray[i] = sentimentCount > 0 ? sentimentSum / sentimentCount : 0;
       }
       else {
-        // "count", "average", "nps", ...
         switch(indicator){
           case "count":
             resultArray[i] = total;
             break;
           case "average":
-            resultArray[i] = total>0? (sumRatings/total) : 0;
+            resultArray[i] = total > 0 ? (sumRatings / total) : 0;
             break;
           case "nps":
-            resultArray[i] = total>0 ? ((promoters-detractors)/total)*100 : 0;
+            resultArray[i] = total > 0 ? ((promoters - detractors) / total) * 100 : 0;
             break;
           default:
             resultArray[i] = 0;
@@ -1776,23 +1781,22 @@ $(document).ready(function() {
   }
 
   function computeStackedData(ratingsData, dates){
-    var length=dates.length;
+    var length = dates.length;
     var promotersArray = new Array(length).fill(0);
     var passivesArray = new Array(length).fill(0);
     var detractorsArray = new Array(length).fill(0);
 
-    for(var i=0;i<length;i++){
-      var pro=0, pas=0, det=0, total=0;
-      for(var rating=1; rating<=10; rating++){
-        var c=(ratingsData[rating.toString()]||[])[i]||0;
-        total+=c;
-        if(rating>=9) pro+=c;
-        else if(rating>=7) pas+=c;
-        else det+=c;
+    for(var i = 0; i < length; i++){
+      var pro = 0, pas = 0, det = 0;
+      for(var rating = 1; rating <= 10; rating++){
+        var c = (ratingsData[rating.toString()] || [])[i] || 0;
+        if(rating >= 9) pro += c;
+        else if(rating >= 7) pas += c;
+        else det += c;
       }
-      promotersArray[i]=pro;
-      passivesArray[i]=pas;
-      detractorsArray[i]=det;
+      promotersArray[i] = pro;
+      passivesArray[i] = pas;
+      detractorsArray[i] = det;
     }
     return {
       promotersArray: promotersArray,
@@ -1801,25 +1805,23 @@ $(document).ready(function() {
     };
   }
 
-  function renderChart(ratingsData, dates, detailsByDay, itemType, indicator){
-    // Si "tabla de evaluaciones"
-    if(indicator==="table"){
-      document.getElementById('chartContainer').style.display='none';
-      document.getElementById('tableContainer').style.display='block';
+  function renderChart(ratingsData, dates, detailsByDay, itemType, indicator) {
+    if(indicator === "table"){
+      document.getElementById('chartContainer').style.display = 'none';
+      document.getElementById('tableContainer').style.display = 'block';
       return;
     } else {
-      document.getElementById('chartContainer').style.display='block';
-      document.getElementById('tableContainer').style.display='none';
+      document.getElementById('chartContainer').style.display = 'block';
+      document.getElementById('tableContainer').style.display = 'none';
     }
 
-    if(indicator==="stacked"){
+    if(indicator === "stacked"){
       renderStackedChart(ratingsData, dates);
       return;
     }
 
     var dataArray = computeDataByIndicator(ratingsData, dates, indicator);
-
-    var labelMap={
+    var labelMap = {
       count:"Cantidad de Evaluaciones",
       average:"Promedio de Puntajes",
       nps:"NPS",
@@ -1833,7 +1835,7 @@ $(document).ready(function() {
     };
     var datasetLabel = labelMap[indicator] || "Indicador";
 
-    var data={
+    var data = {
       labels: dates,
       datasets: [{
         label: datasetLabel,
@@ -1845,272 +1847,263 @@ $(document).ready(function() {
       }]
     };
     var config = {
-        type: 'line', // O el tipo de gráfico que estés usando
-        data: data,
-        plugins: [ChartDataLabels],
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Indicador: " + datasetLabel,
-                    align: 'start', // Alinea el título a la izquierda
-                    padding: {
-                        top: 0, // Espaciado superior opcional
-                        bottom: 30 // Espaciado inferior opcional
-                    },
-                    font: {
-                        size: 20, // Tamaño de fuente (ajusta según tu preferencia)
-                        weight: 'bold', // Negrita para el título
-                        family: 'Arial' // Familia de fuente (opcional)
-                    }
-                },
-                legend: {
-                    display: true,
-                    position: 'bottom', // 📌 Mueve la leyenda a la parte inferior
-                    align: 'center' // 📌 Centra la leyenda horizontalmente
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            if (indicator === "sentiment") {
-                                return 'Sentimiento: ' + context.parsed.y.toFixed(2);
-                            }
-                            if (indicator === "average" || indicator === "count") {
-                                return context.parsed.y.toFixed(1);
-                            }
-                            return context.parsed.y;
-                        }
-                    }
-                },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: function (value, ctx) {
-                        if (value === 0) { return ''; }
-                        let lbl = ctx.dataset.label.toLowerCase();
-                        if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
-                            if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
-                            if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
-                            if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
-                                return "E: " + value.toFixed(1) + "%";
-                            }
-                        }
-                        else if (lbl === "sentiment (análisis de sentimientos)") {
-                            return value.toFixed(2);
-                        }
-                        else {
-                            return value.toFixed(1) + "%";
-                        }
-                        return value;
-                    },
-                    color: 'black',
-                    font: { weight: 'bold' }
+      type: 'line',
+      data: data,
+      plugins: [ChartDataLabels],
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Indicador: " + datasetLabel,
+            align: 'start',
+            padding: { top: 0, bottom: 30 },
+            font: { size: 20, weight: 'bold', family: 'Arial' }
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+            align: 'center'
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                if (indicator === "sentiment") {
+                  return 'Sentimiento: ' + context.parsed.y.toFixed(2);
                 }
-            },
-            onClick: function (evt, elements) {
-                if (elements && elements.length) {
-                    var idx = elements[0].index;
-                    var selectedDate = dates[idx];
-                    var dayResponses = detailsByDay[selectedDate] || [];
-                    showResponsesForDay(selectedDate, dayResponses);
+                if (indicator === "average" || indicator === "count") {
+                  return context.parsed.y.toFixed(1);
                 }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: (indicator === "count" || indicator === "average") ? "Evaluaciones" : "Valor"
-                    }
-                }
+                return context.parsed.y;
+              }
             }
+          },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: function (value, ctx) {
+              if (value === 0) { return ''; }
+              let lbl = ctx.dataset.label.toLowerCase();
+              if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
+                if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
+                if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
+                if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
+                  return "E: " + value.toFixed(1) + "%";
+                }
+              }
+              else if (lbl === "sentiment (análisis de sentimientos)") {
+                return value.toFixed(2);
+              }
+              else {
+                return value.toFixed(1) + "%";
+              }
+              return value;
+            },
+            color: 'black',
+            font: { weight: 'bold' }
+          }
+        },
+        onClick: function (evt, elements) {
+          if (elements && elements.length) {
+            var idx = elements[0].index;
+            var selectedDate = dates[idx];
+            var dayResponses = detailsByDay[selectedDate] || [];
+            showResponsesForDay(selectedDate, dayResponses);
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: (indicator === "count" || indicator === "average") ? "Evaluaciones" : "Valor"
+            }
+          }
         }
+      }
     };
-    var ctx=document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById('myChart').getContext('2d');
     if(window.myChartInstance){
       window.myChartInstance.destroy();
     }
-    window.myChartInstance=new Chart(ctx, config);
+    window.myChartInstance = new Chart(ctx, config);
   }
 
-  function renderStackedChart(ratingsData, dates){
-    var computed=computeStackedData(ratingsData, dates);
-    var data={
+  function renderStackedChart(ratingsData, dates) {
+    var computed = computeStackedData(ratingsData, dates);
+    var data = {
       labels: dates,
-      datasets:[
+      datasets: [
         {
-          label:"Promotores",
-          data:computed.promotersArray,
-          backgroundColor:"rgba(75,192,192,0.8)"
+          label: "Promotores",
+          data: computed.promotersArray,
+          backgroundColor: "rgba(75,192,192,0.8)"
         },
         {
-          label:"Neutros",
-          data:computed.passivesArray,
-          backgroundColor:"rgba(255,206,86,0.8)"
+          label: "Neutros",
+          data: computed.passivesArray,
+          backgroundColor: "rgba(255,206,86,0.8)"
         },
         {
-          label:"Detractores",
-          data:computed.detractorsArray,
-          backgroundColor:"rgba(255,99,132,0.8)"
+          label: "Detractores",
+          data: computed.detractorsArray,
+          backgroundColor: "rgba(255,99,132,0.8)"
         }
       ]
     };
 
-    var totalEvaluations=computed.promotersArray.map((p,i)=> p+computed.passivesArray[i]+computed.detractorsArray[i]);
+    var totalEvaluations = computed.promotersArray.map((p, i) =>
+      p + computed.passivesArray[i] + computed.detractorsArray[i]
+    );
 
-    var config={
-      type:'bar',
-      data:data,
-      plugins:[ChartDataLabels],
-      options:{
-        responsive:true,
-        plugins:{
-          title:{
-            display:true,
-            text:"Barras Apiladas (Promotores/Neutros/Detractores)"
+    var config = {
+      type: 'bar',
+      data: data,
+      plugins: [ChartDataLabels],
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: "Barras Apiladas (Promotores/Neutros/Detractores)"
           },
-          tooltip:{
-            callbacks:{
-              label:function(context){
-                return context.dataset.label+': '+context.parsed.y;
+          tooltip: {
+            callbacks: {
+              label: function(context){
+                return context.dataset.label + ': ' + context.parsed.y;
               }
             }
           },
-          datalabels:{
-            anchor:'center',
-            align:'center',
-            formatter:function(value, ctx){
-              if(value===0){ return ''; }
-              var total=totalEvaluations[ctx.dataIndex];
-              var pct=((value/total)*100).toFixed(1)+"%";
-              return "E: "+value+"\n"+pct;
+          datalabels: {
+            anchor: 'center',
+            align: 'center',
+            formatter: function(value, ctx) {
+              if(value === 0) { return ''; }
+              var total = totalEvaluations[ctx.dataIndex];
+              var pct = ((value / total) * 100).toFixed(1) + "%";
+              return "E: " + value + "\n" + pct;
             },
-            color:'white',
-            font:{ weight:'bold' }
+            color: 'white',
+            font: { weight: 'bold' }
           }
         },
-        scales:{
-          x:{ stacked:true },
-          y:{
-            stacked:true,
-            beginAtZero:true,
-            title:{display:true, text:'Cantidad de Evaluaciones'}
+        scales: {
+          x: { stacked: true },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            title: { display: true, text: 'Cantidad de Evaluaciones' }
           }
         }
       }
     };
 
-    var ctx=document.getElementById('myChart').getContext('2d');
+    var ctx = document.getElementById('myChart').getContext('2d');
     if(window.myChartInstance){
       window.myChartInstance.destroy();
     }
-    window.myChartInstance=new Chart(ctx, config);
+    window.myChartInstance = new Chart(ctx, config);
   }
 
-  function showResponsesForDay(dateStr, responses){
-    var detailsTitle=document.getElementById('detailsTitle');
-    detailsTitle.textContent="Detalles del día: "+dateStr;
+  function showResponsesForDay(dateStr, responses) {
+    var detailsTitle = document.getElementById('detailsTitle');
+    detailsTitle.textContent = "Detalles del día: " + dateStr;
 
-    var tbody=document.getElementById('dayDetailsBody');
-    tbody.innerHTML="";
-    if(!responses.length){
-      var row=document.createElement('tr');
-      var cell=document.createElement('td');
-      cell.colSpan=2;
-      cell.textContent="No hay respuestas para este día.";
+    var tbody = document.getElementById('dayDetailsBody');
+    tbody.innerHTML = "";
+    if(!responses.length) {
+      var row = document.createElement('tr');
+      var cell = document.createElement('td');
+      cell.colSpan = 2;
+      cell.textContent = "No hay respuestas para este día.";
       row.appendChild(cell);
       tbody.appendChild(row);
     } else {
-      responses.forEach(function(resp){
-        var row=document.createElement('tr');
-        var tdRating=document.createElement('td');
-        tdRating.textContent=resp.rating;
-        var tdComment=document.createElement('td');
-        tdComment.textContent=resp.comment||"Sin Comentario";
+      responses.forEach(function(resp) {
+        var row = document.createElement('tr');
+        var tdRating = document.createElement('td');
+        tdRating.textContent = resp.rating;
+        var tdComment = document.createElement('td');
+        tdComment.textContent = resp.comment || "Sin Comentario";
         row.appendChild(tdRating);
         row.appendChild(tdComment);
         tbody.appendChild(row);
       });
     }
-    document.getElementById('dayDetailsContainer').style.display='block';
+    document.getElementById('dayDetailsContainer').style.display = 'block';
   }
 
   // Manejar cambio de indicador en el select
   var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
-  if(chartIndicatorSelect){
-    chartIndicatorSelect.addEventListener('change', function(){
+  if(chartIndicatorSelect) {
+    chartIndicatorSelect.addEventListener('change', function() {
       if(!globalRatingsData || !globalDates || !globalDetails) return;
-      var indicator=this.value;
+      var indicator = this.value;
       renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
     });
   }
 
-  // 11) Filtrar por rango de fechas
-  $('#filterDateBtn').on('click', function(){
-    var startDate=$('#startDate').val();
-    var endDate=$('#endDate').val();
-    if(!startDate||!endDate){
+  // 12) Filtrar por rango de fechas
+  $('#filterDateBtn').on('click', function() {
+    var startDate = $('#startDate').val();
+    var endDate = $('#endDate').val();
+    if(!startDate || !endDate) {
       alert('Selecciona ambos rangos de fechas');
       return;
     }
-    if(startDate>endDate){
+    if(startDate > endDate) {
       alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
       return;
     }
-    // Recargar datos
     $.ajax({
-      url:'{{ url_for("get_ratings_data") }}',
-      type:'GET',
-      data:{
+      url: '{{ url_for("get_ratings_data") }}',
+      type: 'GET',
+      data: {
         item_uuid: $('#eliminarItemBtn').data('item-id'),
         start_date: startDate,
         end_date: endDate
       },
-      success:function(resp){
-        if(resp.error){
+      success: function(resp) {
+        if(resp.error) {
           console.error("Error:", resp.error);
           return;
         }
-        globalRatingsData=resp.ratings;
-        globalDates=resp.dates;
-        globalDetails=resp.details;
-        // Limpiar tabla
-        var ratingsHeader=document.getElementById('ratingsHeader');
-        Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th=>th.remove());
-        var rowIds=['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
-        rowIds.forEach(function(rowId){
-          var row=document.getElementById(rowId);
-          while(row.children.length>1){ row.removeChild(row.lastChild); }
+        globalRatingsData = resp.ratings;
+        globalDates = resp.dates;
+        globalDetails = resp.details;
+        var ratingsHeader = document.getElementById('ratingsHeader');
+        Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
+        var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
+        rowIds.forEach(function(rowId) {
+          var row = document.getElementById(rowId);
+          while(row.children.length > 1) { row.removeChild(row.lastChild); }
         });
-        // Agregar las columnas de fechas
-        globalDates.forEach(function(dateStr){
-          var th=document.createElement('th');
-          th.textContent=dateStr;
+        globalDates.forEach(function(dateStr) {
+          var th = document.createElement('th');
+          th.textContent = dateStr;
           ratingsHeader.appendChild(th);
         });
         fillTableWithCounts(globalRatingsData);
-        var currentIndicator=$('#chartIndicatorSelect').val();
+        var currentIndicator = $('#chartIndicatorSelect').val();
         renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", currentIndicator);
       },
-      error:function(xhr,status,error){
+      error: function(xhr, status, error) {
         console.error('Error:', error);
       }
     });
   });
 
-  // 12) Descargar gráfico como imagen
-  $('#downloadChartBtn').on('click', function(){
-    if(window.myChartInstance){
-      var link=document.createElement('a');
-      link.href=window.myChartInstance.toBase64Image();
-      link.download='grafico_dashboard.png';
+  // 13) Descargar gráfico como imagen
+  $('#downloadChartBtn').on('click', function() {
+    if(window.myChartInstance) {
+      var link = document.createElement('a');
+      link.href = window.myChartInstance.toBase64Image();
+      link.download = 'grafico_dashboard.png';
       link.click();
     } else {
       alert('No hay gráfico para descargar.');
     }
   });
-
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -2121,182 +2114,154 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableContainer = document.getElementById("tableContainer");
     const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
 
-    let lastDisplayedContainer = "chart"; // Por defecto, el gráfico es lo primero visible.
-    let trendLineVisible = false; // Estado de la línea de tendencia
-    let trendLineDataset = null; // Dataset de la línea de tendencia
+    let lastDisplayedContainer = "chart"; // Por defecto se muestra el gráfico
+    let trendLineVisible = false;
+    let trendLineDataset = null;
 
-    // Crear el botón "Tendencia" y posicionarlo arriba a la derecha del gráfico
+    // Crear y posicionar el botón "Tendencia" en el contenedor del gráfico
     const trendLineBtn = document.createElement("button");
     trendLineBtn.textContent = "Tendencia";
     trendLineBtn.className = "btn btn-primary btn-sm position-absolute";
     trendLineBtn.style.top = "10px";
     trendLineBtn.style.right = "10px";
     trendLineBtn.style.zIndex = "1000";
-    chartContainer.style.position = "relative"; // Asegurar que el contenedor tiene posición relativa
+    chartContainer.style.position = "relative";
     chartContainer.appendChild(trendLineBtn);
 
     function calculateTrendLine(data) {
-        const n = data.length;
-        if (n < 2) return [];
-
-        const x = Array.from({ length: n }, (_, i) => i + 1);
-        const y = data;
-
-        const sumX = x.reduce((a, b) => a + b, 0);
-        const sumY = y.reduce((a, b) => a + b, 0);
-        const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
-        const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
-
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-
-        return x.map(xi => slope * xi + intercept);
+      const n = data.length;
+      if (n < 2) return [];
+      const x = Array.from({ length: n }, (_, i) => i + 1);
+      const y = data;
+      const sumX = x.reduce((a, b) => a + b, 0);
+      const sumY = y.reduce((a, b) => a + b, 0);
+      const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
+      const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      return x.map(xi => slope * xi + intercept);
     }
 
     function calculateStackedTrendLine(datasets, labels) {
-        const n = labels.length;
-        if (n < 2) return [];
-
-        const x = Array.from({ length: n }, (_, i) => i + 1);
-        const y = labels.map((_, i) =>
-            datasets.reduce((sum, dataset) => {
-                if (!dataset.hidden) return sum + dataset.data[i];
-                return sum;
-            }, 0)
-        );
-
-        return calculateTrendLine(y);
+      const n = labels.length;
+      if (n < 2) return [];
+      const x = Array.from({ length: n }, (_, i) => i + 1);
+      const y = labels.map((_, i) =>
+        datasets.reduce((sum, dataset) => {
+          if (!dataset.hidden) return sum + dataset.data[i];
+          return sum;
+        }, 0)
+      );
+      return calculateTrendLine(y);
     }
 
     function updateTrendLine(chart) {
-        if (!chart) return;
-
-        // Calcular los datos de la línea de tendencia
-        let trendData;
-        if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
-            trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
-        } else {
-            trendData = calculateTrendLine(chart.data.datasets[0].data);
-        }
-
-        if (!trendLineDataset) {
-            // Crear la línea de tendencia si no existe
-            trendLineDataset = {
-                type: "line", // Definir la línea de tendencia como un gráfico de tipo línea
-                label: "Tendencia",
-                data: trendData,
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 2,
-                borderDash: [5, 5],
-                pointRadius: 0, // Sin puntos
-                fill: false
-            };
-            chart.data.datasets.push(trendLineDataset);
-        } else {
-            // Actualizar los datos de la línea de tendencia
-            trendLineDataset.data = trendData;
-        }
-
-        chart.update();
+      if (!chart) return;
+      let trendData;
+      if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
+        trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
+      } else {
+        trendData = calculateTrendLine(chart.data.datasets[0].data);
+      }
+      if (!trendLineDataset) {
+        trendLineDataset = {
+          type: "line",
+          label: "Tendencia",
+          data: trendData,
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        };
+        chart.data.datasets.push(trendLineDataset);
+      } else {
+        trendLineDataset.data = trendData;
+      }
+      chart.update();
     }
 
     function toggleTrendLine(chart) {
-        if (!chart) return;
-
-        if (trendLineVisible) {
-            // Ocultar línea de tendencia
-            chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
-            trendLineDataset = null;
-        } else {
-            // Mostrar línea de tendencia y actualizar datos
-            updateTrendLine(chart);
-        }
-
-        trendLineVisible = !trendLineVisible;
-        chart.update();
+      if (!chart) return;
+      if (trendLineVisible) {
+        chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
+        trendLineDataset = null;
+      } else {
+        updateTrendLine(chart);
+      }
+      trendLineVisible = !trendLineVisible;
+      chart.update();
     }
 
     function showOnlyOneContainer(containerToShow) {
-        if (containerToShow === "chart") {
-            chartContainer.style.display = "block";
-            tableContainer.style.display = "none";
-            lastDisplayedContainer = "chart";
-        } else if (containerToShow === "table") {
-            tableContainer.style.display = "block";
-            chartContainer.style.display = "none";
-            lastDisplayedContainer = "table";
-        }
+      if (containerToShow === "chart") {
+        chartContainer.style.display = "block";
+        tableContainer.style.display = "none";
+        lastDisplayedContainer = "chart";
+      } else if (containerToShow === "table") {
+        tableContainer.style.display = "block";
+        chartContainer.style.display = "none";
+        lastDisplayedContainer = "table";
+      }
     }
 
     fullscreenBtn.addEventListener("click", function () {
-        fullscreenContent.innerHTML = ""; // Limpiar contenido previo
-
-        if (lastDisplayedContainer === "chart") {
-            const clonedChartContainer = chartContainer.cloneNode(true);
-            clonedChartContainer.style.height = "100%";
-            clonedChartContainer.style.width = "100%";
-            fullscreenContent.appendChild(clonedChartContainer);
-
-            const oldCanvas = clonedChartContainer.querySelector("canvas");
-            const newCanvas = document.createElement("canvas");
-            newCanvas.id = "fullscreenChart";
-            oldCanvas.replaceWith(newCanvas);
-
-            setTimeout(() => {
-                const ctx = newCanvas.getContext("2d");
-                if (window.myChartInstance) {
-                    new Chart(ctx, window.myChartInstance.config);
-                }
-            }, 200);
-        } else if (lastDisplayedContainer === "table") {
-            const clonedTable = tableContainer.cloneNode(true);
-            clonedTable.style.height = "100%";
-            clonedTable.style.width = "100%";
-            fullscreenContent.appendChild(clonedTable);
-        }
-
-        fullscreenModal.show();
+      fullscreenContent.innerHTML = "";
+      if (lastDisplayedContainer === "chart") {
+        const clonedChartContainer = chartContainer.cloneNode(true);
+        clonedChartContainer.style.height = "100%";
+        clonedChartContainer.style.width = "100%";
+        fullscreenContent.appendChild(clonedChartContainer);
+        const oldCanvas = clonedChartContainer.querySelector("canvas");
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "fullscreenChart";
+        oldCanvas.replaceWith(newCanvas);
+        setTimeout(() => {
+          const ctx = newCanvas.getContext("2d");
+          if (window.myChartInstance) {
+            new Chart(ctx, window.myChartInstance.config);
+          }
+        }, 200);
+      } else if (lastDisplayedContainer === "table") {
+        const clonedTable = tableContainer.cloneNode(true);
+        clonedTable.style.height = "100%";
+        clonedTable.style.width = "100%";
+        fullscreenContent.appendChild(clonedTable);
+      }
+      fullscreenModal.show();
     });
 
     document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
-        showOnlyOneContainer(lastDisplayedContainer);
+      showOnlyOneContainer(lastDisplayedContainer);
     });
 
-    // Evento al cambiar el indicador del gráfico
     chartIndicatorSelect.addEventListener("change", function () {
-        if (chartIndicatorSelect.value === "table") {
-            showOnlyOneContainer("table");
-        } else {
-            showOnlyOneContainer("chart");
-        }
+      if (chartIndicatorSelect.value === "table") {
+        showOnlyOneContainer("table");
+      } else {
+        showOnlyOneContainer("chart");
+      }
     });
 
-    // Evento del botón "Tendencia"
     trendLineBtn.addEventListener("click", function () {
-        if (window.myChartInstance) {
-            toggleTrendLine(window.myChartInstance);
-        }
+      if (window.myChartInstance) {
+        toggleTrendLine(window.myChartInstance);
+      }
     });
 
-    // Evento para actualizar la línea de tendencia al hacer clic en la leyenda
     if (window.myChartInstance) {
-        window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
-            const index = legendItem.datasetIndex;
-            const dataset = window.myChartInstance.data.datasets[index];
-            dataset.hidden = !dataset.hidden;
-
-            // Recalcular la línea de tendencia
-            if (trendLineVisible) {
-                updateTrendLine(window.myChartInstance);
-            }
-
-            window.myChartInstance.update();
-        };
+      window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
+        const index = legendItem.datasetIndex;
+        const dataset = window.myChartInstance.data.datasets[index];
+        dataset.hidden = !dataset.hidden;
+        if (trendLineVisible) {
+          updateTrendLine(window.myChartInstance);
+        }
+        window.myChartInstance.update();
+      };
     }
 
-    // Asegurar que solo uno esté visible al cargar la página
     showOnlyOneContainer(lastDisplayedContainer);
 });
-
 </script>
 {% endblock %}
