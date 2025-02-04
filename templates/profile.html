@@ -1,237 +1,203 @@
+<!-- templates/profile.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb (Escala 1-10 NPS){% endblock %}
 
 {% block head %}
+<!-- Se mantiene DataTables y Bootstrap -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
 
 <style>
-body {
-  background-image: url("/static/images/background.jpg") !important;
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
-}
-
-.small-text {
-  font-size: 15px; /* Puedes ajustar este valor */
-}
-
-.d-flex {
-  display: flex !important;
-}
-.h-100 {
-  height: 100% !important;
-}
-
-#sidebar {
-  height: calc(100vh - 90px - 75px); 
-  overflow-y: auto;
-}
-
-/* Sidebar styles for larger screens */
-@media (min-width: 768px) {
-  #sidebar {
-    display: block;
+  /* ===== Estilos Base (Mobile First) ===== */
+  body {
+    background-image: url("/static/images/background.jpg") !important;
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
   }
-}
 
-/* Off-canvas sidebar styles for small screens */
-@media (max-width: 767.98px) {
+  .small-text {
+    font-size: 0.9rem; /* tamaño relativo para móviles */
+  }
+
+  .d-flex {
+    display: flex !important;
+  }
+  .h-100 {
+    height: 100% !important;
+  }
+
+  /* Sidebar: por defecto oculto en móviles */
   #sidebar {
+    height: calc(100vh - 90px - 75px);
+    overflow-y: auto;
     display: none;
   }
 
-  /* Asegurar que el off-canvas ocupe el 100% del ancho en móviles */
-  .offcanvas-start {
-    width: 250px;
-  }
-
-  /* Ajustar el padding del contenido principal en pantallas pequeñas */
+  /* Contenedor principal con padding reducido para móviles */
   #mainContent {
-    padding: 0px;
+    padding: 10px;
   }
 
-  /* Ajustar el tamaño del botón del navbar en móviles */
+  /* Ajuste en botones de navbar para móviles */
   .navbar .btn {
     padding: 0.3rem 0.6rem;
   }
-}
 
-.sidebar-transition {
-  transition: all 0.3s;
-}
-
-/* Ajustes para off-canvas en móviles */
-.offcanvas-custom {
-  width: 250px;
-}
-@media (max-width: 767.98px) {
-  .offcanvas-custom {
+  /* Ajuste de offcanvas en móviles */
+  .offcanvas-start {
     width: 100%;
   }
-}
 
-.btn-primary {
-  background-color: #e7e7e774;
-  border-color: #ffffff;
-}
-.btn-primary:hover {
+  .sidebar-transition {
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background-color: rgba(231,231,231,0.46);
+    border-color: #ffffff;
+  }
+  .btn-primary:hover {
     background-color: #e6e6e6;
     border-color: #b6b6b6;
-}
-.btn-primary:active, 
-.btn-primary:focus {
-    background-color: #d6d6d6 !important; /* Color de fondo cuando se presiona */
-    border-color: #a6a6a6 !important; /* Color del borde cuando se presiona */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Efecto de sombreado */
-}
-#dashboardItemActions .btn,
-#dashboardItemActions .btn * {
-  color: rgb(122, 122, 122) !important;
-}
-#dashboardItemStats .btn,
-#dashboardItemStats .btn * {
-  color: rgb(122, 122, 122) !important;
-}
-#miPerfilSection .btn,
-#miPerfilSection .btn * {
-  color: rgb(122, 122, 122) !important;
-}
-
-#dashboardItemActions .btn-danger,
-#dashboardItemActions .btn-danger * {
-  color: white !important;
-}
-
-/* Estilos para los botones de acción */
-.action-btn {
-  margin-right: 5px;
-}
-
-@media (max-width: 767.98px) {
-  .action-btn span {
-    display: none !important;
   }
-}
+  .btn-primary:active,
+  .btn-primary:focus {
+    background-color: #d6d6d6 !important;
+    border-color: #a6a6a6 !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
 
-.dashboard-section {
-  /* Fondo y borde */
-  background-color: #f8f9fa;  /* Color de fondo similar al header de tablas de Bootstrap */
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  
-  /* Espaciado */
-  padding: 1rem;
-  margin-bottom: 1rem;
+  /* Colores para los botones en secciones */
+  #dashboardItemActions .btn,
+  #dashboardItemStats .btn,
+  #miPerfilSection .btn {
+    color: rgb(122, 122, 122) !important;
+  }
+  #dashboardItemActions .btn-danger {
+    color: white !important;
+  }
 
-  /* Layout en flex, similar a la sección de botones (ajusta según lo necesites) */
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end; /* Alinea los elementos a la derecha */
-  gap: 1rem; /* Espacio entre elementos */
-}
+  /* Espaciado en botones de acción */
+  .action-btn {
+    margin-right: 5px;
+  }
+  @media (max-width: 767.98px) {
+    .action-btn span {
+      display: none !important;
+    }
+  }
 
-/* Aumentar margen entre el selector y el gráfico */
-#chartIndicatorSelect {
-  margin-bottom: 0px !important; /* Puedes ajustar este valor */
-}
+  /* Sección de Dashboard con layout flexible */
+  .dashboard-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
 
-/* Ajustar el contenedor del gráfico */
-#chartContainer {
-  margin: 0px auto; /* Reducir el margen superior/inferior */
-  padding: 0;        /* Eliminar relleno */
-  width: 100%;        /* Utilizar el 95% del ancho de la pantalla */
-  max-width: 1200px; /* Límite máximo para pantallas grandes */
-  height: auto;      /* Altura dinámica */
-}
-
-/* Ajustar el gráfico */
-#myChart {
-  width: 100%;
-  height: 500px; /* Aumentar altura en pantallas grandes */
-}
-
-/* Ajustes para pantallas pequeñas */
-@media (max-width: 768px) {
+  /* Contenedor del gráfico: uso de porcentajes y límite para pantallas grandes */
   #chartContainer {
-    width: 98%; /* Ampliar más el ancho para aprovechar el espacio */
-    height: auto; /* Asegurar altura dinámica */
+    margin: 0 auto;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+    height: auto;
   }
-
   #myChart {
-    height: 400px; /* Aumentar altura en pantallas pequeñas */
+    width: 100%;
+    height: 500px;
   }
-}
 
-#ratingsTable thead th {
-  font-size: 14px; /* Tamaño base */
-  font-weight: bold; /* Negrita */
-  white-space: nowrap; /* Evita saltos de línea */
-}
+  /* Estilos para DataTables y tablas personalizadas */
+  #ratingsTable thead th,
+  #ratingsTable tbody td,
+  #ratingsTable tbody th {
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
+  .table-responsive, .full-width {
+    width: 100%;
+  }
+  .hidden {
+    display: none;
+  }
 
-#ratingsTable tbody td, 
-#ratingsTable tbody th {
-  font-size: 14px; /* Puedes ajustarlo */
-}
+  .chartjs-tooltip {
+    opacity: 1;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    transition: all 0.1s ease;
+  }
 
-.table-responsive {
-  width: 100%;
-}
-
-.hidden {
-  display: none;
-}
-
-/* Asegurar que gráficos y tablas ocupen todo el ancho */
-.full-width {
-  width: 100%;
-}
-
-/* Estilos adicionales para las etiquetas de los gráficos (tooltip, etc.) */
-.chartjs-tooltip {
-  opacity: 1;
-  position: absolute;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  pointer-events: none;
-  transition: all .1s ease;
-}
-
-/* Mejora de la apariencia de las tablas */
-.custom-table thead th {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-.custom-table tbody tr:hover {
-  background-color: #f1f1f1;
-}
+  .custom-table thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  .custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
   #dayDetailsContainer table {
-    table-layout: fixed; /* Hacer que la tabla tenga un ancho fijo */
-    width: 100%; /* Utiliza todo el ancho disponible */
+    table-layout: fixed;
+    width: 100%;
   }
-
   #dayDetailsContainer th:first-child,
   #dayDetailsContainer td:first-child {
-    width: 170px; /* Ajusta el ancho según el contenido del encabezado */
-    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    width: 170px;
+    white-space: nowrap;
   }
-
   #dayDetailsContainer th:last-child,
   #dayDetailsContainer td:last-child {
-    width: auto; /* Deja que esta columna ocupe el espacio restante */
-    word-wrap: break-word; /* Permite el ajuste del texto */
+    width: auto;
+    word-wrap: break-word;
     text-align: start;
   }
 
+  /* ===== Media Queries para pantallas mayores ===== */
+  @media (min-width: 768px) {
+    /* Mostrar el sidebar en pantallas medianas y grandes */
+    #sidebar {
+      display: block;
+    }
+    /* Restablece el padding del mainContent */
+    #mainContent {
+      padding: 20px;
+    }
+  }
+
+  /* Ajustes para pantallas extra pequeñas */
+  @media (max-width: 575px) {
+    #mainContent {
+      padding: 5px;
+    }
+    .small-text {
+      font-size: 0.8rem;
+    }
+    /* Puedes ajustar márgenes o tamaños de fuente adicionales */
+  }
+
+  /* Ajustes para pantallas extra grandes */
+  @media (min-width: 1400px) {
+    #chartContainer {
+      max-width: 1400px;
+    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- NAVBAR superior con botón para abrir off-canvas en pantallas pequeñas -->
+<!-- NAVBAR superior para pantallas pequeñas -->
 <nav class="navbar navbar-expand-md navbar-light border-bottom d-md-none">
   <div class="container-fluid">
     <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
@@ -255,8 +221,7 @@ body {
     <ul class="nav flex-column pt-2" id="sidebarMenu">
       <!-- Dashboard -->
       <li class="nav-item mt-2">
-        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu"
-            aria-expanded="false" aria-controls="dashboardSubmenu" title="Dashboard">
+        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenu" aria-expanded="false" aria-controls="dashboardSubmenu" title="Dashboard">
           <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Encuestas</span>
         </a>
         <ul class="collapse list-unstyled ps-0" id="dashboardSubmenu">
@@ -269,12 +234,8 @@ body {
             {% if dashboard_items %}
               {% for item in dashboard_items %}
               <li>
-                <a href="#dashboardItemDetailSection"
-                    class="nav-link sub-link dashboard-item-link"
-                    data-item-id="{{ item.uuid }}"
-                    data-item-name="{{ item.name }}"
-                    data-item-type="{{ item.item_type }}">
-                    <i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">{{ item.name }}</span>
+                <a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" data-item-id="{{ item.uuid }}" data-item-name="{{ item.name }}" data-item-type="{{ item.item_type }}">
+                  <i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">{{ item.name }}</span>
                 </a>
               </li>
               {% endfor %}
@@ -288,8 +249,7 @@ body {
       </li>
       <!-- Pulzcards -->
       <li class="nav-item mt-2">
-        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-           data-bs-target="#pulzcardSubmenu" aria-expanded="false" title="Pulzcards">
+        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#pulzcardSubmenu" aria-expanded="false" title="Pulzcards">
           <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
         </a>
         <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenu">
@@ -305,17 +265,14 @@ body {
           </li>
         </ul>
       </li>
-
       <!-- Etiquetas -->
       <li class="nav-item mt-2">
-        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-           data-bs-target="#etiquetasSubmenu" aria-expanded="false" title="Etiquetas">
+        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#etiquetasSubmenu" aria-expanded="false" title="Etiquetas">
           <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
         </a>
         <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenu">
           <li>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
-               class="nav-link sub-link">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal" class="nav-link sub-link">
               <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
             </a>
           </li>
@@ -331,17 +288,14 @@ body {
           </li>
         </ul>
       </li>
-
       <!-- Bodegas -->
       <li class="nav-item mt-2">
-        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenu"
-           aria-expanded="false" title="Bodegas">
+        <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenu" aria-expanded="false" title="Bodegas">
           <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
         </a>
         <ul class="collapse list-unstyled ps-0" id="bodegasSubmenu">
           <li>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
-               class="nav-link sub-link">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal" class="nav-link sub-link">
               <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
             </a>
           </li>
@@ -352,9 +306,7 @@ body {
           </li>
         </ul>
       </li>
-
       <hr class="my-10">
-
       <!-- Mi Perfil -->
       <li class="nav-item mt-2">
         <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
@@ -372,11 +324,9 @@ body {
     </div>
     <div class="offcanvas-body p-0">
       <ul class="nav flex-column pt-2" id="offcanvasSidebarMenu">
-
         <!-- Dashboard -->
         <li class="nav-item mt-2">
-          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenuOffcanvas"
-             aria-expanded="false" aria-controls="dashboardSubmenuOffcanvas" title="Dashboard">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#dashboardSubmenuOffcanvas" aria-expanded="false" aria-controls="dashboardSubmenuOffcanvas" title="Dashboard">
             <i class="fa-regular fa-chart-bar"></i><span class="text-label ms-2">Encuestas</span>
           </a>
           <ul class="collapse list-unstyled ps-0" id="dashboardSubmenuOffcanvas">
@@ -389,11 +339,7 @@ body {
               {% if dashboard_items %}
                 {% for item in dashboard_items %}
                 <li>
-                  <a href="#dashboardItemDetailSection"
-                     class="nav-link sub-link dashboard-item-link"
-                     data-item-id="{{ item.uuid }}"
-                     data-item-name="{{ item.name }}"
-                     data-item-type="{{ item.item_type }}">
+                  <a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" data-item-id="{{ item.uuid }}" data-item-name="{{ item.name }}" data-item-type="{{ item.item_type }}">
                     <i class="fa-solid fa-square-poll-vertical"></i><span class="text-label ms-1">{{ item.name }}</span>
                   </a>
                 </li>
@@ -406,11 +352,9 @@ body {
             </div>
           </ul>
         </li>
-        
         <!-- Pulzcards -->
         <li class="nav-item mt-2">
-          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-             data-bs-target="#pulzcardSubmenuOffcanvas" aria-expanded="false" title="Pulzcards">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#pulzcardSubmenuOffcanvas" aria-expanded="false" title="Pulzcards">
             <i class="bi bi-person-badge-fill"></i><span class="text-label ms-2">Pulzcards</span>
           </a>
           <ul class="collapse list-unstyled ps-0" id="pulzcardSubmenuOffcanvas">
@@ -426,17 +370,14 @@ body {
             </li>
           </ul>
         </li>
-
         <!-- Etiquetas -->
         <li class="nav-item mt-2">
-          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse"
-             data-bs-target="#etiquetasSubmenuOffcanvas" aria-expanded="false" title="Etiquetas">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#etiquetasSubmenuOffcanvas" aria-expanded="false" title="Etiquetas">
             <i class="bi bi-tags-fill"></i><span class="text-label ms-2">Etiquetas</span>
           </a>
           <ul class="collapse list-unstyled ps-0" id="etiquetasSubmenuOffcanvas">
             <li>
-              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal"
-                 class="nav-link sub-link">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarEtiquetaModal" class="nav-link sub-link">
                 <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nuevo</span>
               </a>
             </li>
@@ -452,17 +393,14 @@ body {
             </li>
           </ul>
         </li>
-
         <!-- Bodegas -->
         <li class="nav-item mt-2">
-          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenuOffcanvas"
-             aria-expanded="false" title="Bodegas">
+          <a href="#" class="nav-link sidebar-link" data-bs-toggle="collapse" data-bs-target="#bodegasSubmenuOffcanvas" aria-expanded="false" title="Bodegas">
             <i class="bi bi-box-fill"></i><span class="text-label ms-2">Bodegas</span>
           </a>
           <ul class="collapse list-unstyled ps-0" id="bodegasSubmenuOffcanvas">
             <li>
-              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal"
-                 class="nav-link sub-link">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#agregarBodegaModal" class="nav-link sub-link">
                 <i class="bi bi-plus-circle-fill"></i><span class="text-label ms-1">Crear Nueva</span>
               </a>
             </li>
@@ -474,7 +412,6 @@ body {
           </ul>
         </li>
         <hr class="my-10">
-
         <!-- Mi Perfil -->
         <li class="nav-item mt-2">
           <a href="#miPerfilSection" class="nav-link sidebar-link" title="Mi Perfil">
@@ -486,8 +423,8 @@ body {
   </div>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <div class="flex-grow-1" id="mainContent" style="padding:20px; overflow-y: auto;">
-    <!-- Seccion Perfil -->
+  <div class="flex-grow-1" id="mainContent" style="overflow-y: auto;">
+    <!-- Sección Perfil -->
     <div id="miPerfilSection">
       <h2 class="text-center mb-4">Mi Perfil</h2>
       <div class="container-fluid mb-5">
@@ -937,10 +874,9 @@ body {
       </div>
     </div>
 
-    <!-- SECCIÓN DETALLE DE Ítem de Dashboard -->
-    <div id="dashboardItemDetailSection" style="display:none;">
 
-      <!-- Bloque con nombre y tipo, centrado -->
+    <!-- Sección Detalle de Ítem del Dashboard -->
+    <div id="dashboardItemDetailSection" style="display:none;">
       <div class="mb-3 text-center">
         <h2 class="mb-0" id="dashboardItemName"></h2>
         <small class="text-muted" id="dashboardItemType"></small>
@@ -948,41 +884,34 @@ body {
       <div class="dashboard-section flex-right" id="dashboardItemActions">
         <div class="action-bar-wrapper">
           <div class="action-bar">
-            <!-- Botones: Responder, Pantalla Completa, Copiar URL, Ver QR, Descargar Gráfico, Eliminar -->
-            <a class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-               id="surveyLink" title="Responder" target="_blank">
+            <a class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="surveyLink" title="Responder" target="_blank">
               <i class="fa-solid fa-reply"></i>
               <span class="d-none d-sm-inline ms-1">Responder</span>
             </a>
-            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="fullscreenToggleBtn" title="Ver en Pantalla Completa">
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="fullscreenToggleBtn" title="Ver en Pantalla Completa">
               <i class="fa-solid fa-expand"></i>
               <span class="d-none d-sm-inline ms-1">Pantalla Completa</span>
             </button>
-            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="copySurveyBtn" title="Copiar URL">
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="copySurveyBtn" title="Copiar URL">
               <i class="fa-solid fa-clone"></i>
               <span class="d-none d-sm-inline ms-1">Copiar URL</span>
             </button>
-            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="showSurveyQRBtn" title="Ver QR">
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="showSurveyQRBtn" title="Ver QR">
               <i class="fas fa-qrcode"></i>
               <span class="d-none d-sm-inline ms-1">QR</span>
             </button>
-            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center"
-                    id="downloadChartBtn" title="Descargar Gráfico">
+            <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="downloadChartBtn" title="Descargar Gráfico">
               <i class="fa-solid fa-download"></i>
               <span class="d-none d-sm-inline ms-1">Descargar Gráfico</span>
             </button>
-            <button class="btn btn-sm btn-danger action-btn d-flex align-items-center"
-                    id="eliminarItemBtn" title="Eliminar">
+            <button class="btn btn-sm btn-danger action-btn d-flex align-items-center" id="eliminarItemBtn" title="Eliminar">
               <i class="fa-solid fa-trash"></i>
               <span class="d-none d-sm-inline ms-1">Eliminar</span>
             </button>
           </div>
         </div>
       </div>
-      <!-- Modal de Pantalla Completa -->
+      <!-- Modal Pantalla Completa -->
       <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
           <div class="modal-content">
@@ -991,16 +920,13 @@ body {
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body d-flex justify-content-center align-items-center">
-              <div id="fullscreenContent" class="w-100 h-100">
-                <!-- Aquí se insertará dinámicamente la tabla o el gráfico -->
-              </div>
+              <div id="fullscreenContent" class="w-100 h-100"></div>
             </div>
           </div>
         </div>
       </div>
 
       <div id="dashboardItemStats" style="display:none;">
-        <!-- Filtro de rango de fechas -->
         <div class="mb-3 d-flex flex-nowrap justify-content-end align-items-center gap-2">
           <label for="dateRangePicker" class="form-label mb-0"></label>
           <input type="date" id="startDate" class="form-control form-control-sm" style="width: auto;">
@@ -1008,8 +934,6 @@ body {
           <input type="date" id="endDate" class="form-control form-control-sm" style="width: auto;">
           <button class="btn btn-sm btn-primary action-btn d-flex align-items-center" id="filterDateBtn"><i class="bi bi-list"></i> Filtrar</button>
         </div>
-
-        <!-- Selección de indicador con 'Tabla de Evaluaciones' al final -->
         <div class="d-flex justify-content-end align-items-center mb-3">
           <select id="chartIndicatorSelect" class="form-select form-select-sm" style="width: 220px;">
             <option value="count" selected>Cantidad de Evaluaciones</option>
@@ -1023,11 +947,9 @@ body {
             <option value="table">Tabla de Evaluaciones</option>
           </select>
         </div>
-
         <div id="chartContainer" class="full-width">
           <canvas id="myChart"></canvas>
         </div>
-
         <div id="tableContainer" style="display:none;">
           <table class="table table-bordered table-striped table-hover text-center" id="ratingsTable">
             <thead class="table-info">
@@ -1050,7 +972,6 @@ body {
             </tbody>
           </table>
         </div>
-        
         <div id="dayDetailsContainer" style="display:none; margin-top: 20px;">
           <h5 id="detailsTitle"></h5>
           <table class="table table-bordered table-striped table-hover text-center">
@@ -1067,7 +988,24 @@ body {
     </div>
   </div>
 </div>
-
+<!-- Indicador de carga (spinner) -->
+<div id="loader" class="d-none" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+">
+  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+  <div style="margin-left: 10px; font-size: 1.5rem; color: #333;">Cargando...</div>
+</div>
 <!-- MODALES para Pulzcards, Etiquetas, Bodegas, Dashboard Items -->
 <!-- Modal Importar Pulzcards -->
 <div class="modal fade" id="importPulzcardModal" tabindex="-1" aria-labelledby="importPulzcardModalLabel" aria-hidden="true">
@@ -1301,15 +1239,15 @@ body {
 
 {% if bodega_form.errors %}
 <script>
-var agregarBodegaModal = new bootstrap.Modal(document.getElementById('agregarBodegaModal'));
-agregarBodegaModal.show();
+  var agregarBodegaModal = new bootstrap.Modal(document.getElementById('agregarBodegaModal'));
+  agregarBodegaModal.show();
 </script>
 {% endif %}
 
 {% if tag_form.errors %}
 <script>
-var agregarEtiquetaModal = new bootstrap.Modal(document.getElementById('agregarEtiquetaModal'));
-agregarEtiquetaModal.show();
+  var agregarEtiquetaModal = new bootstrap.Modal(document.getElementById('agregarEtiquetaModal'));
+  agregarEtiquetaModal.show();
 </script>
 {% endif %}
 {% endblock %}
@@ -1320,948 +1258,1013 @@ agregarEtiquetaModal.show();
 <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<!-- Asegúrate de incluir FontAwesome para los íconos (sort y filter) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 
 <script>
-// ----------------------------------------------------------------------------------
-// Al cargar el DOM
-$(document).ready(function() {
-  // 1) Inicializa DataTables en todas las tablas con la clase .custom-table
-  $('.custom-table').DataTable({
-    language: {
-      url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
-    }
-  });
+  // Funciones para mostrar y ocultar el loader
+  function showLoader() {
+    document.getElementById('loader').classList.remove('d-none');
+  }
+  function hideLoader() {
+    document.getElementById('loader').classList.add('d-none');
+  }
 
-  // 2) Control de secciones mediante el hash de la URL
-  function showSection(section) {
-    var sections = [
-      'miPerfilSection',
-      'pulzcardsSection',
-      'etiquetasSection',
-      'bodegasSection',
-      'dashboardItemDetailSection'
-    ];
-    sections.forEach(function(sec) {
-      var el = document.getElementById(sec);
-      if (el) {
-        el.style.display = (sec === section) ? 'block' : 'none';
+  // ----------------------------------------------------------------------------------
+  // Al cargar el DOM
+  $(document).ready(function() {
+    // 1) Inicializa DataTables en todas las tablas con la clase .custom-table
+    $('.custom-table').DataTable({
+      language: {
+        url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json"
       }
     });
-  }
-  function handleHash() {
-    var hash = window.location.hash.substring(1);
-    if (hash) {
-      showSection(hash);
-    } else {
-      showSection('miPerfilSection');
-    }
-  }
-  window.addEventListener('load', handleHash, false);
-  window.addEventListener('hashchange', handleHash, false);
 
-  // 2.1) Listener delegado para cerrar el off-canvas automáticamente al pulsar enlaces
-  // que NO sean los que usan data-bs-toggle="collapse" (es decir, los que no tienen la función de desplegar subítems)
-  $('#offcanvasSidebar').on('click', 'a', function(e) {
-    var href = $(this).attr('href');
-    // Si el enlace tiene data-bs-toggle="collapse", se utiliza para desplegar subítems: no se cierra.
-    if ($(this).attr('data-bs-toggle') === 'collapse') {
-      return;
-    }
-    // Si el href es un ancla (por ejemplo, "#etiquetasSection")
-    if (href && href.startsWith('#')) {
-      // Si el hash actual ya es igual al href, forzamos la actualización de la sección
-      if (location.hash === href) {
-        handleHash();
-      } else {
-        location.hash = href;
-      }
-    }
-    // Luego, cerrar el off‑canvas
-    var offcanvasElement = document.getElementById('offcanvasSidebar');
-    if (offcanvasElement) {
-      var offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
-      if (offcanvasInstance) {
-        offcanvasInstance.hide();
-      }
-    }
-  });
-  // 3) Función para manejar el clic en los ítems del Dashboard
-  function handleDashboardItemClick(e, element) {
-    e.preventDefault();
-    var name = $(element).data('item-name');
-    var type = $(element).data('item-type');
-    var itemId = $(element).data('item-id');
-
-    // Actualiza la sección de detalle con el nombre, tipo y el id del ítem
-    $('#dashboardItemName').text(name);
-    $('#dashboardItemType').text(type);
-    $('#eliminarItemBtn').data('item-id', itemId);
-
-    // Si el tipo admite encuesta (para mostrar acciones como "Responder", "Copiar URL", etc.)
-    if (["Evaluación de Clientes", "Evaluación de Semáforo", "CSAT", "CES", "Sentiment", "Response Rate"].includes(type)) {
-      var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
-      $('#surveyLink')
-        .attr('href', surveyUrl)
-        .show()
-        .find('span')
-        .text('Responder');
-      $('#copySurveyBtn').off('click').on('click', function() {
-        navigator.clipboard.writeText(surveyUrl)
-          .then(function(){ alert('URL copiada al portapapeles!'); })
-          .catch(function(err){ alert('Error al copiar la URL: ' + err); });
-      }).show();
-      $('#showSurveyQRBtn').off('click').on('click', function() {
-        window.open('/survey_qrcode/' + itemId, '_blank');
-      }).show();
-      $('#dashboardItemStats').show();
-      renderLast10DaysTable(itemId, type);
-    } else {
-      $('#surveyLink, #copySurveyBtn, #showSurveyQRBtn').hide();
-      $('#dashboardItemStats').hide();
-    }
-
-    // Cambia a la sección de detalle
-    showSection('dashboardItemDetailSection');
-
-    // Si se pulsa sobre un subítem (sin data-bs-toggle="collapse") el off-canvas se cierra por el listener delegado
-  }
-
-  // Listeners para los ítems del sidebar (en pantalla grande y en off-canvas)
-  $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
-    handleDashboardItemClick(e, this);
-  });
-  $('#dashboardItemsContainerOffcanvas').on('click', '.dashboard-item-link', function(e) {
-    handleDashboardItemClick(e, this);
-  });
-
-  // 4) Función para copiar URL al portapapeles
-  window.copyURL = function(url) {
-    navigator.clipboard.writeText(url)
-      .then(function(){ alert('URL copiada al portapapeles!'); })
-      .catch(function(err){ alert('Error al copiar URL: ' + err); });
-  };
-
-  // 5) Toggle del sidebar (colapsar en pantallas grandes)
-  var sidebar = document.getElementById('sidebar');
-  var toggleBtn = document.getElementById('sidebarToggle');
-  if (sidebar && toggleBtn) {
-    toggleBtn.addEventListener('click', function() {
-      sidebar.classList.toggle('collapsed');
-      this.innerHTML = sidebar.classList.contains('collapsed')
-        ? '<i class="bi bi-chevron-right"></i>'
-        : '<i class="bi bi-chevron-left"></i>';
-    });
-  }
-
-  // 6) Selección masiva de Etiquetas
-  var selectAllTagsCheckbox = document.getElementById('select_all');
-  if (selectAllTagsCheckbox) {
-    selectAllTagsCheckbox.addEventListener('click', function() {
-      var checkboxes = document.querySelectorAll('input[name="selected_tags"]');
-      checkboxes.forEach(ch => { ch.checked = selectAllTagsCheckbox.checked; });
-    });
-  }
-  var confirmDeleteBulkBtn = document.getElementById('confirmDeleteBulkBtn');
-  if (confirmDeleteBulkBtn) {
-    confirmDeleteBulkBtn.addEventListener('click', function(){
-      document.getElementById('bulkDeleteForm').submit();
-    });
-  }
-
-  // 7) Exportar Etiquetas
-  window.exportSelectedTags = function() {
-    var selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
-    if (!selectedTags.length) {
-      alert('Selecciona al menos una etiqueta para exportar.');
-      return;
-    }
-    var tagIds = Array.from(selectedTags).map(tag => tag.value);
-    fetch('{{ url_for("export_tags") }}', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
-      body: JSON.stringify({ tag_ids: tagIds })
-    })
-    .then(res => {
-      if (!res.ok) {
-        return res.json().then(data => { throw new Error(data.error); });
-      }
-      return res.blob();
-    })
-    .then(blob => {
-      var url = window.URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'tags_export.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    })
-    .catch(err => {
-      console.error('Error:', err);
-      alert('Error exportando: ' + err.message);
-    });
-  };
-
-  // 8) Selección masiva de Pulzcards
-  var selectAllPulzcardsCheckbox = document.getElementById('select_all_pulzcards');
-  if (selectAllPulzcardsCheckbox) {
-    selectAllPulzcardsCheckbox.addEventListener('click', function(){
-      var checkboxes = document.querySelectorAll('input[name="selected_pulzcards"]');
-      checkboxes.forEach(ch => { ch.checked = selectAllPulzcardsCheckbox.checked; });
-    });
-  }
-  var confirmDeleteBulkPulzcardsBtn = document.getElementById('confirmDeleteBulkPulzcardsBtn');
-  if (confirmDeleteBulkPulzcardsBtn) {
-    confirmDeleteBulkPulzcardsBtn.addEventListener('click', function(){
-      document.getElementById('bulkDeletePulzcardForm').submit();
-    });
-  }
-
-  // 9) Exportar Pulzcards
-  window.exportSelectedPulzcards = function() {
-    var selected = document.querySelectorAll('input[name="selected_pulzcards"]:checked');
-    if (!selected.length) {
-      alert('Selecciona al menos una Pulzcard para exportar.');
-      return;
-    }
-    var pulz_ids = Array.from(selected).map(el => el.value);
-    fetch('{{ url_for("export_pulzcards") }}', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
-      body: JSON.stringify({ pulz_ids: pulz_ids })
-    })
-    .then(res => {
-      if(!res.ok) {
-        return res.json().then(data=>{throw new Error(data.error);});
-      }
-      return res.blob();
-    })
-    .then(blob => {
-      var url = window.URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'pulzcards_export.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    })
-    .catch(err => {
-      console.error('Error:', err);
-      alert('Error exportando pulzcards: ' + err.message);
-    });
-  };
-
-  // 10) Crear Item Dashboard (Ajax)
-  $('#agregarItemForm').submit(function(e) {
-    e.preventDefault();
-    var itemName = $('#itemNameInput').val().trim();
-    var itemType = $('#itemTypeSelect').val();
-    if (!itemName || !itemType) {
-      alert('Completa todos los campos.');
-      return;
-    }
-    $.ajax({
-      url: "{{ url_for('create_dashboard_item') }}",
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ name: itemName, item_type: itemType }),
-      headers: { 'X-CSRFToken': '{{ csrf_token() }}' },
-      success: function(resp) {
-        // Construye el HTML del nuevo item con su ícono
-        var newItemHtml = '<li>' +
-            '<a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" ' +
-            'data-item-id="'+ resp.uuid +'" data-item-name="'+ itemName +'" data-item-type="'+ itemType +'">' +
-            '<i class="fa-solid fa-square-poll-vertical"></i>' +
-            '<span class="text-label ms-1">' + itemName + '</span>' +
-            '</a></li>';
-        
-        // Se agrega el nuevo item a ambos contenedores (sidebar y off‑canvas)
-        $('#dashboardItemsContainer').append(newItemHtml);
-        $('#dashboardItemsContainerOffcanvas').append(newItemHtml);
-        
-        // Se cierra el modal y se limpian los campos
-        $('#agregarItemModal').modal('hide');
-        $('#itemNameInput').val('');
-        $('#itemTypeSelect').val('');
-        
-        // Simula el clic en el nuevo item para cargar su dashboard (vista principal de la encuesta)
-        // Esto hace que se invoque el handler handleDashboardItemClick,
-        // que se encarga de actualizar los elementos (gráficos, tablas, etc.)
-        var $newItemLink = $('#dashboardItemsContainer .dashboard-item-link').last();
-        if ($newItemLink.length) {
-          $newItemLink.trigger('click');
-        } else {
-          // En caso de no encontrar el elemento, se actualiza el hash
-          location.hash = '#dashboardItemDetailSection';
+    // 2) Control de secciones mediante el hash de la URL
+    function showSection(section) {
+      var sections = [
+        'miPerfilSection',
+        'pulzcardsSection',
+        'etiquetasSection',
+        'bodegasSection',
+        'dashboardItemDetailSection'
+      ];
+      sections.forEach(function(sec) {
+        var el = document.getElementById(sec);
+        if (el) {
+          el.style.display = (sec === section) ? 'block' : 'none';
         }
-      },
-      error: function() {
-        alert('Error al crear ítem.');
+      });
+    }
+    function handleHash() {
+      var hash = window.location.hash.substring(1);
+      if (hash) {
+        showSection(hash);
+      } else {
+        showSection('miPerfilSection');
+      }
+    }
+    window.addEventListener('load', handleHash, false);
+    window.addEventListener('hashchange', handleHash, false);
+
+    // 2.1) Listener delegado para cerrar el off-canvas automáticamente al pulsar enlaces
+    $('#offcanvasSidebar').on('click', 'a', function(e) {
+      var href = $(this).attr('href');
+      if ($(this).attr('data-bs-toggle') === 'collapse') {
+        return;
+      }
+      if (href && href.startsWith('#')) {
+        if (location.hash === href) {
+          handleHash();
+        } else {
+          location.hash = href;
+        }
+      }
+      var offcanvasElement = document.getElementById('offcanvasSidebar');
+      if (offcanvasElement) {
+        var offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement);
+        if (offcanvasInstance) {
+          offcanvasInstance.hide();
+        }
       }
     });
-  });
 
-  // Eliminar Item (Ajax)
-  $('#eliminarItemBtn').on('click', function(){
-    var itemId = $(this).data('item-id');
-    if(!itemId){
-      console.error('No item-id');
-      return;
-    }
-    var confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteDashboardItemModal'));
-    confirmModal.show();
-    $('#deleteDashboardItemForm').off('submit').on('submit', function(e){
+    // 3) Función para manejar el clic en los ítems del Dashboard
+    function handleDashboardItemClick(e, element) {
       e.preventDefault();
+      var name = $(element).data('item-name');
+      var type = $(element).data('item-type');
+      var itemId = $(element).data('item-id');
+
+      $('#dashboardItemName').text(name);
+      $('#dashboardItemType').text(type);
+      $('#eliminarItemBtn').data('item-id', itemId);
+
+      if (["Evaluación de Clientes", "Evaluación de Semáforo", "CSAT", "CES", "Sentiment", "Response Rate"].includes(type)) {
+        var surveyUrl = "{{ url_for('survey', item_uuid='ITEMUUID', _external=True) }}".replace('ITEMUUID', itemId);
+        $('#surveyLink')
+          .attr('href', surveyUrl)
+          .show()
+          .find('span')
+          .text('Responder');
+        $('#copySurveyBtn').off('click').on('click', function() {
+          navigator.clipboard.writeText(surveyUrl)
+            .then(function(){ alert('URL copiada al portapapeles!'); })
+            .catch(function(err){ alert('Error al copiar la URL: ' + err); });
+        }).show();
+        $('#showSurveyQRBtn').off('click').on('click', function() {
+          window.open('/survey_qrcode/' + itemId, '_blank');
+        }).show();
+        $('#dashboardItemStats').show();
+        renderLast10DaysTable(itemId, type);
+      } else {
+        $('#surveyLink, #copySurveyBtn, #showSurveyQRBtn').hide();
+        $('#dashboardItemStats').hide();
+      }
+      showSection('dashboardItemDetailSection');
+    }
+
+    // Listeners para ítems en sidebar y off-canvas
+    $('#dashboardItemsContainer').on('click', '.dashboard-item-link', function(e) {
+      handleDashboardItemClick(e, this);
+    });
+    $('#dashboardItemsContainerOffcanvas').on('click', '.dashboard-item-link', function(e) {
+      handleDashboardItemClick(e, this);
+    });
+
+    // 4) Función para copiar URL al portapapeles
+    window.copyURL = function(url) {
+      navigator.clipboard.writeText(url)
+        .then(function(){ alert('URL copiada al portapapeles!'); })
+        .catch(function(err){ alert('Error al copiar URL: ' + err); });
+    };
+
+    // 5) Toggle del sidebar
+    var sidebar = document.getElementById('sidebar');
+    var toggleBtn = document.getElementById('sidebarToggle');
+    if (sidebar && toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('collapsed');
+        this.innerHTML = sidebar.classList.contains('collapsed')
+          ? '<i class="bi bi-chevron-right"></i>'
+          : '<i class="bi bi-chevron-left"></i>';
+      });
+    }
+
+    // 6) Selección masiva de Etiquetas
+    var selectAllTagsCheckbox = document.getElementById('select_all');
+    if (selectAllTagsCheckbox) {
+      selectAllTagsCheckbox.addEventListener('click', function() {
+        var checkboxes = document.querySelectorAll('input[name="selected_tags"]');
+        checkboxes.forEach(ch => { ch.checked = selectAllTagsCheckbox.checked; });
+      });
+    }
+    var confirmDeleteBulkBtn = document.getElementById('confirmDeleteBulkBtn');
+    if (confirmDeleteBulkBtn) {
+      confirmDeleteBulkBtn.addEventListener('click', function(){
+        document.getElementById('bulkDeleteForm').submit();
+      });
+    }
+
+    // 7) Exportar Etiquetas
+    window.exportSelectedTags = function() {
+      var selectedTags = document.querySelectorAll('input[name="selected_tags"]:checked');
+      if (!selectedTags.length) {
+        alert('Selecciona al menos una etiqueta para exportar.');
+        return;
+      }
+      var tagIds = Array.from(selectedTags).map(tag => tag.value);
+      fetch('{{ url_for("export_tags") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
+        body: JSON.stringify({ tag_ids: tagIds })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(data => { throw new Error(data.error); });
+        }
+        return res.blob();
+      })
+      .then(blob => {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'tags_export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        alert('Error exportando: ' + err.message);
+      });
+    };
+
+    // 8) Selección masiva de Pulzcards
+    var selectAllPulzcardsCheckbox = document.getElementById('select_all_pulzcards');
+    if (selectAllPulzcardsCheckbox) {
+      selectAllPulzcardsCheckbox.addEventListener('click', function(){
+        var checkboxes = document.querySelectorAll('input[name="selected_pulzcards"]');
+        checkboxes.forEach(ch => { ch.checked = selectAllPulzcardsCheckbox.checked; });
+      });
+    }
+    var confirmDeleteBulkPulzcardsBtn = document.getElementById('confirmDeleteBulkPulzcardsBtn');
+    if (confirmDeleteBulkPulzcardsBtn) {
+      confirmDeleteBulkPulzcardsBtn.addEventListener('click', function(){
+        document.getElementById('bulkDeletePulzcardForm').submit();
+      });
+    }
+
+    // 9) Exportar Pulzcards
+    window.exportSelectedPulzcards = function() {
+      var selected = document.querySelectorAll('input[name="selected_pulzcards"]:checked');
+      if (!selected.length) {
+        alert('Selecciona al menos una Pulzcard para exportar.');
+        return;
+      }
+      var pulz_ids = Array.from(selected).map(el => el.value);
+      fetch('{{ url_for("export_pulzcards") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
+        body: JSON.stringify({ pulz_ids: pulz_ids })
+      })
+      .then(res => {
+        if(!res.ok) {
+          return res.json().then(data=>{throw new Error(data.error);});
+        }
+        return res.blob();
+      })
+      .then(blob => {
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'pulzcards_export.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        alert('Error exportando pulzcards: ' + err.message);
+      });
+    };
+
+    // 10) Crear Item Dashboard (Ajax)
+    $('#agregarItemForm').submit(function(e) {
+      e.preventDefault();
+      var itemName = $('#itemNameInput').val().trim();
+      var itemType = $('#itemTypeSelect').val();
+      if (!itemName || !itemType) {
+        alert('Completa todos los campos.');
+        return;
+      }
       $.ajax({
-        url: "{{ url_for('delete_dashboard_item') }}",
+        url: "{{ url_for('create_dashboard_item') }}",
         method: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ uuid: itemId }),
-        headers: {'X-CSRFToken': '{{ csrf_token() }}'},
-        success: function(){
-          $('.dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
-          $('.offcanvas #dashboardItemsContainerOffcanvas .dashboard-item-link[data-item-id="'+itemId+'"]').parent().remove();
-          showSection('miPerfilSection');
-          confirmModal.hide();
-          alert('Ítem eliminado.');
+        data: JSON.stringify({ name: itemName, item_type: itemType }),
+        headers: { 'X-CSRFToken': '{{ csrf_token() }}' },
+        success: function(resp) {
+          var newItemHtml = '<li>' +
+              '<a href="#dashboardItemDetailSection" class="nav-link sub-link dashboard-item-link" ' +
+              'data-item-id="'+ resp.uuid +'" data-item-name="'+ itemName +'" data-item-type="'+ itemType +'">' +
+              '<i class="fa-solid fa-square-poll-vertical"></i>' +
+              '<span class="text-label ms-1">' + itemName + '</span>' +
+              '</a></li>';
+          $('#dashboardItemsContainer').append(newItemHtml);
+          $('#dashboardItemsContainerOffcanvas').append(newItemHtml);
+          $('#agregarItemModal').modal('hide');
+          $('#itemNameInput').val('');
+          $('#itemTypeSelect').val('');
+          var $newItemLink = $('#dashboardItemsContainer .dashboard-item-link').last();
+          if ($newItemLink.length) {
+            $newItemLink.trigger('click');
+          } else {
+            location.hash = '#dashboardItemDetailSection';
+          }
         },
-        error: function(){ alert('Error al eliminar ítem.'); }
+        error: function() {
+          alert('Error al crear ítem.');
+        }
       });
     });
-  });
 
-  // 11) Renderizar tabla y gráfico
-  var globalRatingsData = null, globalDates = null, globalDetails = null;
+    // 11) Renderizar tabla y gráfico
+    var globalRatingsData = null, globalDates = null, globalDetails = null;
 
-  function renderLast10DaysTable(itemUUID, itemType){
-    var ratingsHeader = document.getElementById('ratingsHeader');
-    // Limpiar columnas
-    Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
-    // Limpiar filas
-    var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row',
-                  'rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
-    rowIds.forEach(function(rowId){
-      var row = document.getElementById(rowId);
-      while(row.children.length > 1){
-        row.removeChild(row.lastChild);
-      }
-    });
-
-    $.ajax({
-      url:'{{ url_for("get_ratings_data") }}',
-      type:'GET',
-      data:{
-        item_uuid: itemUUID,
-        start_date: $('#startDate').val(),
-        end_date: $('#endDate').val()
-      },
-      success:function(resp){
-        if(resp.error){
-          console.error("Error:", resp.error);
-          return;
+    function renderLast10DaysTable(itemUUID, itemType){
+      var ratingsHeader = document.getElementById('ratingsHeader');
+      Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
+      var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
+      rowIds.forEach(function(rowId){
+        var row = document.getElementById(rowId);
+        while(row.children.length > 1){
+          row.removeChild(row.lastChild);
         }
-        globalRatingsData = resp.ratings;
-        globalDates = resp.dates;
-        globalDetails = resp.details;
+      });
 
-        // Agregar encabezado con las fechas
-        globalDates.forEach(function(dateStr){
-          var th = document.createElement('th');
-          th.textContent = dateStr;
-          ratingsHeader.appendChild(th);
+      showLoader(); // Mostrar indicador de carga
+
+      $.ajax({
+        url:'{{ url_for("get_ratings_data") }}',
+        type:'GET',
+        data:{
+          item_uuid: itemUUID,
+          start_date: $('#startDate').val(),
+          end_date: $('#endDate').val()
+        },
+        success:function(resp){
+          hideLoader(); // Ocultar indicador de carga
+          if(resp.error){
+            console.error("Error:", resp.error);
+            return;
+          }
+          globalRatingsData = resp.ratings;
+          globalDates = resp.dates;
+          globalDetails = resp.details;
+
+          globalDates.forEach(function(dateStr){
+            var th = document.createElement('th');
+            th.textContent = dateStr;
+            ratingsHeader.appendChild(th);
+          });
+          fillTableWithCounts(globalRatingsData);
+          renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
+        },
+        error:function(xhr, status, error){
+          hideLoader();
+          console.error('Error al obtener datos:', error);
+        }
+      });
+    }
+
+    function fillTableWithCounts(ratingsData){
+      for(var val = 10; val >= 1; val--){
+        var row = document.getElementById('rating' + val + 'Row');
+        var countArray = ratingsData[val.toString()] || [];
+        countArray.forEach(function(cnt){
+          var td = document.createElement('td');
+          td.textContent = cnt;
+          row.appendChild(td);
         });
-        // Llenar la tabla
-        fillTableWithCounts(globalRatingsData);
-
-        // Renderizar gráfico por defecto "count"
-        renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
-      },
-      error:function(xhr, status, error){
-        console.error('Error al obtener datos:', error);
       }
-    });
-  }
-
-  function fillTableWithCounts(ratingsData){
-    for(var val = 10; val >= 1; val--){
-      var row = document.getElementById('rating' + val + 'Row');
-      var countArray = ratingsData[val.toString()] || [];
-      countArray.forEach(function(cnt){
+      var totalRow = document.getElementById('totalRow');
+      var length = (ratingsData["1"] || []).length;
+      var dayTotals = new Array(length).fill(0);
+      for(var rating = 1; rating <= 10; rating++){
+        var arr = ratingsData[rating.toString()] || [];
+        arr.forEach(function(cnt, i){
+          dayTotals[i] += cnt;
+        });
+      }
+      dayTotals.forEach(function(t){
         var td = document.createElement('td');
-        td.textContent = cnt;
-        row.appendChild(td);
+        td.textContent = t;
+        totalRow.appendChild(td);
       });
     }
-    var totalRow = document.getElementById('totalRow');
-    var length = (ratingsData["1"] || []).length;
-    var dayTotals = new Array(length).fill(0);
-    for(var rating = 1; rating <= 10; rating++){
-      var arr = ratingsData[rating.toString()] || [];
-      arr.forEach(function(cnt, i){
-        dayTotals[i] += cnt;
-      });
-    }
-    dayTotals.forEach(function(t){
-      var td = document.createElement('td');
-      td.textContent = t;
-      totalRow.appendChild(td);
-    });
-  }
 
-  // Cálculo de indicadores
-  function computeDataByIndicator(ratingsData, dates, indicator){
-    var length = dates.length;
-    var resultArray = new Array(length).fill(0);
+    // Cálculo de indicadores
+    function computeDataByIndicator(ratingsData, dates, indicator){
+      var length = dates.length;
+      var resultArray = new Array(length).fill(0);
 
-    for(var i = 0; i < length; i++){
-      var total = 0, sumRatings = 0, promoters = 0, passives = 0, detractors = 0;
-      for(var rating = 1; rating <= 10; rating++){
-        var c = (ratingsData[rating.toString()] || [])[i] || 0;
-        total += c;
-        sumRatings += rating * c;
-        if(rating >= 9) promoters += c;
-        else if(rating >= 7) passives += c;
-        else detractors += c;
-      }
-
-      if(indicator === "csat"){
-        var csat = 0;
-        if(total > 0) csat = (promoters / total) * 100;
-        resultArray[i] = csat;
-      }
-      else if(indicator === "ces"){
-        var sumEsfuerzo = 0; 
-        var totEsf = 0;
-        for(var r = 1; r <= 5; r++){
-          var c2 = (ratingsData[r.toString()] || [])[i] || 0;
-          sumEsfuerzo += r * c2;
-          totEsf += c2;
+      for(var i = 0; i < length; i++){
+        var total = 0, sumRatings = 0, promoters = 0, passives = 0, detractors = 0;
+        for(var rating = 1; rating <= 10; rating++){
+          var c = (ratingsData[rating.toString()] || [])[i] || 0;
+          total += c;
+          sumRatings += rating * c;
+          if(rating >= 9) promoters += c;
+          else if(rating >= 7) passives += c;
+          else detractors += c;
         }
-        resultArray[i] = totEsf > 0 ? sumEsfuerzo / totEsf : 0;
-      }
-      else if(indicator === "response_rate"){
-        var totalSent = 0; 
-        if(globalRatingsData && globalRatingsData.total_sent){
-          totalSent = globalRatingsData.total_sent[i] || 0;
+
+        if(indicator === "csat"){
+          var csat = 0;
+          if(total > 0) csat = (promoters / total) * 100;
+          resultArray[i] = csat;
         }
-        resultArray[i] = totalSent > 0 ? (total / totalSent) * 100 : 0;
-      }
-      else if(indicator === "sentiment"){
-        var sentiments = globalDetails[dates[i]] || [];
-        var sentimentSum = 0, sentimentCount = 0;
-        sentiments.forEach(function(resp){
-          if(resp.sentiment !== undefined){
-            sentimentSum += resp.sentiment;
-            sentimentCount++;
+        else if(indicator === "ces"){
+          var sumEsfuerzo = 0; 
+          var totEsf = 0;
+          for(var r = 1; r <= 5; r++){
+            var c2 = (ratingsData[r.toString()] || [])[i] || 0;
+            sumEsfuerzo += r * c2;
+            totEsf += c2;
           }
-        });
-        resultArray[i] = sentimentCount > 0 ? sentimentSum / sentimentCount : 0;
-      }
-      else {
-        switch(indicator){
-          case "count":
-            resultArray[i] = total;
-            break;
-          case "average":
-            resultArray[i] = total > 0 ? (sumRatings / total) : 0;
-            break;
-          case "nps":
-            resultArray[i] = total > 0 ? ((promoters - detractors) / total) * 100 : 0;
-            break;
-          default:
-            resultArray[i] = 0;
+          resultArray[i] = totEsf > 0 ? sumEsfuerzo / totEsf : 0;
         }
-      }
-    }
-    return resultArray;
-  }
-
-  function computeStackedData(ratingsData, dates){
-    var length = dates.length;
-    var promotersArray = new Array(length).fill(0);
-    var passivesArray = new Array(length).fill(0);
-    var detractorsArray = new Array(length).fill(0);
-
-    for(var i = 0; i < length; i++){
-      var pro = 0, pas = 0, det = 0;
-      for(var rating = 1; rating <= 10; rating++){
-        var c = (ratingsData[rating.toString()] || [])[i] || 0;
-        if(rating >= 9) pro += c;
-        else if(rating >= 7) pas += c;
-        else det += c;
-      }
-      promotersArray[i] = pro;
-      passivesArray[i] = pas;
-      detractorsArray[i] = det;
-    }
-    return {
-      promotersArray: promotersArray,
-      passivesArray: passivesArray,
-      detractorsArray: detractorsArray
-    };
-  }
-
-  function renderChart(ratingsData, dates, detailsByDay, itemType, indicator) {
-    if(indicator === "table"){
-      document.getElementById('chartContainer').style.display = 'none';
-      document.getElementById('tableContainer').style.display = 'block';
-      return;
-    } else {
-      document.getElementById('chartContainer').style.display = 'block';
-      document.getElementById('tableContainer').style.display = 'none';
-    }
-
-    if(indicator === "stacked"){
-      renderStackedChart(ratingsData, dates);
-      return;
-    }
-
-    var dataArray = computeDataByIndicator(ratingsData, dates, indicator);
-    var labelMap = {
-      count:"Cantidad de Evaluaciones",
-      average:"Promedio de Puntajes",
-      nps:"NPS",
-      promoters:"% Promotores",
-      passives:"% Neutros",
-      detractors:"% Detractores",
-      csat:"CSAT (Satisfacción del Cliente)",
-      ces:"CES (Esfuerzo del Cliente)",
-      response_rate:"Tasa de Respuesta",
-      sentiment:"Análisis de Sentimientos"
-    };
-    var datasetLabel = labelMap[indicator] || "Indicador";
-
-    var data = {
-      labels: dates,
-      datasets: [{
-        label: datasetLabel,
-        data: dataArray,
-        borderColor: 'rgba(75,192,192,1)',
-        backgroundColor: 'rgba(75,192,192,0.2)',
-        fill: true,
-        tension: 0.4
-      }]
-    };
-    var config = {
-      type: 'line',
-      data: data,
-      plugins: [ChartDataLabels],
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: "Indicador: " + datasetLabel,
-            align: 'start',
-            padding: { top: 0, bottom: 30 },
-            font: { size: 20, weight: 'bold', family: 'Arial' }
-          },
-          legend: {
-            display: true,
-            position: 'bottom',
-            align: 'center'
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                if (indicator === "sentiment") {
-                  return 'Sentimiento: ' + context.parsed.y.toFixed(2);
-                }
-                if (indicator === "average" || indicator === "count") {
-                  return context.parsed.y.toFixed(1);
-                }
-                return context.parsed.y;
-              }
+        else if(indicator === "response_rate"){
+          var totalSent = 0; 
+          if(globalRatingsData && globalRatingsData.total_sent){
+            totalSent = globalRatingsData.total_sent[i] || 0;
+          }
+          resultArray[i] = totalSent > 0 ? (total / totalSent) * 100 : 0;
+        }
+        else if(indicator === "sentiment"){
+          var sentiments = globalDetails[dates[i]] || [];
+          var sentimentSum = 0, sentimentCount = 0;
+          sentiments.forEach(function(resp){
+            if(resp.sentiment !== undefined){
+              sentimentSum += resp.sentiment;
+              sentimentCount++;
             }
-          },
-          datalabels: {
-            anchor: 'end',
-            align: 'top',
-            formatter: function (value, ctx) {
-              if (value === 0) { return ''; }
-              let lbl = ctx.dataset.label.toLowerCase();
-              if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
-                if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
-                if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
-                if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
-                  return "E: " + value.toFixed(1) + "%";
-                }
-              }
-              else if (lbl === "sentiment (análisis de sentimientos)") {
-                return value.toFixed(2);
-              }
-              else {
-                return value.toFixed(1) + "%";
-              }
-              return value;
-            },
-            color: 'black',
-            font: { weight: 'bold' }
-          }
-        },
-        onClick: function (evt, elements) {
-          if (elements && elements.length) {
-            var idx = elements[0].index;
-            var selectedDate = dates[idx];
-            var dayResponses = detailsByDay[selectedDate] || [];
-            showResponsesForDay(selectedDate, dayResponses);
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: (indicator === "count" || indicator === "average") ? "Evaluaciones" : "Valor"
-            }
+          });
+          resultArray[i] = sentimentCount > 0 ? sentimentSum / sentimentCount : 0;
+        }
+        else {
+          switch(indicator){
+            case "count":
+              resultArray[i] = total;
+              break;
+            case "average":
+              resultArray[i] = total > 0 ? (sumRatings / total) : 0;
+              break;
+            case "nps":
+              resultArray[i] = total > 0 ? ((promoters - detractors) / total) * 100 : 0;
+              break;
+            default:
+              resultArray[i] = 0;
           }
         }
       }
-    };
-    var ctx = document.getElementById('myChart').getContext('2d');
-    if(window.myChartInstance){
-      window.myChartInstance.destroy();
+      return resultArray;
     }
-    window.myChartInstance = new Chart(ctx, config);
-  }
 
-  function renderStackedChart(ratingsData, dates) {
-    var computed = computeStackedData(ratingsData, dates);
-    var data = {
-      labels: dates,
-      datasets: [
-        {
-          label: "Promotores",
-          data: computed.promotersArray,
-          backgroundColor: "rgba(75,192,192,0.8)"
-        },
-        {
-          label: "Neutros",
-          data: computed.passivesArray,
-          backgroundColor: "rgba(255,206,86,0.8)"
-        },
-        {
-          label: "Detractores",
-          data: computed.detractorsArray,
-          backgroundColor: "rgba(255,99,132,0.8)"
+    function computeStackedData(ratingsData, dates){
+      var length = dates.length;
+      var promotersArray = new Array(length).fill(0);
+      var passivesArray = new Array(length).fill(0);
+      var detractorsArray = new Array(length).fill(0);
+
+      for(var i = 0; i < length; i++){
+        var pro = 0, pas = 0, det = 0;
+        for(var rating = 1; rating <= 10; rating++){
+          var c = (ratingsData[rating.toString()] || [])[i] || 0;
+          if(rating >= 9) pro += c;
+          else if(rating >= 7) pas += c;
+          else det += c;
         }
-      ]
-    };
-
-    var totalEvaluations = computed.promotersArray.map((p, i) =>
-      p + computed.passivesArray[i] + computed.detractorsArray[i]
-    );
-
-    var config = {
-      type: 'bar',
-      data: data,
-      plugins: [ChartDataLabels],
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: "Barras Apiladas (Promotores/Neutros/Detractores)"
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context){
-                return context.dataset.label + ': ' + context.parsed.y;
-              }
-            }
-          },
-          datalabels: {
-            anchor: 'center',
-            align: 'center',
-            formatter: function(value, ctx) {
-              if(value === 0) { return ''; }
-              var total = totalEvaluations[ctx.dataIndex];
-              var pct = ((value / total) * 100).toFixed(1) + "%";
-              return "E: " + value + "\n" + pct;
-            },
-            color: 'white',
-            font: { weight: 'bold' }
-          }
-        },
-        scales: {
-          x: { stacked: true },
-          y: {
-            stacked: true,
-            beginAtZero: true,
-            title: { display: true, text: 'Cantidad de Evaluaciones' }
-          }
-        }
+        promotersArray[i] = pro;
+        passivesArray[i] = pas;
+        detractorsArray[i] = det;
       }
-    };
-
-    var ctx = document.getElementById('myChart').getContext('2d');
-    if(window.myChartInstance){
-      window.myChartInstance.destroy();
-    }
-    window.myChartInstance = new Chart(ctx, config);
-  }
-
-  function showResponsesForDay(dateStr, responses) {
-    var detailsTitle = document.getElementById('detailsTitle');
-    detailsTitle.textContent = "Detalles del día: " + dateStr;
-
-    var tbody = document.getElementById('dayDetailsBody');
-    tbody.innerHTML = "";
-    if(!responses.length) {
-      var row = document.createElement('tr');
-      var cell = document.createElement('td');
-      cell.colSpan = 2;
-      cell.textContent = "No hay respuestas para este día.";
-      row.appendChild(cell);
-      tbody.appendChild(row);
-    } else {
-      responses.forEach(function(resp) {
-        var row = document.createElement('tr');
-        var tdRating = document.createElement('td');
-        tdRating.textContent = resp.rating;
-        var tdComment = document.createElement('td');
-        tdComment.textContent = resp.comment || "Sin Comentario";
-        row.appendChild(tdRating);
-        row.appendChild(tdComment);
-        tbody.appendChild(row);
-      });
-    }
-    document.getElementById('dayDetailsContainer').style.display = 'block';
-  }
-
-  // Manejar cambio de indicador en el select
-  var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
-  if(chartIndicatorSelect) {
-    chartIndicatorSelect.addEventListener('change', function() {
-      if(!globalRatingsData || !globalDates || !globalDetails) return;
-      var indicator = this.value;
-      renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
-    });
-  }
-
-  // 12) Filtrar por rango de fechas
-  $('#filterDateBtn').on('click', function() {
-    var startDate = $('#startDate').val();
-    var endDate = $('#endDate').val();
-    if(!startDate || !endDate) {
-      alert('Selecciona ambos rangos de fechas');
-      return;
-    }
-    if(startDate > endDate) {
-      alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
-      return;
-    }
-    $.ajax({
-      url: '{{ url_for("get_ratings_data") }}',
-      type: 'GET',
-      data: {
-        item_uuid: $('#eliminarItemBtn').data('item-id'),
-        start_date: startDate,
-        end_date: endDate
-      },
-      success: function(resp) {
-        if(resp.error) {
-          console.error("Error:", resp.error);
-          return;
-        }
-        globalRatingsData = resp.ratings;
-        globalDates = resp.dates;
-        globalDetails = resp.details;
-        var ratingsHeader = document.getElementById('ratingsHeader');
-        Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
-        var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
-        rowIds.forEach(function(rowId) {
-          var row = document.getElementById(rowId);
-          while(row.children.length > 1) { row.removeChild(row.lastChild); }
-        });
-        globalDates.forEach(function(dateStr) {
-          var th = document.createElement('th');
-          th.textContent = dateStr;
-          ratingsHeader.appendChild(th);
-        });
-        fillTableWithCounts(globalRatingsData);
-        var currentIndicator = $('#chartIndicatorSelect').val();
-        renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", currentIndicator);
-      },
-      error: function(xhr, status, error) {
-        console.error('Error:', error);
-      }
-    });
-  });
-
-  // 13) Descargar gráfico como imagen
-  $('#downloadChartBtn').on('click', function() {
-    if(window.myChartInstance) {
-      var link = document.createElement('a');
-      link.href = window.myChartInstance.toBase64Image();
-      link.download = 'grafico_dashboard.png';
-      link.click();
-    } else {
-      alert('No hay gráfico para descargar.');
-    }
-  });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const fullscreenBtn = document.getElementById("fullscreenToggleBtn");
-    const fullscreenModal = new bootstrap.Modal(document.getElementById("fullscreenModal"));
-    const fullscreenContent = document.getElementById("fullscreenContent");
-    const chartContainer = document.getElementById("chartContainer");
-    const tableContainer = document.getElementById("tableContainer");
-    const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
-
-    let lastDisplayedContainer = "chart"; // Por defecto se muestra el gráfico
-    let trendLineVisible = false;
-    let trendLineDataset = null;
-
-    // Crear y posicionar el botón "Tendencia" en el contenedor del gráfico
-    const trendLineBtn = document.createElement("button");
-    trendLineBtn.textContent = "Tendencia";
-    trendLineBtn.className = "btn btn-primary btn-sm position-absolute";
-    trendLineBtn.style.top = "10px";
-    trendLineBtn.style.right = "10px";
-    trendLineBtn.style.zIndex = "1000";
-    chartContainer.style.position = "relative";
-    chartContainer.appendChild(trendLineBtn);
-
-    function calculateTrendLine(data) {
-      const n = data.length;
-      if (n < 2) return [];
-      const x = Array.from({ length: n }, (_, i) => i + 1);
-      const y = data;
-      const sumX = x.reduce((a, b) => a + b, 0);
-      const sumY = y.reduce((a, b) => a + b, 0);
-      const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
-      const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
-      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-      const intercept = (sumY - slope * sumX) / n;
-      return x.map(xi => slope * xi + intercept);
-    }
-
-    function calculateStackedTrendLine(datasets, labels) {
-      const n = labels.length;
-      if (n < 2) return [];
-      const x = Array.from({ length: n }, (_, i) => i + 1);
-      const y = labels.map((_, i) =>
-        datasets.reduce((sum, dataset) => {
-          if (!dataset.hidden) return sum + dataset.data[i];
-          return sum;
-        }, 0)
-      );
-      return calculateTrendLine(y);
-    }
-
-    function updateTrendLine(chart) {
-      if (!chart) return;
-      let trendData;
-      if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
-        trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
-      } else {
-        trendData = calculateTrendLine(chart.data.datasets[0].data);
-      }
-      if (!trendLineDataset) {
-        trendLineDataset = {
-          type: "line",
-          label: "Tendencia",
-          data: trendData,
-          borderColor: "rgba(255, 99, 132, 1)",
-          borderWidth: 2,
-          borderDash: [5, 5],
-          pointRadius: 0,
-          fill: false
-        };
-        chart.data.datasets.push(trendLineDataset);
-      } else {
-        trendLineDataset.data = trendData;
-      }
-      chart.update();
-    }
-
-    function toggleTrendLine(chart) {
-      if (!chart) return;
-      if (trendLineVisible) {
-        chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
-        trendLineDataset = null;
-      } else {
-        updateTrendLine(chart);
-      }
-      trendLineVisible = !trendLineVisible;
-      chart.update();
-    }
-
-    function showOnlyOneContainer(containerToShow) {
-      if (containerToShow === "chart") {
-        chartContainer.style.display = "block";
-        tableContainer.style.display = "none";
-        lastDisplayedContainer = "chart";
-      } else if (containerToShow === "table") {
-        tableContainer.style.display = "block";
-        chartContainer.style.display = "none";
-        lastDisplayedContainer = "table";
-      }
-    }
-
-    fullscreenBtn.addEventListener("click", function () {
-      fullscreenContent.innerHTML = "";
-      if (lastDisplayedContainer === "chart") {
-        const clonedChartContainer = chartContainer.cloneNode(true);
-        clonedChartContainer.style.height = "100%";
-        clonedChartContainer.style.width = "100%";
-        fullscreenContent.appendChild(clonedChartContainer);
-        const oldCanvas = clonedChartContainer.querySelector("canvas");
-        const newCanvas = document.createElement("canvas");
-        newCanvas.id = "fullscreenChart";
-        oldCanvas.replaceWith(newCanvas);
-        setTimeout(() => {
-          const ctx = newCanvas.getContext("2d");
-          if (window.myChartInstance) {
-            new Chart(ctx, window.myChartInstance.config);
-          }
-        }, 200);
-      } else if (lastDisplayedContainer === "table") {
-        const clonedTable = tableContainer.cloneNode(true);
-        clonedTable.style.height = "100%";
-        clonedTable.style.width = "100%";
-        fullscreenContent.appendChild(clonedTable);
-      }
-      fullscreenModal.show();
-    });
-
-    document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
-      showOnlyOneContainer(lastDisplayedContainer);
-    });
-
-    chartIndicatorSelect.addEventListener("change", function () {
-      if (chartIndicatorSelect.value === "table") {
-        showOnlyOneContainer("table");
-      } else {
-        showOnlyOneContainer("chart");
-      }
-    });
-
-    trendLineBtn.addEventListener("click", function () {
-      if (window.myChartInstance) {
-        toggleTrendLine(window.myChartInstance);
-      }
-    });
-
-    if (window.myChartInstance) {
-      window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
-        const index = legendItem.datasetIndex;
-        const dataset = window.myChartInstance.data.datasets[index];
-        dataset.hidden = !dataset.hidden;
-        if (trendLineVisible) {
-          updateTrendLine(window.myChartInstance);
-        }
-        window.myChartInstance.update();
+      return {
+        promotersArray: promotersArray,
+        passivesArray: passivesArray,
+        detractorsArray: detractorsArray
       };
     }
 
-    showOnlyOneContainer(lastDisplayedContainer);
-});
+    function renderChart(ratingsData, dates, detailsByDay, itemType, indicator) {
+      if(indicator === "table"){
+        document.getElementById('chartContainer').style.display = 'none';
+        document.getElementById('tableContainer').style.display = 'block';
+        return;
+      } else {
+        document.getElementById('chartContainer').style.display = 'block';
+        document.getElementById('tableContainer').style.display = 'none';
+      }
+
+      if(indicator === "stacked"){
+        renderStackedChart(ratingsData, dates);
+        return;
+      }
+
+      var dataArray = computeDataByIndicator(ratingsData, dates, indicator);
+      var labelMap = {
+        count:"Cantidad de Evaluaciones",
+        average:"Promedio de Puntajes",
+        nps:"NPS",
+        promoters:"% Promotores",
+        passives:"% Neutros",
+        detractors:"% Detractores",
+        csat:"CSAT (Satisfacción del Cliente)",
+        ces:"CES (Esfuerzo del Cliente)",
+        response_rate:"Tasa de Respuesta",
+        sentiment:"Análisis de Sentimientos"
+      };
+      var datasetLabel = labelMap[indicator] || "Indicador";
+
+      var data = {
+        labels: dates,
+        datasets: [{
+          label: datasetLabel,
+          data: dataArray,
+          borderColor: 'rgba(75,192,192,1)',
+          backgroundColor: 'rgba(75,192,192,0.2)',
+          fill: true,
+          tension: 0.4
+        }]
+      };
+      var config = {
+        type: 'line',
+        data: data,
+        plugins: [ChartDataLabels],
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Indicador: " + datasetLabel,
+              align: 'start',
+              padding: { top: 0, bottom: 30 },
+              font: { size: 20, weight: 'bold', family: 'Arial' }
+            },
+            legend: {
+              display: true,
+              position: 'bottom',
+              align: 'center'
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  if (indicator === "sentiment") {
+                    return 'Sentimiento: ' + context.parsed.y.toFixed(2);
+                  }
+                  if (indicator === "average" || indicator === "count") {
+                    return context.parsed.y.toFixed(1);
+                  }
+                  return context.parsed.y;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'end',
+              align: 'top',
+              formatter: function (value, ctx) {
+                if (value === 0) { return ''; }
+                let lbl = ctx.dataset.label.toLowerCase();
+                if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
+                  if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
+                  if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
+                  if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
+                    return "E: " + value.toFixed(1) + "%";
+                  }
+                }
+                else if (lbl === "sentiment (análisis de sentimientos)") {
+                  return value.toFixed(2);
+                }
+                else {
+                  return value.toFixed(1) + "%";
+                }
+                return value;
+              },
+              color: 'black',
+              font: { weight: 'bold' }
+            }
+          },
+          onClick: function (evt, elements) {
+            if (elements && elements.length) {
+              var idx = elements[0].index;
+              var selectedDate = dates[idx];
+              var dayResponses = detailsByDay[selectedDate] || [];
+              showResponsesForDay(selectedDate, dayResponses);
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: (indicator === "count" || indicator === "average") ? "Evaluaciones" : "Valor"
+              }
+            }
+          }
+        }
+      };
+      var ctx = document.getElementById('myChart').getContext('2d');
+      if(window.myChartInstance){
+        window.myChartInstance.destroy();
+      }
+      window.myChartInstance = new Chart(ctx, config);
+    }
+
+    function renderStackedChart(ratingsData, dates) {
+      var computed = computeStackedData(ratingsData, dates);
+      var data = {
+        labels: dates,
+        datasets: [
+          {
+            label: "Promotores",
+            data: computed.promotersArray,
+            backgroundColor: "rgba(75,192,192,0.8)"
+          },
+          {
+            label: "Neutros",
+            data: computed.passivesArray,
+            backgroundColor: "rgba(255,206,86,0.8)"
+          },
+          {
+            label: "Detractores",
+            data: computed.detractorsArray,
+            backgroundColor: "rgba(255,99,132,0.8)"
+          }
+        ]
+      };
+
+      var totalEvaluations = computed.promotersArray.map((p, i) =>
+        p + computed.passivesArray[i] + computed.detractorsArray[i]
+      );
+
+      var config = {
+        type: 'bar',
+        data: data,
+        plugins: [ChartDataLabels],
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Barras Apiladas (Promotores/Neutros/Detractores)"
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context){
+                  return context.dataset.label + ': ' + context.parsed.y;
+                }
+              }
+            },
+            datalabels: {
+              anchor: 'center',
+              align: 'center',
+              formatter: function(value, ctx) {
+                if(value === 0) { return ''; }
+                var total = totalEvaluations[ctx.dataIndex];
+                var pct = ((value / total) * 100).toFixed(1) + "%";
+                return "E: " + value + "\n" + pct;
+              },
+              color: 'white',
+              font: { weight: 'bold' }
+            }
+          },
+          scales: {
+            x: { stacked: true },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              title: { display: true, text: 'Cantidad de Evaluaciones' }
+            }
+          }
+        }
+      };
+
+      var ctx = document.getElementById('myChart').getContext('2d');
+      if(window.myChartInstance){
+        window.myChartInstance.destroy();
+      }
+      window.myChartInstance = new Chart(ctx, config);
+    }
+
+    // NUEVA FUNCIÓN: Agregamos ordenación y filtro al mostrar respuestas
+    function showResponsesForDay(dateStr, responses) {
+      var detailsTitle = document.getElementById('detailsTitle');
+      detailsTitle.textContent = "Detalles del día: " + dateStr;
+      
+      // Reconstruir encabezados con botones de ordenación y filtro
+      var theadRow = document.querySelector("#dayDetailsContainer thead tr");
+      theadRow.innerHTML = ""; // Limpiar encabezados previos
+      
+      var thRating = document.createElement('th');
+      thRating.id = "thRating";
+      thRating.style.cursor = "pointer";
+      // Se agrega el event listener y se verifica si el clic es sobre el ícono de filtro
+      thRating.addEventListener('click', function(e) {
+        if (e.target.closest('.fa-filter')) return;
+        sortTable(0);
+      });
+      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterRatingIcon" style="margin-left:5px; cursor:pointer;"></i>';
+      
+      var thComment = document.createElement('th');
+      thComment.id = "thComment";
+      thComment.style.cursor = "pointer";
+      thComment.addEventListener('click', function(e) {
+        if (e.target.closest('.fa-filter')) return;
+        sortTable(1);
+      });
+      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterCommentIcon" style="margin-left:5px; cursor:pointer;"></i>';
+      
+      theadRow.appendChild(thRating);
+      theadRow.appendChild(thComment);
+      
+      // Agregar eventos a los íconos de filtro
+      document.getElementById('filterRatingIcon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        showFilterModal('rating');
+      });
+      document.getElementById('filterCommentIcon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        showFilterModal('comment');
+      });
+      
+      // Rellenar el cuerpo de la tabla
+      var tbody = document.getElementById('dayDetailsBody');
+      tbody.innerHTML = "";
+      if(!responses.length) {
+        var row = document.createElement('tr');
+        var cell = document.createElement('td');
+        cell.colSpan = 2;
+        cell.textContent = "No hay respuestas para este día.";
+        row.appendChild(cell);
+        tbody.appendChild(row);
+      } else {
+        responses.forEach(function(resp) {
+          var row = document.createElement('tr');
+          var tdRating = document.createElement('td');
+          tdRating.textContent = resp.rating;
+          var tdComment = document.createElement('td');
+          tdComment.textContent = resp.comment || "Sin Comentario";
+          row.appendChild(tdRating);
+          row.appendChild(tdComment);
+          tbody.appendChild(row);
+        });
+      }
+      document.getElementById('dayDetailsContainer').style.display = 'block';
+    }
+
+    // Manejar cambio de indicador en el select
+    var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
+    if(chartIndicatorSelect) {
+      chartIndicatorSelect.addEventListener('change', function() {
+        if(!globalRatingsData || !globalDates || !globalDetails) return;
+        var indicator = this.value;
+        renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
+      });
+    }
+
+    // 12) Filtrar por rango de fechas
+    $('#filterDateBtn').on('click', function() {
+      var startDate = $('#startDate').val();
+      var endDate = $('#endDate').val();
+      if(!startDate || !endDate) {
+        alert('Selecciona ambos rangos de fechas');
+        return;
+      }
+      if(startDate > endDate) {
+        alert('La fecha de inicio no puede ser posterior a la fecha de fin.');
+        return;
+      }
+      $.ajax({
+        url: '{{ url_for("get_ratings_data") }}',
+        type: 'GET',
+        data: {
+          item_uuid: $('#eliminarItemBtn').data('item-id'),
+          start_date: startDate,
+          end_date: endDate
+        },
+        success: function(resp) {
+          if(resp.error) {
+            console.error("Error:", resp.error);
+            return;
+          }
+          globalRatingsData = resp.ratings;
+          globalDates = resp.dates;
+          globalDetails = resp.details;
+          var ratingsHeader = document.getElementById('ratingsHeader');
+          Array.from(ratingsHeader.querySelectorAll('th:not(:first-child)')).forEach(th => th.remove());
+          var rowIds = ['rating10Row','rating9Row','rating8Row','rating7Row','rating6Row','rating5Row','rating4Row','rating3Row','rating2Row','rating1Row','totalRow'];
+          rowIds.forEach(function(rowId) {
+            var row = document.getElementById(rowId);
+            while(row.children.length > 1) { row.removeChild(row.lastChild); }
+          });
+          globalDates.forEach(function(dateStr) {
+            var th = document.createElement('th');
+            th.textContent = dateStr;
+            ratingsHeader.appendChild(th);
+          });
+          fillTableWithCounts(globalRatingsData);
+          var currentIndicator = $('#chartIndicatorSelect').val();
+          renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", currentIndicator);
+        },
+        error: function(xhr, status, error) {
+          console.error('Error:', error);
+        }
+      });
+    });
+
+    // 13) Descargar gráfico como imagen
+    $('#downloadChartBtn').on('click', function() {
+      if(window.myChartInstance) {
+        var link = document.createElement('a');
+        link.href = window.myChartInstance.toBase64Image();
+        link.download = 'grafico_dashboard.png';
+        link.click();
+      } else {
+        alert('No hay gráfico para descargar.');
+      }
+    });
+  });
+
+  // Funciones adicionales para orden y filtro en la tabla de detalles
+  function sortTable(colIndex) {
+    var tbody = document.getElementById('dayDetailsBody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var th = document.querySelectorAll("#dayDetailsContainer thead th")[colIndex];
+    var sortOrder = th.getAttribute('data-sort') === 'asc' ? 'desc' : 'asc';
+    th.setAttribute('data-sort', sortOrder);
+    rows.sort(function(a, b) {
+      var aText = a.children[colIndex].textContent.trim().toLowerCase();
+      var bText = b.children[colIndex].textContent.trim().toLowerCase();
+      if (!isNaN(aText) && !isNaN(bText)) {
+        return sortOrder === 'asc' ? aText - bText : bText - aText;
+      } else {
+        return sortOrder === 'asc' ? aText.localeCompare(bText) : bText.localeCompare(aText);
+      }
+    });
+    tbody.innerHTML = "";
+    rows.forEach(function(row) {
+      tbody.appendChild(row);
+    });
+  }
+
+  function showFilterModal(column) {
+    var filterInput = document.getElementById('filterInput');
+    if (column === 'rating') {
+      filterInput.placeholder = "Filtrar por Evaluación (número)";
+    } else {
+      filterInput.placeholder = "Filtrar por Comentario (texto)";
+    }
+    document.getElementById('filterColumn').value = column;
+    var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+    filterModal.show();
+  }
+
+  function applyFilter() {
+    var filterColumn = document.getElementById('filterColumn').value;
+    var filterValue = document.getElementById('filterInput').value.toLowerCase();
+    var tbody = document.getElementById('dayDetailsBody');
+    var rows = tbody.getElementsByTagName('tr');
+    var colIndex = (filterColumn === 'rating') ? 0 : 1;
+    for (var i = 0; i < rows.length; i++) {
+      var cellText = rows[i].cells[colIndex].textContent.toLowerCase();
+      rows[i].style.display = (cellText.indexOf(filterValue) > -1) ? "" : "none";
+    }
+    var filterModal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
+    filterModal.hide();
+  }
+
+  // Funciones para pantalla completa, tendencia, etc.
+  document.addEventListener("DOMContentLoaded", function () {
+      const fullscreenBtn = document.getElementById("fullscreenToggleBtn");
+      const fullscreenModal = new bootstrap.Modal(document.getElementById("fullscreenModal"));
+      const fullscreenContent = document.getElementById("fullscreenContent");
+      const chartContainer = document.getElementById("chartContainer");
+      const tableContainer = document.getElementById("tableContainer");
+      const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
+
+      let lastDisplayedContainer = "chart"; // Por defecto se muestra el gráfico
+      let trendLineVisible = false;
+      let trendLineDataset = null;
+
+      const trendLineBtn = document.createElement("button");
+      trendLineBtn.textContent = "Tendencia";
+      trendLineBtn.className = "btn btn-primary btn-sm position-absolute";
+      trendLineBtn.style.top = "10px";
+      trendLineBtn.style.right = "10px";
+      trendLineBtn.style.zIndex = "1000";
+      chartContainer.style.position = "relative";
+      chartContainer.appendChild(trendLineBtn);
+
+      function calculateTrendLine(data) {
+        const n = data.length;
+        if (n < 2) return [];
+        const x = Array.from({ length: n }, (_, i) => i + 1);
+        const y = data;
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
+        const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        return x.map(xi => slope * xi + intercept);
+      }
+
+      function calculateStackedTrendLine(datasets, labels) {
+        const n = labels.length;
+        if (n < 2) return [];
+        const x = Array.from({ length: n }, (_, i) => i + 1);
+        const y = labels.map((_, i) =>
+          datasets.reduce((sum, dataset) => {
+            if (!dataset.hidden) return sum + dataset.data[i];
+            return sum;
+          }, 0)
+        );
+        return calculateTrendLine(y);
+      }
+
+      function updateTrendLine(chart) {
+        if (!chart) return;
+        let trendData;
+        if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
+          trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
+        } else {
+          trendData = calculateTrendLine(chart.data.datasets[0].data);
+        }
+        if (!trendLineDataset) {
+          trendLineDataset = {
+            type: "line",
+            label: "Tendencia",
+            data: trendData,
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 0,
+            fill: false
+          };
+          chart.data.datasets.push(trendLineDataset);
+        } else {
+          trendLineDataset.data = trendData;
+        }
+        chart.update();
+      }
+
+      function toggleTrendLine(chart) {
+        if (!chart) return;
+        if (trendLineVisible) {
+          chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
+          trendLineDataset = null;
+        } else {
+          updateTrendLine(chart);
+        }
+        trendLineVisible = !trendLineVisible;
+        chart.update();
+      }
+
+      function showOnlyOneContainer(containerToShow) {
+        if (containerToShow === "chart") {
+          chartContainer.style.display = "block";
+          tableContainer.style.display = "none";
+          lastDisplayedContainer = "chart";
+        } else if (containerToShow === "table") {
+          tableContainer.style.display = "block";
+          chartContainer.style.display = "none";
+          lastDisplayedContainer = "table";
+        }
+      }
+
+      fullscreenBtn.addEventListener("click", function () {
+        fullscreenContent.innerHTML = "";
+        if (lastDisplayedContainer === "chart") {
+          const clonedChartContainer = chartContainer.cloneNode(true);
+          clonedChartContainer.style.height = "100%";
+          clonedChartContainer.style.width = "100%";
+          fullscreenContent.appendChild(clonedChartContainer);
+          const oldCanvas = clonedChartContainer.querySelector("canvas");
+          const newCanvas = document.createElement("canvas");
+          newCanvas.id = "fullscreenChart";
+          oldCanvas.replaceWith(newCanvas);
+          setTimeout(() => {
+            const ctx = newCanvas.getContext("2d");
+            if (window.myChartInstance) {
+              new Chart(ctx, window.myChartInstance.config);
+            }
+          }, 200);
+        } else if (lastDisplayedContainer === "table") {
+          const clonedTable = tableContainer.cloneNode(true);
+          clonedTable.style.height = "100%";
+          clonedTable.style.width = "100%";
+          fullscreenContent.appendChild(clonedTable);
+        }
+        fullscreenModal.show();
+      });
+
+      document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
+        showOnlyOneContainer(lastDisplayedContainer);
+      });
+
+      chartIndicatorSelect.addEventListener("change", function () {
+        if (chartIndicatorSelect.value === "table") {
+          showOnlyOneContainer("table");
+        } else {
+          showOnlyOneContainer("chart");
+        }
+      });
+
+      trendLineBtn.addEventListener("click", function () {
+        if (window.myChartInstance) {
+          toggleTrendLine(window.myChartInstance);
+        }
+      });
+
+      if (window.myChartInstance) {
+        window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
+          const index = legendItem.datasetIndex;
+          const dataset = window.myChartInstance.data.datasets[index];
+          dataset.hidden = !dataset.hidden;
+          if (trendLineVisible) {
+            updateTrendLine(window.myChartInstance);
+          }
+          window.myChartInstance.update();
+        };
+      }
+
+      showOnlyOneContainer(lastDisplayedContainer);
+  });
 </script>
+
+<!-- Modal de Filtro (similar al de Excel) -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filterModalLabel">Filtro de columna</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Input oculto para indicar la columna a filtrar -->
+        <input type="hidden" id="filterColumn" value="">
+        <input type="text" id="filterInput" class="form-control" placeholder="Filtrar">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="applyFilter()">Aplicar Filtro</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
