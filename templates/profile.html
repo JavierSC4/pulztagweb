@@ -1,5 +1,7 @@
 <!-- templates/profile.html -->
 
+<!-- templates/profile.html -->
+
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb (Escala 1-10 NPS){% endblock %}
@@ -16,7 +18,23 @@
     background-attachment: fixed;
     background-position: center;
   }
+  /* Efecto de pulsación para el logo */
+  .pulsate {
+    animation: pulse 1.5s infinite;
+  }
 
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  /* Reservar ancho fijo para los puntos para que no se mueva el contenido */
+  #dots {
+    display: inline-block;
+    width: 30px; /* Ajusta este valor según la cantidad máxima de puntos que vayas a mostrar */
+    text-align: left;
+  }
   .small-text {
     font-size: 0.9rem; /* tamaño relativo para móviles */
   }
@@ -988,7 +1006,7 @@
     </div>
   </div>
 </div>
-<!-- Indicador de carga (spinner) -->
+<!-- Indicador de carga personalizado -->
 <div id="loader" class="d-none" style="
     position: fixed;
     top: 0;
@@ -1001,10 +1019,10 @@
     justify-content: center;
     z-index: 9999;
 ">
-  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-    <span class="visually-hidden">Cargando...</span>
+  <img src="/static/images/logochain1.png" alt="Logo" class="pulsate" style="width: 50px; height: auto; margin-right: 10px;">
+  <div style="font-size: 1.5rem; color: #333;">
+    Cargando<span id="dots"></span>
   </div>
-  <div style="margin-left: 10px; font-size: 1.5rem; color: #333;">Cargando...</div>
 </div>
 <!-- MODALES para Pulzcards, Etiquetas, Bodegas, Dashboard Items -->
 <!-- Modal Importar Pulzcards -->
@@ -1260,7 +1278,16 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <!-- Asegúrate de incluir FontAwesome para los íconos (sort y filter) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var dots = document.getElementById("dots");
+    var count = 0;
+    setInterval(function () {
+      count = (count + 1) % 4; // Ciclo: 0,1,2,3 puntos
+      dots.textContent = ".".repeat(count);
+    }, 500);
+  });
+</script>
 <script>
   // Funciones para mostrar y ocultar el loader
   function showLoader() {
@@ -1906,46 +1933,34 @@
       var detailsTitle = document.getElementById('detailsTitle');
       detailsTitle.textContent = "Detalles del día: " + dateStr;
       
-      // Reconstruir encabezados con botones de ordenación y filtro
+      // Reconstruir encabezados solo con ordenamiento
       var theadRow = document.querySelector("#dayDetailsContainer thead tr");
       theadRow.innerHTML = ""; // Limpiar encabezados previos
       
       var thRating = document.createElement('th');
       thRating.id = "thRating";
       thRating.style.cursor = "pointer";
-      // Se agrega el event listener y se verifica si el clic es sobre el ícono de filtro
-      thRating.addEventListener('click', function(e) {
-        if (e.target.closest('.fa-filter')) return;
+      thRating.addEventListener('click', function() {
         sortTable(0);
       });
-      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterRatingIcon" style="margin-left:5px; cursor:pointer;"></i>';
+      // Solo se incluye el ícono de ordenación
+      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i>';
       
       var thComment = document.createElement('th');
       thComment.id = "thComment";
       thComment.style.cursor = "pointer";
-      thComment.addEventListener('click', function(e) {
-        if (e.target.closest('.fa-filter')) return;
+      thComment.addEventListener('click', function() {
         sortTable(1);
       });
-      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterCommentIcon" style="margin-left:5px; cursor:pointer;"></i>';
+      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i>';
       
       theadRow.appendChild(thRating);
       theadRow.appendChild(thComment);
       
-      // Agregar eventos a los íconos de filtro
-      document.getElementById('filterRatingIcon').addEventListener('click', function(e) {
-        e.stopPropagation();
-        showFilterModal('rating');
-      });
-      document.getElementById('filterCommentIcon').addEventListener('click', function(e) {
-        e.stopPropagation();
-        showFilterModal('comment');
-      });
-      
       // Rellenar el cuerpo de la tabla
       var tbody = document.getElementById('dayDetailsBody');
       tbody.innerHTML = "";
-      if(!responses.length) {
+      if (!responses.length) {
         var row = document.createElement('tr');
         var cell = document.createElement('td');
         cell.colSpan = 2;
@@ -1965,16 +1980,6 @@
         });
       }
       document.getElementById('dayDetailsContainer').style.display = 'block';
-    }
-
-    // Manejar cambio de indicador en el select
-    var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
-    if(chartIndicatorSelect) {
-      chartIndicatorSelect.addEventListener('change', function() {
-        if(!globalRatingsData || !globalDates || !globalDetails) return;
-        var indicator = this.value;
-        renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
-      });
     }
 
     // 12) Filtrar por rango de fechas
@@ -2060,32 +2065,6 @@
     rows.forEach(function(row) {
       tbody.appendChild(row);
     });
-  }
-
-  function showFilterModal(column) {
-    var filterInput = document.getElementById('filterInput');
-    if (column === 'rating') {
-      filterInput.placeholder = "Filtrar por Evaluación (número)";
-    } else {
-      filterInput.placeholder = "Filtrar por Comentario (texto)";
-    }
-    document.getElementById('filterColumn').value = column;
-    var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
-    filterModal.show();
-  }
-
-  function applyFilter() {
-    var filterColumn = document.getElementById('filterColumn').value;
-    var filterValue = document.getElementById('filterInput').value.toLowerCase();
-    var tbody = document.getElementById('dayDetailsBody');
-    var rows = tbody.getElementsByTagName('tr');
-    var colIndex = (filterColumn === 'rating') ? 0 : 1;
-    for (var i = 0; i < rows.length; i++) {
-      var cellText = rows[i].cells[colIndex].textContent.toLowerCase();
-      rows[i].style.display = (cellText.indexOf(filterValue) > -1) ? "" : "none";
-    }
-    var filterModal = bootstrap.Modal.getInstance(document.getElementById('filterModal'));
-    filterModal.hide();
   }
 
   // Funciones para pantalla completa, tendencia, etc.
@@ -2246,25 +2225,4 @@
       showOnlyOneContainer(lastDisplayedContainer);
   });
 </script>
-
-<!-- Modal de Filtro (similar al de Excel) -->
-<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="filterModalLabel">Filtro de columna</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Input oculto para indicar la columna a filtrar -->
-        <input type="hidden" id="filterColumn" value="">
-        <input type="text" id="filterInput" class="form-control" placeholder="Filtrar">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="applyFilter()">Aplicar Filtro</button>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}
