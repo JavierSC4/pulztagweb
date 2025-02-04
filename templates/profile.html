@@ -205,10 +205,14 @@
     /* Puedes ajustar márgenes o tamaños de fuente adicionales */
   }
 
-  /* Ajustes para pantallas extra grandes */
-  @media (min-width: 1400px) {
+  /* Ajuste para que en pantallas pequeñas el gráfico mantenga una proporción de 5:4 */
+  @media (max-width: 767px) {
     #chartContainer {
-      max-width: 1400px;
+      min-height: calc(100vw * 4 / 5);
+    }
+    #myChart {
+      width: 100% !important;
+      height: 100% !important;
     }
   }
 </style>
