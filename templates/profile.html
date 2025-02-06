@@ -1,7 +1,5 @@
 <!-- templates/profile.html -->
 
-<!-- templates/profile.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Perfil de Usuario - PulztagWeb (Escala 1-10 NPS){% endblock %}
@@ -48,9 +46,9 @@
 
   /* Sidebar: por defecto oculto en móviles */
   #sidebar {
-    height: calc(100vh - 90px - 75px);
+    /* Calcula la altura disponible: viewport height menos la suma del header, footer y margen */
+    height: calc(100vh - var(--header-height) - var(--footer-height) - var(--sidebar-margin));
     overflow-y: auto;
-    display: none;
   }
 
   /* Contenedor principal con padding reducido para móviles */
@@ -129,9 +127,17 @@
     max-width: 1200px;
     height: auto;
   }
+  /* Contenedor que forzará la relación de aspecto */
+  #chartWrapper {
+    width: 100%;
+    /* Define la relación de aspecto deseada; por ejemplo, si en una pantalla grande el gráfico es 1200px de ancho y 500px de alto, la relación es 2.4 */
+    aspect-ratio: 2.4; 
+    position: relative; /* Esto es importante para que el canvas se ajuste correctamente */
+  }
+  /* El canvas ocupará el 100% del contenedor */
   #myChart {
     width: 100%;
-    height: 500px;
+    height: 100%;
   }
 
   /* Estilos para DataTables y tablas personalizadas */
@@ -896,13 +902,18 @@
       </div>
     </div>
 
-
     <!-- Sección Detalle de Ítem del Dashboard -->
     <div id="dashboardItemDetailSection" style="display:none;">
-      <div class="mb-3 text-center">
-        <h2 class="mb-0" id="dashboardItemName"></h2>
-        <small class="text-muted" id="dashboardItemType"></small>
+      <div class="mb-3 text-start">
+        <small class="text-muted">
+          <strong>Nombre de ítem:</strong>
+          <span id="dashboardItemName"></span>
+          &nbsp;&nbsp;&nbsp;
+          <strong>Tipo de Ítem:</strong>
+          <span id="dashboardItemType"></span>
+        </small>
       </div>
+      <!-- Resto del contenido (botones, gráficas, etc.) -->
       <div class="dashboard-section flex-right" id="dashboardItemActions">
         <div class="action-bar-wrapper">
           <div class="action-bar">
@@ -970,7 +981,9 @@
           </select>
         </div>
         <div id="chartContainer" class="full-width">
-          <canvas id="myChart"></canvas>
+          <div id="chartWrapper">
+            <canvas id="myChart"></canvas>
+          </div>
         </div>
         <div id="tableContainer" style="display:none;">
           <table class="table table-bordered table-striped table-hover text-center" id="ratingsTable">
@@ -1219,13 +1232,6 @@
               <option value="Evaluación de Clientes">Evaluación de Clientes (NPS 1-10)</option>
               <option value="Evaluación de Semáforo">Evaluación de Semáforo (1-3)</option>
               <option value="Visualizaciones diarias">Visualizaciones Diarias</option>
-              <!-- (Si no deseas más tipos, remueve los de abajo) -->
-              <!--
-              <option value="CSAT">CSAT (Satisfacción del Cliente)</option>
-              <option value="CES">CES (Esfuerzo del Cliente)</option>
-              <option value="Sentiment">Análisis de Sentimientos</option>
-              <option value="Response Rate">Tasa de Respuesta</option>
-              -->
             </select>
           </div>
         </div>
@@ -1283,16 +1289,6 @@
 <!-- Asegúrate de incluir FontAwesome para los íconos (sort y filter) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var dots = document.getElementById("dots");
-    var count = 0;
-    setInterval(function () {
-      count = (count + 1) % 4; // Ciclo: 0,1,2,3 puntos
-      dots.textContent = ".".repeat(count);
-    }, 500);
-  });
-</script>
-<script>
   // Funciones para mostrar y ocultar el loader
   function showLoader() {
     document.getElementById('loader').classList.remove('d-none');
@@ -1300,6 +1296,14 @@
   function hideLoader() {
     document.getElementById('loader').classList.add('d-none');
   }
+
+  // ----------------------------------------------------------------------------------
+  // Variables globales:
+  // - globalRatingsData, globalDates y globalDetails se usan para el gráfico.
+  // - window.trendMethod define el método actual de tendencia (por defecto "lineal").
+  // - trendLineDataset se usa para almacenar el dataset de tendencia en el gráfico.
+  let trendLineDataset = null;
+  window.trendMethod = "lineal";  // por defecto
 
   // ----------------------------------------------------------------------------------
   // Al cargar el DOM
@@ -1605,6 +1609,7 @@
           });
           fillTableWithCounts(globalRatingsData);
           renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
+          // La función renderChart se encargará de agregar la línea de tendencia.
         },
         error:function(xhr, status, error){
           hideLoader();
@@ -1732,6 +1737,7 @@
       };
     }
 
+    // La función renderChart se modifica para que, después de crear el gráfico, se llame automáticamente a updateTrendLineWithMethod.
     function renderChart(ratingsData, dates, detailsByDay, itemType, indicator) {
       if(indicator === "table"){
         document.getElementById('chartContainer').style.display = 'none';
@@ -1744,6 +1750,7 @@
 
       if(indicator === "stacked"){
         renderStackedChart(ratingsData, dates);
+        // Luego de renderizar el gráfico de barras, si existe una opción de tendencia (por ejemplo, se desea extender la línea de tendencia) se puede implementar de forma similar.
         return;
       }
 
@@ -1852,8 +1859,13 @@
       var ctx = document.getElementById('myChart').getContext('2d');
       if(window.myChartInstance){
         window.myChartInstance.destroy();
+        trendLineDataset = null;  // reiniciamos la variable para que se vuelva a agregar
       }
       window.myChartInstance = new Chart(ctx, config);
+      // Después de crear el gráfico, se agrega la línea de tendencia según el método actual
+      if(window.trendMethod){
+        updateTrendLineWithMethod(window.myChartInstance, window.trendMethod);
+      }
     }
 
     function renderStackedChart(ratingsData, dates) {
@@ -1937,34 +1949,45 @@
       var detailsTitle = document.getElementById('detailsTitle');
       detailsTitle.textContent = "Detalles del día: " + dateStr;
       
-      // Reconstruir encabezados solo con ordenamiento
+      // Reconstruir encabezados con botones de ordenación y filtro
       var theadRow = document.querySelector("#dayDetailsContainer thead tr");
       theadRow.innerHTML = ""; // Limpiar encabezados previos
       
       var thRating = document.createElement('th');
       thRating.id = "thRating";
       thRating.style.cursor = "pointer";
-      thRating.addEventListener('click', function() {
+      thRating.addEventListener('click', function(e) {
+        if (e.target.closest('.fa-filter')) return;
         sortTable(0);
       });
-      // Solo se incluye el ícono de ordenación
-      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i>';
+      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterRatingIcon" style="margin-left:5px; cursor:pointer;"></i>';
       
       var thComment = document.createElement('th');
       thComment.id = "thComment";
       thComment.style.cursor = "pointer";
-      thComment.addEventListener('click', function() {
+      thComment.addEventListener('click', function(e) {
+        if (e.target.closest('.fa-filter')) return;
         sortTable(1);
       });
-      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i>';
+      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterCommentIcon" style="margin-left:5px; cursor:pointer;"></i>';
       
       theadRow.appendChild(thRating);
       theadRow.appendChild(thComment);
       
+      // Agregar eventos a los íconos de filtro
+      document.getElementById('filterRatingIcon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        showFilterModal('rating');
+      });
+      document.getElementById('filterCommentIcon').addEventListener('click', function(e) {
+        e.stopPropagation();
+        showFilterModal('comment');
+      });
+      
       // Rellenar el cuerpo de la tabla
       var tbody = document.getElementById('dayDetailsBody');
       tbody.innerHTML = "";
-      if (!responses.length) {
+      if(!responses.length) {
         var row = document.createElement('tr');
         var cell = document.createElement('td');
         cell.colSpan = 2;
@@ -1984,6 +2007,16 @@
         });
       }
       document.getElementById('dayDetailsContainer').style.display = 'block';
+    }
+
+    // Manejar cambio de indicador en el select
+    var chartIndicatorSelect = document.getElementById('chartIndicatorSelect');
+    if(chartIndicatorSelect) {
+      chartIndicatorSelect.addEventListener('change', function() {
+        if(!globalRatingsData || !globalDates || !globalDetails) return;
+        var indicator = this.value;
+        renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
+      });
     }
 
     // 12) Filtrar por rango de fechas
@@ -2047,32 +2080,185 @@
         alert('No hay gráfico para descargar.');
       }
     });
-  });
 
-  // Funciones adicionales para orden y filtro en la tabla de detalles
-  function sortTable(colIndex) {
-    var tbody = document.getElementById('dayDetailsBody');
-    var rows = Array.from(tbody.querySelectorAll('tr'));
-    var th = document.querySelectorAll("#dayDetailsContainer thead th")[colIndex];
-    var sortOrder = th.getAttribute('data-sort') === 'asc' ? 'desc' : 'asc';
-    th.setAttribute('data-sort', sortOrder);
-    rows.sort(function(a, b) {
-      var aText = a.children[colIndex].textContent.trim().toLowerCase();
-      var bText = b.children[colIndex].textContent.trim().toLowerCase();
-      if (!isNaN(aText) && !isNaN(bText)) {
-        return sortOrder === 'asc' ? aText - bText : bText - aText;
-      } else {
-        return sortOrder === 'asc' ? aText.localeCompare(bText) : bText.localeCompare(aText);
+    // =====================================================================================
+    // NUEVA SECCIÓN: MENÚ DESPLEGABLE PARA OPCIONES DE TENDENCIA
+    // =====================================================================================
+    // Se crea el dropdown para elegir entre "Lineal", "Media Móvil", "Descomposición Estacional" y "ARIMA"
+    const chartContainer = document.getElementById("chartContainer");
+    const trendDropdown = document.createElement("div");
+    trendDropdown.className = "dropdown position-absolute";
+    trendDropdown.style.top = "10px";
+    trendDropdown.style.right = "10px";
+    trendDropdown.style.zIndex = "1000";
+    chartContainer.style.position = "relative";
+
+    const trendButton = document.createElement("button");
+    trendButton.className = "btn btn-primary btn-sm dropdown-toggle";
+    trendButton.setAttribute("data-bs-toggle", "dropdown");
+    trendButton.textContent = "Tendencia: Lineal";
+    trendDropdown.appendChild(trendButton);
+
+    const trendMenu = document.createElement("ul");
+    trendMenu.className = "dropdown-menu";
+
+    const trendOptions = ["Lineal", "Media Móvil", "Descomposición Estacional", "ARIMA"];
+    trendOptions.forEach(function(option) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.className = "dropdown-item";
+      a.href = "#";
+      a.textContent = option;
+      a.addEventListener("click", function(e) {
+        e.preventDefault();
+        trendButton.textContent = "Tendencia: " + option;
+        window.trendMethod = option.toLowerCase();
+        if (window.myChartInstance) {
+          updateTrendLineWithMethod(window.myChartInstance, window.trendMethod);
+        }
+      });
+      li.appendChild(a);
+      trendMenu.appendChild(li);
+    });
+    trendDropdown.appendChild(trendMenu);
+    chartContainer.appendChild(trendDropdown);
+
+    // Función para actualizar (o agregar) la línea de tendencia según el método seleccionado
+    function updateTrendLineWithMethod(chart, method) {
+      let trendData = [];
+      // Se calcula a partir del primer dataset (la serie principal)
+      const dataArray = chart.data.datasets[0].data; 
+
+      switch(method) {
+        case "lineal":
+          trendData = calculateTrendLine(dataArray);
+          break;
+        case "media móvil":
+          trendData = calculateMovingAverage(dataArray, 3);
+          break;
+        case "descomposición estacional":
+          trendData = calculateSeasonalTrend(dataArray);
+          break;
+        case "arima":
+          trendData = calculateARIMATrend(dataArray);
+          break;
+        default:
+          trendData = calculateTrendLine(dataArray);
       }
-    });
-    tbody.innerHTML = "";
-    rows.forEach(function(row) {
-      tbody.appendChild(row);
-    });
-  }
 
-  // Funciones para pantalla completa, tendencia, etc.
-  document.addEventListener("DOMContentLoaded", function () {
+      if (!trendLineDataset) {
+        trendLineDataset = {
+          type: "line",
+          label: "Tendencia (" + method + ")",
+          data: trendData,
+          borderColor: "rgba(255, 99, 132, 1)",
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 0,
+          fill: false
+        };
+        chart.data.datasets.push(trendLineDataset);
+      } else {
+        trendLineDataset.label = "Tendencia (" + method + ")";
+        trendLineDataset.data = trendData;
+      }
+      chart.update();
+    }
+
+    // Funciones para calcular la tendencia según distintos métodos:
+    function calculateTrendLine(data) {
+      const n = data.length;
+      if (n < 2) return [];
+      const x = Array.from({ length: n }, (_, i) => i + 1);
+      const y = data;
+      const sumX = x.reduce((a, b) => a + b, 0);
+      const sumY = y.reduce((a, b) => a + b, 0);
+      const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
+      const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+      const intercept = (sumY - slope * sumX) / n;
+      return x.map(xi => slope * xi + intercept);
+    }
+
+    function calculateMovingAverage(data, windowSize) {
+      let result = [];
+      for (let i = 0; i < data.length; i++) {
+        const start = Math.max(0, i - windowSize + 1);
+        const subset = data.slice(start, i + 1);
+        const sum = subset.reduce((a, b) => a + b, 0);
+        result.push(sum / subset.length);
+      }
+      return result;
+    }
+
+    function calculateSeasonalTrend(data) {
+      return calculateMovingAverage(data, 7);
+    }
+
+    // Para ARIMA se simula una proyección usando el método de Holt (suavizado lineal)
+    function calculateARIMATrend(data) {
+      const historical = data.filter(x => x !== null && x !== undefined);
+      const m = historical.length;
+      const n = data.length;
+      if(m === 0) return [];
+      const forecastPart = calculateHoltForecast(historical, n - m);
+      let result = [];
+      for(let i = 0; i < n; i++){
+        if(i < m) {
+          result.push(historical[i]);
+        } else {
+          result.push(forecastPart[i - m]);
+        }
+      }
+      return result;
+    }
+    function calculateHoltForecast(data, nForecasts) {
+       let alpha = 0.8, beta = 0.2;
+       let level = data[0];
+       let trend = data[1] - data[0];
+       for (let i = 1; i < data.length; i++){
+           let prevLevel = level;
+           level = alpha * data[i] + (1 - alpha) * (level + trend);
+           trend = beta * (level - prevLevel) + (1 - beta) * trend;
+       }
+       let forecast = [];
+       for (let h = 1; h <= nForecasts; h++){
+          forecast.push(level + h * trend);
+       }
+       return forecast;
+    }
+    // =====================================================================================
+    // FIN DE LA SECCIÓN NUEVA DE TENDENCIAS
+    // =====================================================================================
+
+    // 14) Funciones adicionales para orden y filtro en la tabla de detalles
+    function sortTable(colIndex) {
+      var tbody = document.getElementById('dayDetailsBody');
+      var rows = Array.from(tbody.querySelectorAll('tr'));
+      var th = document.querySelectorAll("#dayDetailsContainer thead th")[colIndex];
+      var sortOrder = th.getAttribute('data-sort') === 'asc' ? 'desc' : 'asc';
+      th.setAttribute('data-sort', sortOrder);
+      rows.sort(function(a, b) {
+        var aText = a.children[colIndex].textContent.trim().toLowerCase();
+        var bText = b.children[colIndex].textContent.trim().toLowerCase();
+        if (!isNaN(aText) && !isNaN(bText)) {
+          return sortOrder === 'asc' ? aText - bText : bText - aText;
+        } else {
+          return sortOrder === 'asc' ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        }
+      });
+      tbody.innerHTML = "";
+      rows.forEach(function(row) {
+        tbody.appendChild(row);
+      });
+    }
+
+    function showFilterModal(column) {
+      alert("Función de filtro para " + column + " aún no implementada.");
+    }
+
+    // Funciones para pantalla completa, etc.
+    document.addEventListener("DOMContentLoaded", function () {
       const fullscreenBtn = document.getElementById("fullscreenToggleBtn");
       const fullscreenModal = new bootstrap.Modal(document.getElementById("fullscreenModal"));
       const fullscreenContent = document.getElementById("fullscreenContent");
@@ -2080,95 +2266,7 @@
       const tableContainer = document.getElementById("tableContainer");
       const chartIndicatorSelect = document.getElementById("chartIndicatorSelect");
 
-      let lastDisplayedContainer = "chart"; // Por defecto se muestra el gráfico
-      let trendLineVisible = false;
-      let trendLineDataset = null;
-
-      const trendLineBtn = document.createElement("button");
-      trendLineBtn.textContent = "Tendencia";
-      trendLineBtn.className = "btn btn-primary btn-sm position-absolute";
-      trendLineBtn.style.top = "10px";
-      trendLineBtn.style.right = "10px";
-      trendLineBtn.style.zIndex = "1000";
-      chartContainer.style.position = "relative";
-      chartContainer.appendChild(trendLineBtn);
-
-      function calculateTrendLine(data) {
-        const n = data.length;
-        if (n < 2) return [];
-        const x = Array.from({ length: n }, (_, i) => i + 1);
-        const y = data;
-        const sumX = x.reduce((a, b) => a + b, 0);
-        const sumY = y.reduce((a, b) => a + b, 0);
-        const sumXY = x.reduce((acc, xi, i) => acc + xi * y[i], 0);
-        const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-        return x.map(xi => slope * xi + intercept);
-      }
-
-      function calculateStackedTrendLine(datasets, labels) {
-        const n = labels.length;
-        if (n < 2) return [];
-        const x = Array.from({ length: n }, (_, i) => i + 1);
-        const y = labels.map((_, i) =>
-          datasets.reduce((sum, dataset) => {
-            if (!dataset.hidden) return sum + dataset.data[i];
-            return sum;
-          }, 0)
-        );
-        return calculateTrendLine(y);
-      }
-
-      function updateTrendLine(chart) {
-        if (!chart) return;
-        let trendData;
-        if (chart.config.type === "bar" && chart.config.data.datasets.length > 1) {
-          trendData = calculateStackedTrendLine(chart.data.datasets, chart.data.labels);
-        } else {
-          trendData = calculateTrendLine(chart.data.datasets[0].data);
-        }
-        if (!trendLineDataset) {
-          trendLineDataset = {
-            type: "line",
-            label: "Tendencia",
-            data: trendData,
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 2,
-            borderDash: [5, 5],
-            pointRadius: 0,
-            fill: false
-          };
-          chart.data.datasets.push(trendLineDataset);
-        } else {
-          trendLineDataset.data = trendData;
-        }
-        chart.update();
-      }
-
-      function toggleTrendLine(chart) {
-        if (!chart) return;
-        if (trendLineVisible) {
-          chart.data.datasets = chart.data.datasets.filter(ds => ds !== trendLineDataset);
-          trendLineDataset = null;
-        } else {
-          updateTrendLine(chart);
-        }
-        trendLineVisible = !trendLineVisible;
-        chart.update();
-      }
-
-      function showOnlyOneContainer(containerToShow) {
-        if (containerToShow === "chart") {
-          chartContainer.style.display = "block";
-          tableContainer.style.display = "none";
-          lastDisplayedContainer = "chart";
-        } else if (containerToShow === "table") {
-          tableContainer.style.display = "block";
-          chartContainer.style.display = "none";
-          lastDisplayedContainer = "table";
-        }
-      }
+      let lastDisplayedContainer = "chart";
 
       fullscreenBtn.addEventListener("click", function () {
         fullscreenContent.innerHTML = "";
@@ -2197,36 +2295,32 @@
       });
 
       document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
-        showOnlyOneContainer(lastDisplayedContainer);
+        // Se mantiene la última vista
       });
 
       chartIndicatorSelect.addEventListener("change", function () {
-        if (chartIndicatorSelect.value === "table") {
-          showOnlyOneContainer("table");
+        var indicator = this.value;
+        if (indicator === "table") {
+          tableContainer.style.display = "block";
+          chartContainer.style.display = "none";
+          lastDisplayedContainer = "table";
         } else {
-          showOnlyOneContainer("chart");
-        }
-      });
-
-      trendLineBtn.addEventListener("click", function () {
-        if (window.myChartInstance) {
-          toggleTrendLine(window.myChartInstance);
-        }
-      });
-
-      if (window.myChartInstance) {
-        window.myChartInstance.options.plugins.legend.onClick = function (e, legendItem) {
-          const index = legendItem.datasetIndex;
-          const dataset = window.myChartInstance.data.datasets[index];
-          dataset.hidden = !dataset.hidden;
-          if (trendLineVisible) {
-            updateTrendLine(window.myChartInstance);
+          chartContainer.style.display = "block";
+          tableContainer.style.display = "none";
+          lastDisplayedContainer = "chart";
+          if (indicator === "stacked") {
+            renderStackedChart(globalRatingsData, globalDates);
+          } else {
+            renderChart(globalRatingsData, globalDates, globalDetails, "Evaluación de Clientes", indicator);
           }
-          window.myChartInstance.update();
-        };
+        }
+      });
+    });
+    window.addEventListener('resize', function() {
+      if (window.myChartInstance) {
+        window.myChartInstance.resize();
       }
-
-      showOnlyOneContainer(lastDisplayedContainer);
+    });
   });
 </script>
 {% endblock %}

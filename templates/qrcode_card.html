@@ -1,12 +1,11 @@
 <!-- templates/qrcode_card.html -->
-
 {% extends 'base.html' %}
 
 {% block title %}Código QR - PulztagWeb{% endblock %}
 
 {% block content %}
 <style>
-    /* Fondo personalizado igual al de la barra principal */
+    /* Fondo personalizado */
     body {
         background-color: #f8f9fa;
         background-image: url('{{ url_for("static", filename="images/fondo_card3.jpg") }}');
@@ -18,155 +17,204 @@
         display: flex;
         flex-direction: column;
     }
-
-    /* Estilos para la tarjeta del código QR */
+    /* Tarjeta del código QR */
     .qrcode-card {
         background: rgba(255, 255, 255, 0.95);
         border-radius: 20px;
-        padding: 0;
+        padding: 20px;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         max-width: 450px;
         width: 100%;
         text-align: center;
         margin: auto;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-
     .qrcode-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.3);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
     }
-
-    /* Estilo para el encabezado */
+    /* Encabezado (opcional, se mantiene simple) */
     .card-header {
         background: linear-gradient(135deg, #01b9f6 0%, #02a4da 100%);
         color: #ffffff;
+        padding: 10px;
+        border-radius: 15px 15px 0 0;
     }
-
     .card-header h3 {
         margin: 0;
         font-weight: 700;
-        font-size: 1.7rem;
+        font-size: 1.5rem;
     }
-
     /* Imagen del QR */
     .qrcode-image {
-        margin: 20px 0;
+        margin-bottom: 20px;
     }
-
-    /* Botones de acción */
+    .qrcode-image img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    /* Formulario de selección de colores */
+    .color-form {
+        margin-top: 20px;
+        text-align: center;
+    }
+    .color-form .form-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    .color-form input[type="color"],
+    .color-form input[type="text"] {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 5px;
+        font-size: 0.9rem;
+        outline: none;
+    }
+    .color-form input[type="text"] {
+        width: 100px;
+    }
+    /* Botón de generar QR: más pequeño y sobrio */
+    .color-form button {
+        background-color: #01b9f6;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .color-form button:hover {
+        background-color: #0193d4;
+    }
+    /* Estilo para el botón copiar URL, etc. se mantiene igual */
     .action-buttons {
         display: flex;
         justify-content: center;
         gap: 10px;
         margin-top: 20px;
     }
-
-    .action-buttons a {
+    .action-buttons a,
+    .action-buttons button {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border: 2px solid #6a11cb;
         border-radius: 50%;
         color: #6a11cb;
         text-decoration: none;
+        background: transparent;
         transition: background-color 0.3s ease, color 0.3s ease;
     }
-
-    .action-buttons a:hover {
+    .action-buttons a:hover,
+    .action-buttons button:hover {
         background-color: #6a11cb;
         color: #ffffff;
     }
-
-    /* Botón para regresar al perfil */
-    .btn-back {
-        margin-top: 30px;
-    }
-
     /* Ajuste del footer */
     .footer {
         margin-top: auto;
     }
-
-    /* Estilos para dispositivos móviles */
+    /* Responsive */
     @media (max-width: 576px) {
         .qrcode-card {
-            padding: 0;
             max-width: 90%;
         }
-
-        .action-buttons a {
-            width: 40px;
-            height: 40px;
+        .action-buttons a,
+        .action-buttons button {
+            width: 35px;
+            height: 35px;
         }
     }
 </style>
-    
-
 
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
             <div class="card qrcode-card shadow-lg border-0 rounded-lg">
-                <!-- Encabezado con logo y botones -->
+                <!-- Encabezado con logo y botones (sin cambios) -->
                 <div class="card-header text-white d-flex justify-content-between align-items-center p-3">
                     <!-- Logo a la izquierda -->
                     <div>
-                        <img src="{{ url_for('static', filename='images/logocardv2.png') }}" alt="Pulztag Logo" height="30">
+                        <img src="{{ url_for('static', filename='images/logochainwhite.png') }}" alt="Pulztag Logo" height="30">
                     </div>
-                <!-- Botones a la derecha -->
-                <div class="d-flex gap-2">
-                    <a href="{{ qr_url }}" download="{{ entity_type|lower }}_{{ tag_id }}.png" class="btn btn-custom-white btn-icon" title="Descargar QR">
-                        <i class="fas fa-download" style="font-size: 1.0em;"></i>
-                    </a>
-                    <!-- Botón para copiar URL -->
-                    <button class="btn btn-custom-white btn-icon" onclick="copyURL()" title="Copiar URL">
-                        <i class="fas fa-copy" style="font-size: 1.0em;"></i>
-                    </button>
-                    {% if current_user.is_authenticated %}
-                    <!-- Botón Volver -->
-                    <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
-                        <i class="fas fa-chevron-right" style="font-size: 1.0em;"></i>
-                    </a>
-                    {% endif %}
-                    <input type="hidden" id="pageURL" value="{{ share_url }}">
+                    <!-- Botones a la derecha -->
+                    <div class="d-flex gap-2">
+                        <a href="{{ qr_url }}" download="{{ entity_type|lower }}_{{ tag_id }}.png" class="btn btn-custom-white btn-icon" title="Descargar QR">
+                            <i class="fas fa-download" style="font-size: 1.0em;"></i>
+                        </a>
+                        <!-- Botón para copiar URL -->
+                        <button class="btn btn-custom-white btn-icon" onclick="copyURL()" title="Copiar URL">
+                            <i class="fas fa-copy" style="font-size: 1.0em;"></i>
+                        </button>
+                        {% if current_user.is_authenticated %}
+                        <!-- Botón Volver -->
+                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
+                            <i class="fas fa-chevron-right" style="font-size: 1.0em;"></i>
+                        </a>
+                        {% endif %}
+                        <input type="hidden" id="pageURL" value="{{ share_url }}">
+                    </div>
                 </div>
-                </div>
-                <!-- Contenido del código QR -->
+                <!-- Contenido de la tarjeta -->
                 <div class="card-body text-center">
-                    <!-- Título -->
-                    <h3 class="mt-3 mb-4">Código QR de {{ entity_type }}</h3>
-                    <!-- Imagen del QR -->
-                    <div class="qrcode-image">
+                    <!-- Imagen del QR (se muestra primero) -->
+                    <div class="qrcode-image mb-4">
                         <img id="qrImage" src="{{ qr_url }}" alt="Código QR" class="img-fluid rounded shadow-lg">
                     </div>
+                    <!-- Formulario para selección de colores (se muestra abajo) -->
+                    <form class="color-form" method="GET" action="">
+                        <div class="form-group mb-2">
+                            <label for="fg_color" class="d-block mb-1">Color del Código:</label>
+                            <!-- Input tipo color con esquinas redondeadas -->
+                            <input type="color" id="fg_color_picker" name="fg_color" value="{{ fg_color if fg_color else '#000000' }}" class="rounded">
+                            <!-- Input de texto para el código hexadecimal con esquinas redondeadas -->
+                            <input type="text" id="fg_color_text" name="fg_color_text" value="{{ fg_color if fg_color else '#000000' }}" placeholder="#000000" class="rounded">
+                        </div>
+                        <div class="form-group mb-2">
+                            <label for="bg_color" class="d-block mb-1">Color de Fondo:</label>
+                            <input type="color" id="bg_color_picker" name="bg_color" value="{{ bg_color if bg_color else '#ffffff' }}" class="rounded">
+                            <input type="text" id="bg_color_text" name="bg_color_text" value="{{ bg_color if bg_color else '#ffffff' }}" placeholder="#ffffff" class="rounded">
+                        </div>
+                        <!-- Botón más pequeño y sobrio -->
+                        <button type="submit" class="btn btn-secondary btn-sm mt-2">Generar QR</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Script para manejar la carga del QR -->
+<!-- Scripts de sincronización de inputs y manejo del QR -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const qrImage = document.getElementById('qrImage');
-
-        qrImage.onload = function () {
-            qrImage.classList.add('loaded');
-        };
-
-        qrImage.onerror = function () {
-            if (qrLoader) {
-                qrLoader.style.display = 'none';
-            }
-            alert('Error al cargar el código QR. Por favor, intenta de nuevo.');
-        };
+    // Sincroniza el picker y el campo de texto para el color del código
+    const fgPicker = document.getElementById('fg_color_picker');
+    const fgText = document.getElementById('fg_color_text');
+    fgPicker.addEventListener('input', function () {
+        fgText.value = fgPicker.value;
     });
-</script>
-<!-- Script para copiar URL al portapapeles -->
-<script>
+    fgText.addEventListener('change', function () {
+        const val = fgText.value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+            fgPicker.value = val;
+        }
+    });
+    // Sincroniza el picker y el campo de texto para el color de fondo
+    const bgPicker = document.getElementById('bg_color_picker');
+    const bgText = document.getElementById('bg_color_text');
+    bgPicker.addEventListener('input', function () {
+        bgText.value = bgPicker.value;
+    });
+    bgText.addEventListener('change', function () {
+        const val = bgText.value;
+        if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+            bgPicker.value = val;
+        }
+    });
+    // Función para copiar URL al portapapeles
     function copyURL() {
         const url = document.getElementById('pageURL').value;
         navigator.clipboard.writeText(url).then(() => {
@@ -175,7 +223,6 @@
             showAlert('Error al copiar la URL: ' + err, 'danger');
         });
     }
-
     function showAlert(message, type) {
         const alertPlaceholder = document.createElement('div');
         alertPlaceholder.innerHTML = `
@@ -189,5 +236,15 @@
             alertPlaceholder.remove();
         }, 3000);
     }
+    // Manejo de carga de la imagen QR
+    document.addEventListener('DOMContentLoaded', function () {
+        const qrImage = document.getElementById('qrImage');
+        qrImage.onload = function () {
+            qrImage.classList.add('loaded');
+        };
+        qrImage.onerror = function () {
+            alert('Error al cargar el código QR. Por favor, intenta de nuevo.');
+        };
+    });
 </script>
 {% endblock %}

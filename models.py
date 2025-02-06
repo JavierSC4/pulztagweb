@@ -1,5 +1,3 @@
-# models.py
-
 from extensions import db
 from flask_admin.contrib.sqla import ModelView
 from flask_login import UserMixin, current_user
@@ -61,6 +59,10 @@ class Pulzcard(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
     template = db.Column(db.String(20), nullable=False, default='template1')
+    
+    # Campos para configuración de colores en el QR
+    qr_fg_color = db.Column(db.String(7), nullable=False, default='#000000')
+    qr_bg_color = db.Column(db.String(7), nullable=False, default='#ffffff')
 
     # Clave foránea hacia User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -80,6 +82,10 @@ class Tag(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     tag_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     vistas = db.Column(db.Integer, default=0, nullable=False)
+    
+    # Campos para configuración de colores en el QR
+    qr_fg_color = db.Column(db.String(7), nullable=False, default='#000000')
+    qr_bg_color = db.Column(db.String(7), nullable=False, default='#ffffff')
 
     # Clave foránea hacia User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -102,6 +108,10 @@ class Bodega(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     uuid = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     
+    # Campos para configuración de colores en el QR
+    qr_fg_color = db.Column(db.String(7), nullable=False, default='#000000')
+    qr_bg_color = db.Column(db.String(7), nullable=False, default='#ffffff')
+
     # Relación con User usando back_populates
     user = db.relationship('User', back_populates='bodegas')
     
@@ -164,6 +174,10 @@ class DashboardItem(db.Model):
     item_type = db.Column(db.String(50), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Campos para configuración de colores en el QR
+    qr_fg_color = db.Column(db.String(7), nullable=False, default='#000000')
+    qr_bg_color = db.Column(db.String(7), nullable=False, default='#ffffff')
 
     # Relación con User usando back_populates
     user = db.relationship('User', back_populates='dashboard_items')

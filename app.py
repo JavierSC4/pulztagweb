@@ -1056,11 +1056,20 @@ def edit_tag(tag_id):
 @login_required
 def tag_qrcode_image(tag_id):
     tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
+    fg_color = request.args.get('fg_color') or tag.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or tag.qr_bg_color or '#ffffff'
+    # Si se reciben parámetros nuevos, se pueden actualizar en la base de datos (opcional)
+    if 'fg_color' in request.args or 'bg_color' in request.args:
+        tag.qr_fg_color = fg_color
+        tag.qr_bg_color = bg_color
+        db.session.commit()
     url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True)
-    # Generar el código QR
-    qr_img = qrcode.make(url)
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=fg_color, back_color=bg_color)
     img_io = BytesIO()
-    qr_img.save(img_io, 'PNG')
+    img.save(img_io, 'PNG')
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
@@ -1069,19 +1078,44 @@ def tag_qrcode_image(tag_id):
 @login_required
 def tag_qrcode(tag_id):
     tag = Tag.query.filter_by(tag_id=tag_id, user_id=current_user.id).first_or_404()
-    qr_image_url = url_for('tag_qrcode_image', tag_id=tag.tag_id)
+    # Aquí se revisan los parámetros GET; si existen, se usan. De lo contrario, se usan los valores almacenados.
+    fg_color = request.args.get('fg_color') or tag.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or tag.qr_bg_color or '#ffffff'
+    qr_image_url = url_for('tag_qrcode_image', tag_id=tag.tag_id, fg_color=fg_color, bg_color=bg_color)
     share_url = url_for('redirect_tag', tag_id=tag.tag_id, _external=True)
-    return render_template('qrcode_card.html', qr_url=qr_image_url, entity_type='Etiqueta', tag_id=tag_id, share_url=share_url)
-
+    return render_template('qrcode_card.html',
+                           qr_url=qr_image_url,
+                           entity_type='Etiqueta',
+                           tag_id=tag_id,
+                           share_url=share_url,
+                           fg_color=fg_color,
+                           bg_color=bg_color)
 
 @app.route('/pulzcard/qrcode_image/<card_id>')
 @login_required
 def pulzcard_qrcode_image(card_id):
     pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
-    url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)  # Confirmar uso de 'pulzcard_card'
-    qr_img = qrcode.make(url)
+
+    # Se obtiene la configuración: si se envían parámetros GET se usan; si no, se usan los almacenados o valores por defecto.
+    fg_color = request.args.get('fg_color') or pulzcard.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or pulzcard.qr_bg_color or '#ffffff'
+
+    # Si el usuario envió los parámetros (por ejemplo, mediante el formulario de la plantilla)
+    # se actualiza el registro para que la configuración quede grabada.
+    if 'fg_color' in request.args or 'bg_color' in request.args:
+        pulzcard.qr_fg_color = fg_color
+        pulzcard.qr_bg_color = bg_color
+        db.session.commit()
+
+    # Se genera el código QR usando los colores personalizados
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+    url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=fg_color, back_color=bg_color)
+
     img_io = BytesIO()
-    qr_img.save(img_io, 'PNG')
+    img.save(img_io, 'PNG')
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
@@ -1090,14 +1124,21 @@ def pulzcard_qrcode_image(card_id):
 @login_required
 def pulzcard_qrcode(card_id):
     pulzcard = Pulzcard.query.filter_by(card_id=card_id, user_id=current_user.id).first_or_404()
-    qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id)
+    # Si existen parámetros GET, usarlos; de lo contrario, usar lo almacenado
+    fg_color = request.args.get('fg_color') or pulzcard.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or pulzcard.qr_bg_color or '#ffffff'
+    # Ahora, construye la URL de la imagen incluyendo los colores
+    qr_image_url = url_for('pulzcard_qrcode_image', card_id=pulzcard.card_id,
+                           fg_color=fg_color, bg_color=bg_color)
     share_url = url_for('pulzcard_card', card_id=pulzcard.card_id, _external=True)
     return render_template(
         'qrcode_card.html',
         qr_url=qr_image_url,
         entity_type='Pulzcard',
         tag_id=card_id,
-        share_url=share_url
+        share_url=share_url,
+        fg_color=fg_color,
+        bg_color=bg_color
     )
 
 
@@ -1213,11 +1254,19 @@ def delete_bodega(uuid_bodega):
 @login_required
 def bodega_qrcode_image(uuid_bodega):
     bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
+    fg_color = request.args.get('fg_color') or bodega.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or bodega.qr_bg_color or '#ffffff'
+    if 'fg_color' in request.args or 'bg_color' in request.args:
+        bodega.qr_fg_color = fg_color
+        bodega.qr_bg_color = bg_color
+        db.session.commit()
     url = url_for('view_bodega', uuid_bodega=bodega.uuid, _external=True)
-    # Generar el código QR
-    qr_img = qrcode.make(url)
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=fg_color, back_color=bg_color)
     img_io = BytesIO()
-    qr_img.save(img_io, 'PNG')
+    img.save(img_io, 'PNG')
     img_io.seek(0)
     return send_file(img_io, mimetype='image/png')
 
@@ -1226,15 +1275,17 @@ def bodega_qrcode_image(uuid_bodega):
 @login_required
 def bodega_qrcode(uuid_bodega):
     bodega = Bodega.query.filter_by(uuid=uuid_bodega, user_id=current_user.id).first_or_404()
-    qr_image_url = url_for('bodega_qrcode_image', uuid_bodega=bodega.uuid)
+    fg_color = request.args.get('fg_color') or bodega.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or bodega.qr_bg_color or '#ffffff'
+    qr_image_url = url_for('bodega_qrcode_image', uuid_bodega=bodega.uuid, fg_color=fg_color, bg_color=bg_color)
     share_url = url_for('view_bodega', uuid_bodega=bodega.uuid, _external=True)
-    return render_template(
-        'qrcode_card.html',
-        qr_url=qr_image_url,
-        entity_type='Bodega',
-        tag_id=uuid_bodega,
-        share_url=share_url
-    )
+    return render_template('qrcode_card.html',
+                           qr_url=qr_image_url,
+                           entity_type='Bodega',
+                           tag_id=bodega.uuid,
+                           share_url=share_url,
+                           fg_color=fg_color,
+                           bg_color=bg_color)
 
 
 @app.route('/caja/<uuid_caja>', methods=['GET'])
@@ -1696,57 +1747,38 @@ def submit_survey(item_uuid):
 @app.route('/survey_qrcode/<item_uuid>')
 @login_required
 def survey_qrcode(item_uuid):
-    """
-    Genera la página con el QR de la encuesta para un DashboardItem (item_uuid).
-    Muestra el template qrcode_card.html.
-    """
-    # Verificar que el Item pertenezca al usuario logueado
-    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
-    if not item:
-        flash("Este ítem no existe o no te pertenece.", "danger")
-        return redirect(url_for('profile'))
-
-    # Construimos la URL de la encuesta, p. ej. /survey/<item_uuid> en forma absoluta (_external=True)
-    survey_url = url_for('survey', item_uuid=item_uuid, _external=True)
-
-    # Apuntamos a la ruta que devuelve la imagen en PNG
-    # (survey_qrcode_image, que definimos abajo)
-    qr_image_url = url_for('survey_qrcode_image', item_uuid=item_uuid, _external=True)
-
-    # Reutilizamos el template qrcode_card.html
-    # Parametrizamos para que se muestre "Encuesta" como entity_type
-    # y la URL absoluta en "share_url" para que el usuario pueda copiarla.
-    return render_template(
-        'qrcode_card.html',
-        qr_url=qr_image_url,
-        entity_type='Encuesta',
-        tag_id=item_uuid,      # Uso de "tag_id" para mantener tu estructura qrcode_card
-        share_url=survey_url   # URL que el usuario puede copiar
-    )
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first_or_404()
+    fg_color = request.args.get('fg_color') or item.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or item.qr_bg_color or '#ffffff'
+    qr_image_url = url_for('survey_qrcode_image', item_uuid=item_uuid, fg_color=fg_color, bg_color=bg_color, _external=True)
+    share_url = url_for('survey', item_uuid=item_uuid, _external=True)
+    return render_template('qrcode_card.html',
+                           qr_url=qr_image_url,
+                           entity_type='Encuesta',
+                           tag_id=item_uuid,
+                           share_url=share_url,
+                           fg_color=fg_color,
+                           bg_color=bg_color)
 
 
 @app.route('/survey_qrcode_image/<item_uuid>')
 @login_required
 def survey_qrcode_image(item_uuid):
-    """
-    Devuelve la imagen PNG del QR, sin template intermedio.
-    El QR apunta a la URL de la encuesta: /survey/<item_uuid>.
-    """
-    # Verificar que el Item pertenezca al usuario logueado
-    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first()
-    if not item:
-        abort(404, description="Ítem no encontrado.")
-
-    # Construimos la URL final de la encuesta
+    item = DashboardItem.query.filter_by(uuid=item_uuid, user_id=current_user.id).first_or_404()
+    fg_color = request.args.get('fg_color') or item.qr_fg_color or '#000000'
+    bg_color = request.args.get('bg_color') or item.qr_bg_color or '#ffffff'
+    if 'fg_color' in request.args or 'bg_color' in request.args:
+        item.qr_fg_color = fg_color
+        item.qr_bg_color = bg_color
+        db.session.commit()
     survey_url = url_for('survey', item_uuid=item_uuid, _external=True)
-
-    # Generamos el QR
-    img = qrcode.make(survey_url)
+    qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+    qr.add_data(survey_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color=fg_color, back_color=bg_color)
     buf = BytesIO()
     img.save(buf, format='PNG')
     buf.seek(0)
-
-    # Devolvemos la imagen QR como 'image/png'
     return send_file(buf, mimetype='image/png')
 
 @app.after_request
