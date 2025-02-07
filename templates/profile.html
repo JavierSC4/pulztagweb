@@ -225,14 +225,32 @@
 {% endblock %}
 
 {% block content %}
-<!-- NAVBAR superior para pantallas pequeñas -->
-<nav class="navbar navbar-expand-md navbar-light border-bottom d-md-none">
-  <div class="container-fluid">
-    <button class="btn btn-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-      <i class="bi bi-list"></i> Menú
-    </button>
-  </div>
-</nav>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var offcanvasSidebarEl = document.getElementById('offcanvasSidebar');
+    var offcanvasToggleBtn = document.getElementById('offcanvasToggleBtn');
+    
+    // Cuando el off-canvas se muestre, oculta el botón
+    offcanvasSidebarEl.addEventListener('shown.bs.offcanvas', function () {
+      offcanvasToggleBtn.style.display = 'none';
+    });
+    
+    // Cuando se oculte el off-canvas, muestra el botón nuevamente
+    offcanvasSidebarEl.addEventListener('hidden.bs.offcanvas', function () {
+      offcanvasToggleBtn.style.display = 'block';
+    });
+  });
+</script>
+
+<!-- Botón fijo para abrir el off-canvas en móviles -->
+<button id="offcanvasToggleBtn"
+        type="button"
+        class="btn btn-secondary offcanvas-toggle-btn d-md-none"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasSidebar"
+        aria-controls="offcanvasSidebar">
+  <i class="fa-solid fa-bars"></i>
+</button>
 
 <div class="d-md-flex h-100">
   <!-- SIDEBAR para pantallas grandes -->

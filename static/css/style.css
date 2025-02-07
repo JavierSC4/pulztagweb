@@ -13,7 +13,7 @@ body {
     background-size: cover;
     background-attachment: scroll; /* Evita 'fixed' en móviles */
     background-position: center;
-    font-family: 'Roboto', sans-serif; /* Fuente base */
+    font-family: 'Montserrat', sans-serif;
 }
 
 /* Sobrescribe la imagen de fondo para pantallas más grandes (desktops y tablets) */
@@ -177,10 +177,9 @@ h6 {
     background-color: rgba(3, 192, 255, 0.1);
 }
 .nav-link.active {
-    color: #334348de !important;
-    font-weight: 300;
-    background-color: rgba(3, 192, 255, 0.2);
-    border-bottom: 3px solid #334348de;
+    font-weight: normal; /* o el valor que prefieras */
+    font-size: 1rem;     /* establece el tamaño que desees */
+    color: inherit;      /* mantiene el mismo color que el resto */
 }
 
 /* Dropdown Menús */
@@ -683,6 +682,16 @@ a:hover {
         margin: 20px 0;
     }
 }
+
+.offcanvas-toggle-btn {
+    position: fixed;
+    top: 80px;
+    left: 10px;
+    z-index: 1050;
+    background-color: #333333 !important;  /* Color sólido, ajusta según tu diseño */
+    opacity: 1 !important;
+    border: none;  /* Opcional, si deseas eliminar cualquier borde */
+  }
 
 /****************************************************************************/
 /* 15. LOGIN-CARD / REGISTER-CARD Y CONTENT WRAPPER */
