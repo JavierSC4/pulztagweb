@@ -1305,6 +1305,9 @@
   let trendLineDataset = null;
   window.trendMethod = "lineal";  // por defecto
 
+  // Variable para almacenar la instancia del gráfico en pantalla completa
+  window.fullscreenChartInstance = null;
+
   // ----------------------------------------------------------------------------------
   // Al cargar el DOM
   $(document).ready(function() {
@@ -1609,7 +1612,6 @@
           });
           fillTableWithCounts(globalRatingsData);
           renderChart(globalRatingsData, globalDates, globalDetails, itemType, 'count');
-          // La función renderChart se encargará de agregar la línea de tendencia.
         },
         error:function(xhr, status, error){
           hideLoader();
@@ -1750,7 +1752,6 @@
 
       if(indicator === "stacked"){
         renderStackedChart(ratingsData, dates);
-        // Luego de renderizar el gráfico de barras, si existe una opción de tendencia (por ejemplo, se desea extender la línea de tendencia) se puede implementar de forma similar.
         return;
       }
 
@@ -1801,11 +1802,24 @@
             },
             tooltip: {
               callbacks: {
-                label: function (context) {
-                  if (indicator === "sentiment") {
+                label: function(context) {
+                  // Suponemos que 'indicator' es la variable definida en el ámbito de renderChart
+                  if (indicator === "nps") {
+                    // Formateamos el valor como porcentaje con un decimal
+                    const npsValue = context.parsed.y.toFixed(1) + "%";
+                    // Calculamos el total de evaluaciones para el día actual (según el índice del tooltip)
+                    let totalEvaluationsForDay = 0;
+                    for (let rating = 1; rating <= 10; rating++) {
+                      // Accedemos al array de conteos para cada rating
+                      // Si no existe o no hay valor para ese índice, asumimos 0
+                      const val = (globalRatingsData[rating.toString()] || [])[context.dataIndex] || 0;
+                      totalEvaluationsForDay += val;
+                    }
+                    // Retornamos el tooltip en el formato deseado: "77.0% (E=30)"
+                    return npsValue + " (E=" + totalEvaluationsForDay + ")";
+                  } else if (indicator === "sentiment") {
                     return 'Sentimiento: ' + context.parsed.y.toFixed(2);
-                  }
-                  if (indicator === "average" || indicator === "count") {
+                  } else if (indicator === "average" || indicator === "count") {
                     return context.parsed.y.toFixed(1);
                   }
                   return context.parsed.y;
@@ -1813,28 +1827,29 @@
               }
             },
             datalabels: {
-              anchor: 'end',
-              align: 'top',
-              formatter: function (value, ctx) {
-                if (value === 0) { return ''; }
-                let lbl = ctx.dataset.label.toLowerCase();
-                if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
-                  if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
-                  if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
-                  if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
-                    return "E: " + value.toFixed(1) + "%";
-                  }
-                }
-                else if (lbl === "sentiment (análisis de sentimientos)") {
-                  return value.toFixed(2);
-                }
-                else {
-                  return value.toFixed(1) + "%";
-                }
-                return value;
-              },
-              color: 'black',
-              font: { weight: 'bold' }
+              display: false
+            //  anchor: 'end',
+            //  align: 'top',
+            //  formatter: function (value, ctx) {
+            //    if (value === 0) { return ''; }
+            //    let lbl = ctx.dataset.label.toLowerCase();
+            //    if (lbl === "cantidad de evaluaciones" || lbl === "promedio de puntajes" || lbl === "csat (satisfacción del cliente)" || lbl === "ces (esfuerzo del cliente)") {
+            //      if (lbl === "promedio de puntajes") return "E: " + value.toFixed(1);
+            //      if (lbl === "cantidad de evaluaciones") return "E: " + value.toFixed(0);
+            //      if (lbl.indexOf("csat") !== -1 || lbl.indexOf("ces") !== -1) {
+            //        return "E: " + value.toFixed(1) + "%";
+            //      }
+            //    }
+            //    else if (lbl === "sentiment (análisis de sentimientos)") {
+            //      return value.toFixed(2);
+            //    }
+            //    else {
+            //      return value.toFixed(1) + "%";
+            //    }
+            //    return value;
+            //  },
+            //  color: 'black',
+            //  font: { weight: 'bold' }
             }
           },
           onClick: function (evt, elements) {
@@ -1908,22 +1923,34 @@
             },
             tooltip: {
               callbacks: {
-                label: function(context){
-                  return context.dataset.label + ': ' + context.parsed.y;
+                label: function(context) {
+                  // Obtenemos el índice del elemento actual
+                  const index = context.dataIndex;
+                  // Valor del dataset actual
+                  const value = context.parsed.y;
+                  // Total de evaluaciones en ese índice (ya calculado previamente)
+                  const total = totalEvaluations[index];
+                  // Calculamos el porcentaje, con un decimal
+                  let pct = "";
+                  if (total > 0) {
+                    pct = " (" + ((value / total) * 100).toFixed(1) + "%)";
+                  }
+                  return context.dataset.label + ': ' + value + pct;
                 }
               }
             },
             datalabels: {
-              anchor: 'center',
-              align: 'center',
-              formatter: function(value, ctx) {
-                if(value === 0) { return ''; }
-                var total = totalEvaluations[ctx.dataIndex];
-                var pct = ((value / total) * 100).toFixed(1) + "%";
-                return "E: " + value + "\n" + pct;
-              },
-              color: 'white',
-              font: { weight: 'bold' }
+              display: false
+            //  anchor: 'center',
+            //  align: 'center',
+            //  formatter: function(value, ctx) {
+            //    if(value === 0) { return ''; }
+            //    var total = totalEvaluations[ctx.dataIndex];
+            //    var pct = ((value / total) * 100).toFixed(1) + "%";
+            //    return "E: " + value + "\n" + pct;
+            //  },
+            //  color: 'white',
+            //  font: { weight: 'bold' }
             }
           },
           scales: {
@@ -1949,45 +1976,34 @@
       var detailsTitle = document.getElementById('detailsTitle');
       detailsTitle.textContent = "Detalles del día: " + dateStr;
       
-      // Reconstruir encabezados con botones de ordenación y filtro
+      // Reconstruir encabezados con botones de ordenación
       var theadRow = document.querySelector("#dayDetailsContainer thead tr");
       theadRow.innerHTML = ""; // Limpiar encabezados previos
       
       var thRating = document.createElement('th');
       thRating.id = "thRating";
       thRating.style.cursor = "pointer";
-      thRating.addEventListener('click', function(e) {
-        if (e.target.closest('.fa-filter')) return;
+      thRating.addEventListener('click', function() {
         sortTable(0);
       });
-      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterRatingIcon" style="margin-left:5px; cursor:pointer;"></i>';
-      
+      thRating.innerHTML = 'Evaluación (1 a 10) <i class="fa fa-sort" aria-hidden="true"></i>';
+
       var thComment = document.createElement('th');
       thComment.id = "thComment";
       thComment.style.cursor = "pointer";
-      thComment.addEventListener('click', function(e) {
-        if (e.target.closest('.fa-filter')) return;
+      thComment.addEventListener('click', function() {
         sortTable(1);
       });
-      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i> <i class="fa fa-filter" id="filterCommentIcon" style="margin-left:5px; cursor:pointer;"></i>';
+      thComment.innerHTML = 'Comentario <i class="fa fa-sort" aria-hidden="true"></i>';
       
       theadRow.appendChild(thRating);
       theadRow.appendChild(thComment);
       
-      // Agregar eventos a los íconos de filtro
-      document.getElementById('filterRatingIcon').addEventListener('click', function(e) {
-        e.stopPropagation();
-        showFilterModal('rating');
-      });
-      document.getElementById('filterCommentIcon').addEventListener('click', function(e) {
-        e.stopPropagation();
-        showFilterModal('comment');
-      });
-      
       // Rellenar el cuerpo de la tabla
       var tbody = document.getElementById('dayDetailsBody');
       tbody.innerHTML = "";
-      if(!responses.length) {
+      
+      if (!responses.length) {
         var row = document.createElement('tr');
         var cell = document.createElement('td');
         cell.colSpan = 2;
@@ -2006,6 +2022,7 @@
           tbody.appendChild(row);
         });
       }
+      
       document.getElementById('dayDetailsContainer').style.display = 'block';
     }
 
@@ -2084,7 +2101,6 @@
     // =====================================================================================
     // NUEVA SECCIÓN: MENÚ DESPLEGABLE PARA OPCIONES DE TENDENCIA
     // =====================================================================================
-    // Se crea el dropdown para elegir entre "Lineal", "Media Móvil", "Descomposición Estacional" y "ARIMA"
     const chartContainer = document.getElementById("chartContainer");
     const trendDropdown = document.createElement("div");
     trendDropdown.className = "dropdown position-absolute";
@@ -2102,7 +2118,7 @@
     const trendMenu = document.createElement("ul");
     trendMenu.className = "dropdown-menu";
 
-    const trendOptions = ["Lineal", "Media Móvil", "Descomposición Estacional", "ARIMA"];
+    const trendOptions = ["Lineal", "Media Móvil", "Descomposición Estacional"];
     trendOptions.forEach(function(option) {
       const li = document.createElement("li");
       const a = document.createElement("a");
@@ -2116,6 +2132,9 @@
         if (window.myChartInstance) {
           updateTrendLineWithMethod(window.myChartInstance, window.trendMethod);
         }
+        if (window.fullscreenChartInstance) {
+          updateTrendLineWithMethod(window.fullscreenChartInstance, window.trendMethod);
+        }
       });
       li.appendChild(a);
       trendMenu.appendChild(li);
@@ -2123,49 +2142,146 @@
     trendDropdown.appendChild(trendMenu);
     chartContainer.appendChild(trendDropdown);
 
+    function filterDataUntilLastClosed(dates, data) {
+      const today = new Date();
+      // Definimos el último día cerrado: día de hoy menos 1 día
+      const lastClosed = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+      let filteredDates = [];
+      let filteredData = [];
+      for (let i = 0; i < dates.length; i++) {
+        // Suponiendo que cada elemento de dates es una cadena en formato ISO o similar
+        const currentDate = new Date(dates[i]);
+        if (currentDate <= lastClosed) {
+          filteredDates.push(dates[i]);
+          filteredData.push(data[i]);
+        }
+      }
+      return { filteredDates, filteredData };
+    }
+
     // Función para actualizar (o agregar) la línea de tendencia según el método seleccionado
     function updateTrendLineWithMethod(chart, method) {
-      let trendData = [];
-      // Se calcula a partir del primer dataset (la serie principal)
-      const dataArray = chart.data.datasets[0].data; 
+      // 1. Obtén el array completo de fechas y datos
+      const fullDates = chart.data.labels;                   // Ejemplo: 15 días
+      const fullDataArray = chart.data.datasets[0].data;       // Valores asociados
 
+      // 2. Definir "hoy" y el "último día cerrado" (suponiendo que hoy no está cerrado)
+      const today = new Date();
+      // Último día cerrado: un día antes de hoy
+      const lastClosed = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+
+      // 3. Filtrar los datos reales: solo aquellos cuya fecha sea <= lastClosed.
+      let realDates = [];
+      let realData = [];
+      for (let i = 0; i < fullDates.length; i++) {
+        const currentDate = new Date(fullDates[i]);
+        if (currentDate <= lastClosed) {
+          realDates.push(fullDates[i]);
+          realData.push(fullDataArray[i]);
+        }
+      }
+      
+      // Si no hay datos reales, no se puede calcular la tendencia.
+      if(realData.length === 0) return;
+      
+      // 4. Calcula la tendencia real con los datos reales
+      let realTrend = [];
       switch(method) {
         case "lineal":
-          trendData = calculateTrendLine(dataArray);
+          realTrend = calculateTrendLine(realData);
           break;
         case "media móvil":
-          trendData = calculateMovingAverage(dataArray, 3);
+          realTrend = calculateMovingAverage(realData, 3);
           break;
         case "descomposición estacional":
-          trendData = calculateSeasonalTrend(dataArray);
-          break;
-        case "arima":
-          trendData = calculateARIMATrend(dataArray);
+          realTrend = calculateSeasonalTrend(realData);
           break;
         default:
-          trendData = calculateTrendLine(dataArray);
+          realTrend = calculateTrendLine(realData);
       }
+      
+      // La cantidad de datos reales (la parte "cerrada")
+      const realCount = realTrend.length; // Por ejemplo, si se tienen datos hasta ayer, realCount equivale al número de días cerrados
 
-      if (!trendLineDataset) {
-        trendLineDataset = {
-          type: "line",
-          label: "Tendencia (" + method + ")",
-          data: trendData,
-          borderColor: "rgba(255, 99, 132, 1)",
-          borderWidth: 2,
-          borderDash: [5, 5],
-          pointRadius: 0,
-          fill: false
-        };
-        chart.data.datasets.push(trendLineDataset);
+      // 5. Calcular la proyección para los días futuros (incluyendo el día de unión)
+      // Queremos que el primer valor proyectado sea igual al último valor real.
+      let projectionTrend = [];
+      if (method === "lineal") {
+        // Función auxiliar para obtener pendiente e intersección con los datos reales
+        function getSlopeIntercept(data) {
+          const n = data.length;
+          if(n < 2) return { slope: 0, intercept: data[0] || 0 };
+          const x = Array.from({ length: n }, (_, i) => i + 1); // x = 1, 2, ..., n
+          const sumX = x.reduce((a, b) => a + b, 0);
+          const sumY = data.reduce((a, b) => a + b, 0);
+          const sumXY = x.reduce((acc, xi, i) => acc + xi * data[i], 0);
+          const sumX2 = x.reduce((acc, xi) => acc + xi * xi, 0);
+          const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+          const intercept = (sumY - slope * sumX) / n;
+          return { slope, intercept };
+        }
+        const { slope, intercept } = getSlopeIntercept(realData);
+        
+        // Queremos que la proyección comience en el mismo punto donde termina la parte real.
+        // Asumamos que para los datos reales, el "x" asignado es 1,2,..., realCount.
+        // Entonces, el último valor real corresponde a x = realCount.
+        // Para la proyección, definiremos x a partir de realCount (el punto de unión) hasta fullDates.length.
+        // Aseguramos que el primer valor proyectado (x = realCount) sea igual al último valor real:
+        projectionTrend.push(realTrend[realCount - 1]); // Primer punto de proyección
+        for (let i = realCount; i < fullDates.length; i++) {
+          // Usamos x = i + 1
+          projectionTrend.push(slope * (i + 1) + intercept);
+        }
       } else {
-        trendLineDataset.label = "Tendencia (" + method + ")";
-        trendLineDataset.data = trendData;
+        // Para otros métodos, se extiende de forma constante: el valor se repite.
+        const lastValue = realTrend[realTrend.length - 1];
+        // El primer punto de proyección se fija igual al último valor real.
+        projectionTrend.push(lastValue);
+        for (let i = realCount; i < fullDates.length; i++) {
+          projectionTrend.push(lastValue);
+        }
       }
+      
+      // 6. Construir los arrays que se usarán en los datasets
+      // Dataset de la línea real: se asignan los valores reales en las primeras posiciones y null en el resto.
+      const redData = realTrend.concat(new Array(fullDates.length - realCount).fill(null));
+      
+      // Dataset de la proyección: se ponen null hasta el punto de unión (índice realCount - 1) y luego los valores proyectados.
+      // Esto garantiza que en el índice (realCount - 1) ambos datasets tengan el mismo valor.
+      const yellowData = new Array(realCount - 1).fill(null).concat(projectionTrend);
+      
+      // 7. Eliminar cualquier dataset de tendencia previo (tanto "Tendencia" como "Proyección")
+      chart.data.datasets = chart.data.datasets.filter(ds => 
+        !ds.label.includes("Tendencia") && !ds.label.includes("Proyección")
+      );
+      
+      // 8. Agregar el dataset de la línea real (por ejemplo, en rojo)
+      chart.data.datasets.push({
+        type: "line",
+        label: "Tendencia (real, " + method + ")",
+        data: redData,
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 2,
+        fill: false,
+        pointRadius: 3
+      });
+      
+      // 9. Agregar el dataset de la proyección (en amarillo)
+      chart.data.datasets.push({
+        type: "line",
+        label: "Proyección (" + method + ")",
+        data: yellowData,
+        borderColor: "yellow",
+        borderWidth: 2,
+        borderDash: [5, 5],
+        fill: false,
+        pointRadius: 3
+      });
+      
+      // 10. Actualiza el gráfico
       chart.update();
     }
 
-    // Funciones para calcular la tendencia según distintos métodos:
     function calculateTrendLine(data) {
       const n = data.length;
       if (n < 2) return [];
@@ -2195,23 +2311,22 @@
       return calculateMovingAverage(data, 7);
     }
 
-    // Para ARIMA se simula una proyección usando el método de Holt (suavizado lineal)
-    function calculateARIMATrend(data) {
-      const historical = data.filter(x => x !== null && x !== undefined);
-      const m = historical.length;
-      const n = data.length;
-      if(m === 0) return [];
-      const forecastPart = calculateHoltForecast(historical, n - m);
-      let result = [];
-      for(let i = 0; i < n; i++){
-        if(i < m) {
-          result.push(historical[i]);
-        } else {
-          result.push(forecastPart[i - m]);
-        }
-      }
-      return result;
-    }
+    //function calculateARIMATrend(data) {
+    //  const historical = data.filter(x => x !== null && x !== undefined);
+    //  const m = historical.length;
+    //  const n = data.length;
+    //  if(m === 0) return [];
+    //  const forecastPart = calculateHoltForecast(historical, n - m);
+    //  let result = [];
+    //  for(let i = 0; i < n; i++){
+    //    if(i < m) {
+    //      result.push(historical[i]);
+    //    } else {
+    //      result.push(forecastPart[i - m]);
+    //    }
+    //  }
+    //  return result;
+    //}
     function calculateHoltForecast(data, nForecasts) {
        let alpha = 0.8, beta = 0.2;
        let level = data[0];
@@ -2257,8 +2372,37 @@
       alert("Función de filtro para " + column + " aún no implementada.");
     }
 
-    // Funciones para pantalla completa, etc.
-    document.addEventListener("DOMContentLoaded", function () {
+    // Agregar listener para el botón "Eliminar" en el dashboard
+    document.getElementById('eliminarItemBtn').addEventListener('click', function() {
+      var modalElement = document.getElementById('confirmDeleteDashboardItemModal');
+      var modalInstance = new bootstrap.Modal(modalElement);
+      modalInstance.show();
+    });
+
+    // NUEVA SECCIÓN: Handler para el formulario de eliminación de ítem del dashboard
+    $('#deleteDashboardItemForm').submit(function(e) {
+      e.preventDefault();
+      var item_id = $('#eliminarItemBtn').data('item-id');
+      $.ajax({
+         url: "{{ url_for('delete_dashboard_item') }}",
+         type: "POST",
+         contentType: "application/json",
+         data: JSON.stringify({ uuid: item_id }),
+         headers: { 'X-CSRFToken': '{{ csrf_token() }}' },
+         success: function(resp) {
+             // Remover el ítem del sidebar (ambas versiones)
+             $('.dashboard-item-link[data-item-id="'+item_id+'"]').closest('li').remove();
+             $('#confirmDeleteDashboardItemModal').modal('hide');
+         },
+         error: function(err) {
+             alert('Error al eliminar el ítem.');
+         }
+      });
+    });
+  });
+
+  // Funciones para pantalla completa y otras funciones relacionadas fuera del $(document).ready()
+  document.addEventListener("DOMContentLoaded", function () {
       const fullscreenBtn = document.getElementById("fullscreenToggleBtn");
       const fullscreenModal = new bootstrap.Modal(document.getElementById("fullscreenModal"));
       const fullscreenContent = document.getElementById("fullscreenContent");
@@ -2274,6 +2418,11 @@
           const clonedChartContainer = chartContainer.cloneNode(true);
           clonedChartContainer.style.height = "100%";
           clonedChartContainer.style.width = "100%";
+          // Eliminar el menú de tendencia del contenedor clonado:
+          const dropdownInClone = clonedChartContainer.querySelector(".dropdown");
+          if (dropdownInClone) {
+            dropdownInClone.remove();
+          }
           fullscreenContent.appendChild(clonedChartContainer);
           const oldCanvas = clonedChartContainer.querySelector("canvas");
           const newCanvas = document.createElement("canvas");
@@ -2282,7 +2431,10 @@
           setTimeout(() => {
             const ctx = newCanvas.getContext("2d");
             if (window.myChartInstance) {
-              new Chart(ctx, window.myChartInstance.config);
+              window.fullscreenChartInstance = new Chart(ctx, window.myChartInstance.config);
+              if (window.trendMethod) {
+                updateTrendLineWithMethod(window.fullscreenChartInstance, window.trendMethod);
+              }
             }
           }, 200);
         } else if (lastDisplayedContainer === "table") {
@@ -2295,7 +2447,8 @@
       });
 
       document.getElementById("fullscreenModal").addEventListener("hidden.bs.modal", function () {
-        // Se mantiene la última vista
+        // Se reinicia la instancia de pantalla completa al cerrar el modal
+        window.fullscreenChartInstance = null;
       });
 
       chartIndicatorSelect.addEventListener("change", function () {
@@ -2315,12 +2468,11 @@
           }
         }
       });
-    });
-    window.addEventListener('resize', function() {
-      if (window.myChartInstance) {
-        window.myChartInstance.resize();
-      }
-    });
+      window.addEventListener('resize', function() {
+        if (window.myChartInstance) {
+          window.myChartInstance.resize();
+        }
+      });
   });
 </script>
 {% endblock %}
