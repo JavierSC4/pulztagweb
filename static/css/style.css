@@ -1,3 +1,5 @@
+/* static/css/style.css */
+
 /****************************************************************************/
 /* 1. RESETEO / CONFIGURACIONES GLOBALES */
 /****************************************************************************/
@@ -9,11 +11,11 @@ html, body {
 
 /* Definición de fondo por defecto para dispositivos móviles */
 body {
+    font-family: 'Lato', sans-serif;
     background-image: url("/static/images/bg2.jpg");
     background-size: cover;
     background-attachment: scroll; /* Evita 'fixed' en móviles */
     background-position: center;
-    font-family: 'Montserrat', sans-serif;
 }
 
 /* Sobrescribe la imagen de fondo para pantallas más grandes (desktops y tablets) */
@@ -34,7 +36,6 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Montserrat', sans-serif;
     color: #2F2C2C;
 }
 
@@ -141,7 +142,6 @@ h6 {
 }
 
 .navbar-brand {
-    font-family: 'Montserrat', sans-serif;
     font-size: 1.8rem;
     display: flex;
     align-items: center;
@@ -424,7 +424,6 @@ form button:hover {
 }
 .card-title {
     color: #103141d3;
-    font-family: 'Montserrat', sans-serif;
     font-size: 1.5rem;
 }
 
