@@ -1,3 +1,5 @@
+<!-- templates/pulzcard/template3.html -->
+
 {% extends 'base.html' %}
 
 {% block navbar %}
@@ -312,9 +314,7 @@ Tu Pulzcard - PulztagWeb
                         <i class="fa-solid fa-address-book"></i>
                     </a>
                     <!-- Agregar a Wallet (pkpass) -->
-                    <a href="{{ url_for('add_to_wallet', filename=card_id + '.pkpass') }}"
-                       class="action-btn"
-                       title="Agregar a Wallet">
+                    <a href="{{ url_for('agregar_al_wallet') }}" class="action-btn" title="Agregar a Wallet">
                         <i class="fa-solid fa-wallet"></i>
                     </a>
                     <!-- Copiar URL -->
