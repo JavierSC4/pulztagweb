@@ -704,25 +704,31 @@ def delete_bulk_pulzcards():
 def save_contact(filename):
     """
     Sirve el archivo vCard para que el usuario pueda guardarlo en su dispositivo.
-    Se espera que el archivo exista en VCARD_FOLDER.
+    En iOS, al no enviarlo como 'attachment', Safari abre la opción de 'Agregar Contacto'.
     """
     file_path = os.path.join(VCARD_FOLDER, filename)
     if not os.path.exists(file_path):
         flash('Archivo vCard no encontrado.', 'danger')
-        return redirect(url_for('main.home'))
-    return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+        return redirect(url_for('home'))  # Ajusta la redirección como quieras
 
+    # iPhone requiere que se sirva sin "attachment" y con el tipo text/x-vcard
+    return send_from_directory(
+        VCARD_FOLDER,
+        filename,
+        mimetype='text/x-vcard',
+        as_attachment=False  # <-- Esto fuerza el comportamiento de "Abrir" en iOS
+    )
 
 @app.route('/pulzcard/add_to_wallet/<filename>')
 def add_to_wallet(filename):
     """
     Sirve un archivo pkpass para que el usuario lo agregue a Apple Wallet.
-    En un entorno real, aquí se debería generar un pkpass válido.
-    Para propósitos de demostración, si el archivo no existe, se crea un archivo dummy.
+    Actualmente, se genera un dummy. En producción, deberías generar
+    un pkpass válido (con tu certificado, manifest, etc.).
     """
     file_path = os.path.join(WALLET_FOLDER, filename)
     if not os.path.exists(file_path):
-        # Generar un archivo pkpass de demostración (en producción se debe generar un pass válido)
+        # Generar un archivo pkpass dummy
         dummy_content = (
             "----- BEGIN APPLE WALLET PASS -----\n"
             "Nombre: Pulzcard\n"
@@ -733,10 +739,13 @@ def add_to_wallet(filename):
             with open(file_path, 'w') as f:
                 f.write(dummy_content)
         except Exception as e:
-            print(f"Error al generar el pass de Wallet: {e}")
             flash('Error al generar el pass de Wallet.', 'danger')
-            return redirect(url_for('main.home'))
-    return send_from_directory(WALLET_FOLDER, filename, as_attachment=True)
+            return redirect(url_for('home'))
+    return send_from_directory(
+        WALLET_FOLDER,
+        filename,
+        as_attachment=True  # Suele descargarse y luego se abre con Wallet
+    )
 
 # Ruta: Perfil de Usuario
 @app.route('/profile', methods=['GET', 'POST'])

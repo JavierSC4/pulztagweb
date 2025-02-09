@@ -12,7 +12,7 @@ Tu Pulzcard - PulztagWeb
 <!-- Estilos y estructura completa del template -->
 <style>
     /* =========================================
-       REGLAS BÁSICAS PARA OCUPAR TODA LA PANTALLA
+       REGLAS BÁSICAS Y RESET
        ========================================= */
     html, body {
         margin: 0;
@@ -24,16 +24,14 @@ Tu Pulzcard - PulztagWeb
     }
 
     /* =========================================
-       BACKGROUND PRINCIPAL
+       BACKGROUND PRINCIPAL CON OVERLAY OSCURO
        ========================================= */
     body {
-        margin-top: -170px;
+        margin-top: -100px; /* Ajusta según tu navbar base.html */
         position: relative;
         background: url('{{ url_for("static", filename="images/83456.jpg") }}') no-repeat center center;
         background-size: cover;
     }
-
-    /* Overlay oscuro para dar contraste */
     body::before {
         content: "";
         position: fixed;
@@ -41,8 +39,9 @@ Tu Pulzcard - PulztagWeb
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgb(0, 0, 0);
+        background: rgb(63, 63, 63);
         z-index: -1;
+        opacity: 0.7; /* ligero oscurecimiento */
     }
 
     /* =========================================
@@ -56,70 +55,122 @@ Tu Pulzcard - PulztagWeb
        TARJETA PRINCIPAL CON EFECTO "GLASS"
        ========================================= */
     .pulzcard-template {
-        max-width: 1000px;
+        width: 100%;
+        max-width: 770px;
+        min-height: 485px; /* Altura mínima aproximada de una tarjeta "clásica" */
         margin: 0 auto;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(46, 46, 46, 0.5);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 15px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        overflow: hidden;
+        overflow: hidden; /* Limita el brillo */
+        position: relative;
         transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
-        display: flex;
-        flex-direction: row;
     }
+    /* Efecto al hacer hover en toda la tarjeta */
     .pulzcard-template:hover {
         transform: scale(1.02);
         box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    }
+    /* Shine aplicado cuando se hace hover en .pulzcard-template */
+    .pulzcard-template:hover .pulzcard-inner::after {
+        left: 125%;
+    }
+
+    /* Contenedor interno para organizar (card-left, card-right) + after del "shine" */
+    .pulzcard-inner {
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: 100%;
+    }
+    .pulzcard-inner::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: skewX(-25deg);
+        transition: left 0.5s ease;
+        z-index: 0;
+        pointer-events: none;
     }
 
     /* =========================================
        SECCIÓN IZQUIERDA (FOTO PERFIL)
        ========================================= */
     .card-left {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.112), rgba(120, 120, 120, 0));
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(120, 120, 120, 0));
         flex: 1 1 25%;
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         padding: 30px;
-        position: relative;
-    }
-    .card-left .logo-container img {
-        height: 50px;
+        z-index: 1; /* Delante del shine */
     }
     .profile-image {
         width: 220px;
         height: 220px;
         border-radius: 25%;
         object-fit: cover;
-        border: 1px solid rgba(0, 0, 0, 0.3);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-        margin-top: 20px;
-        margin-bottom: 20px;
-        transition: transform 0.8s ease-in-out;
-    }
-    .profile-image:hover {
-        transform: scale(1.1);
+        margin: 20px 0;
     }
 
     /* =========================================
-       SECCIÓN DERECHA (DATOS + BOTONES ACCIÓN)
+       SECCIÓN DERECHA (DATOS Y BOTONES)
        ========================================= */
     .card-right {
         flex: 1 1 60%;
         display: flex;
         flex-direction: column;
         padding: 30px;
-        color: #89888885;
+        color: #e1e1e1; /* Texto claro */
         position: relative;
+        z-index: 2; /* Para que quede por delante de .pulzcard-inner::after */
     }
+    /* Botones de acción en una fila, alineados a la derecha */
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        margin-left: auto;
+        position: relative;
+        z-index: 2;
+    }
+    .action-buttons a,
+    .action-buttons button {
+        background-color: rgba(255, 255, 255, 0);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0 !important;
+        border-radius: 50%; /* círculo */
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffffb5;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .action-buttons a:hover,
+    .action-buttons button:hover {
+        background-color: rgba(112, 112, 112, 0.4);
+    }
+
+    /* =========================================
+       ENCABEZADO: NOMBRE Y PUESTO
+       ========================================= */
     .card-header-right {
         margin-bottom: 20px;
     }
     .card-header-right .card-title {
-        color: #004266;
+        color: #00a9ff;
         font-size: 2rem;
         font-weight: 400;
         margin: 0;
@@ -127,37 +178,8 @@ Tu Pulzcard - PulztagWeb
     .card-header-right .card-subtitle {
         font-size: 1.2rem;
         font-weight: 400;
-        opacity: 0.8;
+        opacity: 0.9;
         margin: 5px 0 0 0;
-    }
-
-    /* =========================================
-       BOTONES DE ACCIÓN (REDONDOS ORIGINALES)
-       ========================================= */
-    .action-buttons {
-        display: flex;
-        gap: 12px;
-        position: absolute;
-        top: 10px;
-        right: 10px;
-    }
-    .action-buttons a,
-    .action-buttons button {
-        background-color: rgba(255, 255, 255, 0.2);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: #fff;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-    }
-    .action-buttons a:hover,
-    .action-buttons button:hover {
-        background-color: rgba(0, 66, 102, 1);
     }
 
     /* =========================================
@@ -169,27 +191,24 @@ Tu Pulzcard - PulztagWeb
         background-color: rgba(255, 255, 255, 0.3);
         margin: 20px 0;
     }
-    .contact-info {
-        margin: 15px 0 0 0;
-    }
     .contact-info p {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 1rem;
         margin: 10px 0;
+        color: #fdfdfd;
     }
     .contact-info i {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.7);
         font-size: 1.2rem;
     }
     .contact-info a {
-        color: #ffffffa9;
+        color: #ffffffc9;
         text-decoration: none;
-        border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
     }
     .contact-info a:hover {
-        color: #004266;
+        color: #00a9ff;
         text-decoration: underline;
     }
 
@@ -200,7 +219,8 @@ Tu Pulzcard - PulztagWeb
         margin-top: 30px;
     }
     .instructions h5 {
-        font-size: 1.3rem;
+        color: #00a9ff;
+        font-size: 1.2rem;
         margin-bottom: 10px;
         font-weight: 600;
     }
@@ -215,38 +235,16 @@ Tu Pulzcard - PulztagWeb
         gap: 8px;
         margin-bottom: 8px;
         font-size: 1rem;
-        opacity: 0.9;
+        color: #c4c4c4;
     }
     .instructions li i {
         color: rgba(255, 255, 255, 0.6);
+        font-size: 1.2rem;
     }
 
     /* =========================================
-       RESPONSIVE
+       LOGO PEQUEÑO DEBAJO DE LA TARJETA
        ========================================= */
-    @media (max-width: 992px) {
-        .pulzcard-template {
-            flex-direction: column;
-        }
-        .card-left, .card-right {
-            width: 100%;
-            flex: unset;
-        }
-        .action-buttons {
-            top: 20px;
-            right: 20px;
-        }
-    }
-    @media (max-width: 576px) {
-        .profile-image {
-            width: 140px;
-            height: 140px;
-        }
-        .card-title {
-            font-size: 1.6rem;
-        }
-    }
-    /* Estilos para el pequeño logo adicional */
     .small-logo {
         margin-top: 30px;
         text-align: center;
@@ -256,117 +254,166 @@ Tu Pulzcard - PulztagWeb
         width: auto;
         height: auto;
     }
+
+    /* =========================================
+       RESPONSIVE
+       ========================================= */
+    @media (max-width: 992px) {
+        .pulzcard-template {
+            flex-direction: column;
+        }
+        .pulzcard-inner {
+            flex-direction: column;
+        }
+        .card-left, .card-right {
+            width: 100%;
+        }
+    }
+    @media (max-width: 576px) {
+        .container {
+            padding: 30px 10px;
+        }
+        .card-left, .card-right {
+            padding: 15px;
+        }
+        .profile-image {
+            width: 140px;
+            height: 140px;
+        }
+        .card-header-right .card-title {
+            font-size: 1.6rem;
+        }
+        .action-buttons a,
+        .action-buttons button {
+            width: 25px;
+            height: 25px;
+        }
+    }
 </style>
 
 <div class="container">
     <div class="pulzcard-template">
-        <!-- Sección Izquierda (Foto de Perfil) -->
-        <div class="card-left">
-            <img src="{{ url_for('uploaded_file', filename=contact.image_file) }}" alt="Imagen de Perfil" class="profile-image">
-        </div>
-        <!-- Sección Derecha (Datos + Botones de Acción) -->
-        <div class="card-right">
-            <!-- Botones de Acción -->
-            <div class="action-buttons">
-                <!-- Botón para Guardar Contacto -->
-                <a href="{{ url_for('save_contact', filename=card_id + '.vcf') }}" class="action-btn" title="Guardar Contacto">
-                    <i class="fa-solid fa-address-book"></i>
-                </a>
-                <!-- Botón para Agregar a Wallet -->
-                <a href="{{ url_for('add_to_wallet', filename=card_id + '.pkpass') }}" class="action-btn" title="Agregar a Wallet">
-                    <i class="fa-solid fa-wallet"></i>
-                </a>
-                <!-- Botón para Copiar URL -->
-                <button onclick="copyURL()" class="action-btn" title="Copiar URL">
-                    <i class="fa-solid fa-clone"></i>
-                </button>
-                <!-- Botón para Volver -->
-                {% if current_user.is_authenticated %}
-                <a href="{{ url_for('profile') }}" class="action-btn" title="Volver">
-                    <i class="fa-solid fa-angles-left"></i>
-                </a>
-                {% endif %}
+        <!-- Contenedor interno para el contenido -->
+        <div class="pulzcard-inner">
+            <!-- Sección Izquierda (Foto de Perfil) -->
+            <div class="card-left">
+                <img src="{{ url_for('uploaded_file', filename=contact.image_file) }}"
+                     alt="Imagen de Perfil"
+                     class="profile-image">
             </div>
+            <!-- Sección Derecha (Datos y Botones) -->
+            <div class="card-right">
+                <!-- Botones de Acción -->
+                <div class="action-buttons">
+                    <!-- Guardar Contacto (vCard) -->
+                    <a href="{{ url_for('save_contact', filename=card_id + '.vcf') }}"
+                       class="action-btn"
+                       title="Guardar Contacto">
+                        <i class="fa-solid fa-address-book"></i>
+                    </a>
+                    <!-- Agregar a Wallet (pkpass) -->
+                    <a href="{{ url_for('add_to_wallet', filename=card_id + '.pkpass') }}"
+                       class="action-btn"
+                       title="Agregar a Wallet">
+                        <i class="fa-solid fa-wallet"></i>
+                    </a>
+                    <!-- Copiar URL -->
+                    <button onclick="copyURL()" class="action-btn" title="Copiar URL">
+                        <i class="fa-solid fa-clone"></i>
+                    </button>
+                    <!-- Volver a Perfil (sólo para usuarios logueados) -->
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('profile') }}"
+                       class="action-btn"
+                       title="Volver a mi Perfil">
+                        <i class="fa-solid fa-angles-left"></i>
+                    </a>
+                    {% endif %}
+                </div>
 
-            <!-- Encabezado: Nombre y Puesto -->
-            <div class="card-header-right">
-                <h1 class="card-title">{{ contact.full_name }}</h1>
-                <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
-            </div>
+                <!-- Encabezado: Nombre, Puesto y Organización -->
+                <div class="card-header-right">
+                    <h1 class="card-title">{{ contact.full_name }}</h1>
+                    <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
+                </div>
 
-            <div class="divider"></div>
+                <div class="divider"></div>
 
-            <!-- Información de Contacto -->
-            <div class="contact-info">
-                <p>
-                    <i class="fa-solid fa-mobile-screen-button"></i>
-                    <strong>Teléfono:</strong>
-                    <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
-                </p>
-                <p>
-                    <i class="fa-solid fa-envelope"></i>
-                    <strong>Email:</strong>
-                    <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
-                </p>
-                <p>
-                    <i class="fa-solid fa-globe"></i>
-                    <strong>Página Web:</strong>
-                    <a href="{{ contact.website }}" target="_blank">{{ contact.website }}</a>
-                </p>
-                <p>
-                    <i class="fa-solid fa-map-location-dot"></i>
-                    <strong>Dirección:</strong>
-                    {{ contact.address }}
-                </p>
-            </div>
+                <!-- Información de Contacto -->
+                <div class="contact-info">
+                    <p>
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+                        <strong>Teléfono:</strong>
+                        <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-envelope"></i>
+                        <strong>Email:</strong>
+                        <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-globe"></i>
+                        <strong>Página Web:</strong>
+                        <a href="{{ contact.website }}" target="_blank">{{ contact.website }}</a>
+                    </p>
+                    <p>
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <strong>Dirección:</strong>
+                        {{ contact.address }}
+                    </p>
+                </div>
 
-            <!-- Instrucciones -->
-            <div class="instructions">
-                <h5>Instrucciones:</h5>
-                <ul>
-                    <li>
-                        <i class="fa-brands fa-android"></i>
-                        <strong>Android:</strong> Guarda tu contacto en la app de contactos.
-                    </li>
-                    <li>
-                        <i class="fa-brands fa-apple"></i>
-                        <strong>iOS:</strong> Usa el botón "Agregar a Wallet" para guardar tu contacto.
-                    </li>
-                </ul>
-            </div>
-        </div>
+                <!-- Instrucciones -->
+                <div class="instructions">
+                    <h5>Instrucciones:</h5>
+                    <ul>
+                        <li>
+                            <i class="fa-brands fa-android"></i>
+                            <strong>Android:</strong> Guarda tu contacto (descargando el VCF).
+                        </li>
+                        <li>
+                            <i class="fa-brands fa-apple"></i>
+                            <strong>iOS:</strong> Al abrir la vCard, tu iPhone mostrará “Crear Nuevo Contacto”.
+                        </li>
+                    </ul>
+                </div>
+            </div> <!-- card-right -->
+        </div> <!-- pulzcard-inner -->
     </div>
 
-    <!-- Sección adicional: Pequeño logo debajo de la tarjeta -->
+    <!-- Pequeño Logo debajo de la tarjeta -->
     <div class="small-logo">
         <img src="{{ url_for('static', filename='images/logo_tr1.png') }}" alt="Logo Pulztag">
     </div>
 </div>
 
-<!-- Script para copiar URL al portapapeles -->
+<!-- Script para copiar la URL al portapapeles -->
 <script>
-    function copyURL() {
-        const url = document.getElementById('cardURL').value;
-        navigator.clipboard.writeText(url).then(() => {
-            showAlert('URL copiada al portapapeles!', 'success');
-        }).catch(err => {
-            showAlert('Error al copiar la URL: ' + err, 'danger');
-        });
-    }
+function copyURL() {
+    // Obtenemos la URL actual del navegador
+    const url = window.location.href;
+    navigator.clipboard.writeText(url)
+    .then(() => {
+        showAlert('URL copiada al portapapeles!', 'success');
+    })
+    .catch(err => {
+        showAlert('Error al copiar la URL: ' + err, 'danger');
+    });
+}
 
-    function showAlert(message, type) {
-        const alertPlaceholder = document.createElement('div');
-        alertPlaceholder.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert"
-                 style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        `;
-        document.body.appendChild(alertPlaceholder);
-        setTimeout(() => {
-            alertPlaceholder.remove();
-        }, 3000);
-    }
+function showAlert(message, type) {
+    const alertPlaceholder = document.createElement('div');
+    alertPlaceholder.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert"
+             style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    `;
+    document.body.appendChild(alertPlaceholder);
+    setTimeout(() => {
+        alertPlaceholder.remove();
+    }, 3000);
+}
 </script>
 {% endblock content %}
