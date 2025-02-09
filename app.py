@@ -718,6 +718,46 @@ def save_contact(filename):
         mimetype='text/x-vcard',
         as_attachment=False  # <-- Esto fuerza el comportamiento de "Abrir" en iOS
     )
+@app.route('/agregar_al_wallet')
+def agregar_al_wallet():
+    user_agent = request.headers.get("User-Agent", "").lower()
+    # Detectamos si el User-Agent corresponde a iOS (iPhone/iPad)
+    if "iphone" in user_agent or "ipad" in user_agent:
+        # Redirige a la ruta para Apple Wallet (pkpass)
+        # Aquí se asume que 'tu_tarjeta.pkpass' es el archivo correspondiente.
+        return redirect(url_for('add_to_wallet', filename='tu_tarjeta.pkpass'))
+    elif "android" in user_agent:
+        # Redirige a la ruta para Google Wallet
+        # En producción, aquí se debe implementar la integración de Google Wallet.
+        return redirect(url_for('add_to_google_wallet', filename='tu_tarjeta.googlewallet'))
+    else:
+        # Si no se puede detectar la plataforma, se muestra un mensaje o se pueden mostrar ambas opciones.
+        return "No se pudo detectar la plataforma. Por favor, elige manualmente."
+
+@app.route('/add_to_google_wallet/<filename>')
+def add_to_google_wallet(filename):
+    file_path = os.path.join(WALLET_FOLDER, filename)
+    # Si el archivo no existe, generamos un dummy de demostración.
+    if not os.path.exists(file_path):
+        dummy_content = (
+            "----- BEGIN GOOGLE WALLET PASS -----\n"
+            "Este es un pase de demostración para Google Wallet.\n"
+            "No está firmado ni es un pase real.\n"
+            "----- END GOOGLE WALLET PASS -----"
+        )
+        try:
+            with open(file_path, 'w') as f:
+                f.write(dummy_content)
+        except Exception as e:
+            flash(f'Error al generar el pase de Google Wallet: {e}', 'danger')
+            return redirect(url_for('home'))
+    # Servir el archivo (para pruebas se usa un MIME type genérico)
+    return send_from_directory(
+        WALLET_FOLDER,
+        filename,
+        mimetype='application/octet-stream',
+        as_attachment=False
+    )
 
 @app.route('/pulzcard/add_to_wallet/<filename>')
 def add_to_wallet(filename):
