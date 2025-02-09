@@ -723,28 +723,36 @@ def save_contact(filename):
 def add_to_wallet(filename):
     """
     Sirve un archivo pkpass para que el usuario lo agregue a Apple Wallet.
-    Actualmente, se genera un dummy. En producción, deberías generar
-    un pkpass válido (con tu certificado, manifest, etc.).
+
+    En producción, el .pkpass debe ser un ZIP con todos los archivos 
+    y la firma correcta de Apple PassKit. Además, conviene usar HTTPS y 
+    el certificado Pass Type ID para que iOS lo acepte sin errores.
     """
     file_path = os.path.join(WALLET_FOLDER, filename)
+
+    # Si NO existe, generamos un pkpass de ejemplo (falso)
     if not os.path.exists(file_path):
-        # Generar un archivo pkpass dummy
         dummy_content = (
             "----- BEGIN APPLE WALLET PASS -----\n"
             "Nombre: Pulzcard\n"
-            "Este es un archivo de demostración para Apple Wallet.\n"
+            "Este es un archivo .pkpass de demostración.\n"
+            "No está firmado ni es un pase real.\n"
             "----- END APPLE WALLET PASS -----"
         )
         try:
             with open(file_path, 'w') as f:
                 f.write(dummy_content)
         except Exception as e:
-            flash('Error al generar el pass de Wallet.', 'danger')
-            return redirect(url_for('home'))
+            flash(f'Error al generar el pass de Wallet: {e}', 'danger')
+            return redirect(url_for('home'))  # O la ruta que corresponda
+
+    # Servir el archivo con MIME type oficial. 
+    # Si quieres que iOS abra directamente en Wallet, usa as_attachment=False.
     return send_from_directory(
         WALLET_FOLDER,
         filename,
-        as_attachment=True  # Suele descargarse y luego se abre con Wallet
+        mimetype='application/vnd.apple.pkpass',
+        as_attachment=False  # <--- iOS intenta abrir directamente
     )
 
 # Ruta: Perfil de Usuario
