@@ -98,7 +98,7 @@ h6 {
     border: none;
     border-radius: 10px;
     background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.702);
 }
 .service-card:hover {
     transform: scale(1.05);
@@ -131,7 +131,7 @@ h6 {
     transition: color 0.3s;
 }
 .service-card:hover i {
-    color: #0290b8;
+    color: #343f42;
 }
 
 /****************************************************************************/
@@ -151,9 +151,9 @@ h6 {
 }
 
 .nav-link {
-    color: #555555 !important;
+    color: #00000076 !important;
     transition: color 0.3s, transform 0.3s, background-color 0.3s;
-    font-size: 1.1rem;
+    font-size: 1rem;
     padding: 0.5rem 1rem;
     border-radius: 8px;
     position: relative;
@@ -172,14 +172,14 @@ h6 {
     width: 100%;
 }
 .nav-link:hover {
-    color: #334348de !important;
+    color: #0b0b0b !important;
     transform: translateY(-2px);
     background-color: rgba(3, 192, 255, 0.1);
 }
 .nav-link.active {
-    font-weight: normal; /* o el valor que prefieras */
+    font-weight: bold; /* o el valor que prefieras */
     font-size: 1rem;     /* establece el tamaño que desees */
-    color: inherit;      /* mantiene el mismo color que el resto */
+    color: #00000081 !important;      /* mantiene el mismo color que el resto */
 }
 
 /* Dropdown Menús */
@@ -251,7 +251,7 @@ footer div {
 }
 .btn-primary:hover {
     background-color: #3343486a;
-    border-color: #3343486a;
+    border-color: #33434807;
 }
 
 /* Botones personalizados */

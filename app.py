@@ -82,6 +82,10 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 VCARD_FOLDER = os.path.join(app.instance_path, 'vcards')
 os.makedirs(VCARD_FOLDER, exist_ok=True)
 
+# Nuevo: Directorio para guardar archivos de Wallet
+WALLET_FOLDER = os.path.join(app.instance_path, 'wallets')
+os.makedirs(WALLET_FOLDER, exist_ok=True)
+
 # Directorio para guardar las subidas
 UPLOAD_FOLDER = os.path.join(app.instance_path, 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -695,6 +699,44 @@ def delete_bulk_pulzcards():
         flash('Formulario inválido o token CSRF no válido.', 'danger')
 
     return redirect(url_for('profile') + '#pulzcardsSection')
+
+@app.route('/pulzcard/save_contact/<filename>')
+def save_contact(filename):
+    """
+    Sirve el archivo vCard para que el usuario pueda guardarlo en su dispositivo.
+    Se espera que el archivo exista en VCARD_FOLDER.
+    """
+    file_path = os.path.join(VCARD_FOLDER, filename)
+    if not os.path.exists(file_path):
+        flash('Archivo vCard no encontrado.', 'danger')
+        return redirect(url_for('main.home'))
+    return send_from_directory(VCARD_FOLDER, filename, as_attachment=True)
+
+
+@app.route('/pulzcard/add_to_wallet/<filename>')
+def add_to_wallet(filename):
+    """
+    Sirve un archivo pkpass para que el usuario lo agregue a Apple Wallet.
+    En un entorno real, aquí se debería generar un pkpass válido.
+    Para propósitos de demostración, si el archivo no existe, se crea un archivo dummy.
+    """
+    file_path = os.path.join(WALLET_FOLDER, filename)
+    if not os.path.exists(file_path):
+        # Generar un archivo pkpass de demostración (en producción se debe generar un pass válido)
+        dummy_content = (
+            "----- BEGIN APPLE WALLET PASS -----\n"
+            "Nombre: Pulzcard\n"
+            "Este es un archivo de demostración para Apple Wallet.\n"
+            "----- END APPLE WALLET PASS -----"
+        )
+        try:
+            with open(file_path, 'w') as f:
+                f.write(dummy_content)
+        except Exception as e:
+            print(f"Error al generar el pass de Wallet: {e}")
+            flash('Error al generar el pass de Wallet.', 'danger')
+            return redirect(url_for('main.home'))
+    return send_from_directory(WALLET_FOLDER, filename, as_attachment=True)
 
 # Ruta: Perfil de Usuario
 @app.route('/profile', methods=['GET', 'POST'])

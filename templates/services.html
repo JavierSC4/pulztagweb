@@ -8,13 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <!-- AOS CSS para animaciones -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
-    
-    <style>
-      /* Estilos base para alinear con index.html */
-      body {
-          color: #333;
-      }
-    </style>
 {% endblock %}
 
 {% block title %}Nuestros Servicios - PulztagWeb{% endblock %}
@@ -261,9 +254,6 @@
     </script>
     <style>
       /* Efectos hover en las tarjetas de servicio */
-      .service-card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
       .service-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -273,12 +263,12 @@
           transition: color 0.3s ease;
       }
       .service-card:hover a.btn-outline-primary i {
-          color: #3343486a;
+          color: #f8df00;
       }
       .service-card a.btn-outline-primary:hover {
           background-color: #f8f8f8;
-          border-color: #334348;
-          color: #334348;
+          border-color: #000000;
+          color: #00c3ff;
           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
           transform: scale(1.03);
       }

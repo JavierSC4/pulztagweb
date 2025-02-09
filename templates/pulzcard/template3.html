@@ -1,303 +1,345 @@
-<!-- templates/pulzcard/template3.html -->
-
 {% extends 'base.html' %}
 
-{% block title %}Tu Pulzcard - PulztagWeb{% endblock %}
+{% block navbar %}
+<!-- Se sobrescribe el bloque 'navbar' con contenido vacío para ocultarlo -->
+{% endblock navbar %}
+
+{% block title %}
+Tu Pulzcard - PulztagWeb
+{% endblock title %}
 
 {% block content %}
+<!-- Estilos y estructura completa del template -->
 <style>
-    /* Fondo personalizado solo para esta página */
+    /* =========================================
+       REGLAS BÁSICAS PARA OCUPAR TODA LA PANTALLA
+       ========================================= */
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        box-sizing: border-box;
+        font-family: 'Lato', sans-serif;
+    }
+
+    /* =========================================
+       BACKGROUND PRINCIPAL
+       ========================================= */
     body {
-        background-image: url('{{ url_for("static", filename="images/green_fondo.jpg") }}');
+        margin-top: -170px;
+        position: relative;
+        background: url('{{ url_for("static", filename="images/83456.jpg") }}') no-repeat center center;
         background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        color: #00BCD4; /* Texto claro para contraste */
     }
 
-    /* Estilo para la tarjeta */
+    /* Overlay oscuro para dar contraste */
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgb(0, 0, 0);
+        z-index: -1;
+    }
+
+    /* =========================================
+       CONTENEDOR PRINCIPAL
+       ========================================= */
+    .container {
+        padding: 60px 20px;
+    }
+
+    /* =========================================
+       TARJETA PRINCIPAL CON EFECTO "GLASS"
+       ========================================= */
     .pulzcard-template {
-        background-color: #424242; /* Fondo para la tarjeta */
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(2, 98, 157, 0.7);
-        max-width: 900px;
-        margin: 60px auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         overflow: hidden;
+        transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
         display: flex;
-        flex-direction: column; /* Cambiado a columna para mejor responsividad */
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        flex-direction: row;
     }
-
     .pulzcard-template:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 16px 64px rgba(0, 0, 0, 0.9);
+        transform: scale(1.02);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
     }
 
-    /* Encabezado de la tarjeta */
-    .card-header {
-        background: linear-gradient(135deg, #333333 0%, #555555 100%); /* Gradiente oscuro elegante */
-        color: #00FF00;
-        padding: 20px 30px;
+    /* =========================================
+       SECCIÓN IZQUIERDA (FOTO PERFIL)
+       ========================================= */
+    .card-left {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.112), rgba(120, 120, 120, 0));
+        flex: 1 1 25%;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        border-bottom: 1px solid #444444;
+        padding: 30px;
+        position: relative;
     }
-
-    .card-header h3 {
-        font-size: 1.8rem;
-        font-weight: 700;
+    .card-left .logo-container img {
+        height: 50px;
     }
-
-    /* Estilos para los botones de acción */
-    .action-buttons {
-        display: flex; /* Alineación horizontal */
-        gap: 12px; /* Espacio entre botones */
-    }
-
-    .action-buttons a,
-    .action-buttons button {
-        background-color: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        color: #00FF00;
-    }
-
-    .action-buttons a:hover,
-    .action-buttons button:hover {
-        background-color: #00FF00;
-        color: #00FF00; /* Color de acento */
-    }
-
-    /* Título y subtítulo */
-    .card-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #00FF00;
-        margin: 20px 0 10px 0;
-        text-align: center;
-    }
-
-    .card-subtitle {
-        font-size: 1.3rem;
-        font-weight: 500;
-        color: #b0b0b0;
-        margin-bottom: 25px;
-        text-align: center;
-    }
-
-    /* Imagen de perfil con borde circular y sombra */
     .profile-image {
         width: 220px;
         height: 220px;
-        border: 5px solid #080808;
-        border-radius: 50%;
+        border-radius: 25%;
         object-fit: cover;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        margin-top: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.8s ease-in-out;
     }
-
     .profile-image:hover {
-        transform: scale(1.05);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.7);
+        transform: scale(1.1);
     }
 
-    /* Separador personalizado */
-    hr {
-        border-top: 2px solid #ffffff;
-        opacity: 0.9;
-        width: 85%;
-        margin: 1.5rem auto;
+    /* =========================================
+       SECCIÓN DERECHA (DATOS + BOTONES ACCIÓN)
+       ========================================= */
+    .card-right {
+        flex: 1 1 60%;
+        display: flex;
+        flex-direction: column;
+        padding: 30px;
+        color: #89888885;
+        position: relative;
+    }
+    .card-header-right {
+        margin-bottom: 20px;
+    }
+    .card-header-right .card-title {
+        color: #004266;
+        font-size: 2rem;
+        font-weight: 400;
+        margin: 0;
+    }
+    .card-header-right .card-subtitle {
+        font-size: 1.2rem;
+        font-weight: 400;
+        opacity: 0.8;
+        margin: 5px 0 0 0;
     }
 
-    /* Estilos para la información de contacto */
+    /* =========================================
+       BOTONES DE ACCIÓN (REDONDOS ORIGINALES)
+       ========================================= */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .action-buttons a,
+    .action-buttons button {
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .action-buttons a:hover,
+    .action-buttons button:hover {
+        background-color: rgba(0, 66, 102, 1);
+    }
+
+    /* =========================================
+       DIVISOR E INFORMACIÓN DE CONTACTO
+       ========================================= */
+    .divider {
+        width: 100%;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.3);
+        margin: 20px 0;
+    }
+    .contact-info {
+        margin: 15px 0 0 0;
+    }
     .contact-info p {
-        font-size: 1.1rem;
-        margin: 12px 0;
         display: flex;
         align-items: center;
-        color: #00FF00;
-        justify-content: center;
+        gap: 8px;
+        font-size: 1rem;
+        margin: 10px 0;
     }
-
     .contact-info i {
-        margin-right: 12px;
-        color: #b0b0b0;
-        min-width: 25px;
-        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1.2rem;
     }
-
     .contact-info a {
-        color: #b0b0b0;
+        color: #ffffffa9;
         text-decoration: none;
-        transition: color 0.3s ease;
+        border-bottom: 1px dotted rgba(255, 255, 255, 0.5);
     }
-
     .contact-info a:hover {
-        color: #ffffff;
+        color: #004266;
         text-decoration: underline;
     }
 
-    /* Instrucciones */
+    /* =========================================
+       INSTRUCCIONES
+       ========================================= */
     .instructions {
         margin-top: 30px;
-        text-align: center;
     }
-
     .instructions h5 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-        color: #ffffff;
+        font-size: 1.3rem;
+        margin-bottom: 10px;
         font-weight: 600;
     }
-
     .instructions ul {
         list-style: none;
         padding: 0;
+        margin: 0;
     }
-
     .instructions li {
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin-bottom: 12px;
-        font-size: 1.1rem;
-        color: #b0b0b0;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 1rem;
+        opacity: 0.9;
     }
-
     .instructions li i {
-        margin-right: 10px;
-        color: #b0b0b0;
-        min-width: 30px;
-        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
     }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
+    /* =========================================
+       RESPONSIVE
+       ========================================= */
+    @media (max-width: 992px) {
         .pulzcard-template {
             flex-direction: column;
         }
-
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start;
+        .card-left, .card-right {
+            width: 100%;
+            flex: unset;
         }
-
         .action-buttons {
-            margin-top: 10px;
+            top: 20px;
+            right: 20px;
         }
-
+    }
+    @media (max-width: 576px) {
         .profile-image {
-            width: 180px;
-            height: 180px;
+            width: 140px;
+            height: 140px;
         }
-
         .card-title {
-            font-size: 2.2rem;
+            font-size: 1.6rem;
         }
-
-        .card-subtitle {
-            font-size: 1.1rem;
-        }
-
-        .contact-info p {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .instructions li {
-            flex-direction: column;
-            text-align: center;
-        }
+    }
+    /* Estilos para el pequeño logo adicional */
+    .small-logo {
+        margin-top: 30px;
+        text-align: center;
+    }
+    .small-logo img {
+        max-width: 100px;
+        width: auto;
+        height: auto;
     }
 </style>
 
-<!-- Espaciado Superior -->
-<div style="margin: 60px;"></div>
+<div class="container">
+    <div class="pulzcard-template">
+        <!-- Sección Izquierda (Foto de Perfil) -->
+        <div class="card-left">
+            <img src="{{ url_for('uploaded_file', filename=contact.image_file) }}" alt="Imagen de Perfil" class="profile-image">
+        </div>
+        <!-- Sección Derecha (Datos + Botones de Acción) -->
+        <div class="card-right">
+            <!-- Botones de Acción -->
+            <div class="action-buttons">
+                <!-- Botón para Guardar Contacto -->
+                <a href="{{ url_for('save_contact', filename=card_id + '.vcf') }}" class="action-btn" title="Guardar Contacto">
+                    <i class="fa-solid fa-address-book"></i>
+                </a>
+                <!-- Botón para Agregar a Wallet -->
+                <a href="{{ url_for('add_to_wallet', filename=card_id + '.pkpass') }}" class="action-btn" title="Agregar a Wallet">
+                    <i class="fa-solid fa-wallet"></i>
+                </a>
+                <!-- Botón para Copiar URL -->
+                <button onclick="copyURL()" class="action-btn" title="Copiar URL">
+                    <i class="fa-solid fa-clone"></i>
+                </button>
+                <!-- Botón para Volver -->
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('profile') }}" class="action-btn" title="Volver">
+                    <i class="fa-solid fa-angles-left"></i>
+                </a>
+                {% endif %}
+            </div>
 
-<div class="container mb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="pulzcard-template">
-                <!-- Encabezado con logo y botones -->
-                <div class="card-header">
-                    <!-- Logo a la izquierda -->
-                    <div>
-                        <img src="{{ url_for('static', filename='images/logochainwhite.png') }}" alt="Pulztag Logo" height="45">
-                    </div>
-                    <!-- Botones a la derecha -->
-                    <div class="action-buttons">
-                        <a href="{{ url_for('pulzcard_download_vcard', filename=card_id + '.vcf') }}" download="Pulzcard_{{ contact.full_name.replace(' ', '_') }}.vcf" title="Descargar vCard">
-                            <i class="fa-solid fa-circle-down" style="font-size: 1.0em;"></i>
-                        </a>
-                        <!-- Botón para copiar URL -->
-                        <button onclick="copyURL()" title="Copiar URL">
-                            <i class="fa-solid fa-clone style="font-size: 1.0em;"></i>
-                        </button>
-                        {% if current_user.is_authenticated %}
-                        <!-- Botón Volver -->
-                        <a href="{{ url_for('profile') }}" class="btn btn-custom-white btn-icon" title="Volver al Perfil">
-                            <i class="fa-solid fa-angles-left" style="font-size: 1.0em;"></i>
-                        </a>
-                        {% endif %}
-                        <input type="hidden" id="cardURL" value="{{ request.url }}">
-                    </div>
-                </div>
-                <div style="margin: 10px;"></div>
-                <div class="card-body text-center p-4">
-                    <!-- Imagen de Perfil -->
-                    <div class="mb-4">
-                        <img src="{{ url_for('uploaded_file', filename=contact.image_file) }}" alt="Imagen de Perfil" class="rounded-circle profile-image shadow-lg">
-                    </div>
+            <!-- Encabezado: Nombre y Puesto -->
+            <div class="card-header-right">
+                <h1 class="card-title">{{ contact.full_name }}</h1>
+                <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
+            </div>
 
-                    <h1 class="card-title font-weight-bold mb-3">{{ contact.full_name }}</h1>
-                    <p class="card-subtitle">{{ contact.position }}, {{ contact.organization }}</p>
-                    
-                    <!-- Separador -->
-                    <hr class="my-3">
-                    
-                    <!-- Información de Contacto -->
-                    <div class="mt-4 contact-info">
-                        <p>
-                            <i class="fa-solid fa-mobile-screen-button"></i
-                            <strong>Teléfono:</strong>
-                            <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
-                        </p>
-                        <p>
-                            <i class="fa-solid fa-envelope"></i>
-                            <strong>Email:</strong>
-                            <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
-                        </p>
-                        <p>
-                            <i class="fa-solid fa-globe"></i>>
-                            <strong>Página Web:</strong>
-                            <a href="{{ contact.website }}" target="_blank">{{ contact.website }}</a>
-                        </p>
-                        <p>
-                            <i class="fa-solid fa-map-location"></i>>
-                            <strong>Dirección:</strong> {{ contact.address }}
-                        </p>
-                    </div>
-                    
-                    <!-- Instrucciones para Agregar Contacto -->
-                    <div class="mt-4 instructions">
-                        <h5>Instrucciones:</h5>
-                        <ul>
-                            <li><i class="fa-brands fa-android"></i><strong>Android:</strong> Descarga y abre con la app de contactos.</li>
-                            <li><i class="fa-brands fa-apple"></i><strong>iOS:</strong> Descarga y selecciona "Agregar a contactos".</li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="divider"></div>
+
+            <!-- Información de Contacto -->
+            <div class="contact-info">
+                <p>
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    <strong>Teléfono:</strong>
+                    <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+                </p>
+                <p>
+                    <i class="fa-solid fa-envelope"></i>
+                    <strong>Email:</strong>
+                    <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+                </p>
+                <p>
+                    <i class="fa-solid fa-globe"></i>
+                    <strong>Página Web:</strong>
+                    <a href="{{ contact.website }}" target="_blank">{{ contact.website }}</a>
+                </p>
+                <p>
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <strong>Dirección:</strong>
+                    {{ contact.address }}
+                </p>
+            </div>
+
+            <!-- Instrucciones -->
+            <div class="instructions">
+                <h5>Instrucciones:</h5>
+                <ul>
+                    <li>
+                        <i class="fa-brands fa-android"></i>
+                        <strong>Android:</strong> Guarda tu contacto en la app de contactos.
+                    </li>
+                    <li>
+                        <i class="fa-brands fa-apple"></i>
+                        <strong>iOS:</strong> Usa el botón "Agregar a Wallet" para guardar tu contacto.
+                    </li>
+                </ul>
             </div>
         </div>
+    </div>
+
+    <!-- Sección adicional: Pequeño logo debajo de la tarjeta -->
+    <div class="small-logo">
+        <img src="{{ url_for('static', filename='images/logo_tr1.png') }}" alt="Logo Pulztag">
     </div>
 </div>
 
@@ -315,9 +357,10 @@
     function showAlert(message, type) {
         const alertPlaceholder = document.createElement('div');
         alertPlaceholder.innerHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert"
+                 style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
                 ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         `;
         document.body.appendChild(alertPlaceholder);
@@ -326,4 +369,4 @@
         }, 3000);
     }
 </script>
-{% endblock %}
+{% endblock content %}

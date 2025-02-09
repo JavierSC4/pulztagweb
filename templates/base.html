@@ -4,7 +4,7 @@
     <!-- Configuración básica de caracteres y responsive -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Pulztag{% endblock %}</title>
+    <title>{% block title %}Pulztag{% endblock title %}</title>
 
     <!-- Script para efecto de desplazamiento en el fondo -->
     <script>
@@ -61,8 +61,10 @@
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
 
-    <!-- Navbar global -->
-    {% include 'navbar.html' %}
+    <!-- BLOQUE DEL NAVBAR: se puede sobrescribir en los templates hijos -->
+    {% block navbar %}
+        {% include 'navbar.html' %}
+    {% endblock navbar %}
 
     <!-- Contenedor de mensajes flash (alertas) -->
     <div id="flash-messages" style="position: fixed; top: 90px; left: 0; right: 0; z-index: 1000;">
@@ -90,7 +92,7 @@
     <!-- Contenido principal con margen superior para no quedar tapado por la navbar -->
     <main class="flex-grow-1" style="margin-top: 70px;">
         <div class="container mt-4">
-            {% block content %}{% endblock %}
+            {% block content %}{% endblock content %}
         </div>
     </main>
 
