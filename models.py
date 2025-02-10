@@ -45,30 +45,40 @@ class User(db.Model, UserMixin):
 class Pulzcard(db.Model):
     __tablename__ = 'pulzcards'
     
-    id = db.Column(db.Integer, primary_key=True)
-    card_name = db.Column(db.String(100), nullable=False)
-    first_name = db.Column(db.String(50), nullable=False)
-    last_name = db.Column(db.String(50), nullable=False)
-    organization = db.Column(db.String(100), nullable=False)
-    position = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(120), nullable=False)
-    website = db.Column(db.String(200), nullable=False)
-    address = db.Column(db.String(200), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # Identificador único interno (entero)
+    card_name = db.Column(db.String(100), nullable=False)  # Nombre de la tarjeta
+    first_name = db.Column(db.String(50), nullable=False)  # Nombre del propietario
+    last_name = db.Column(db.String(50), nullable=False)  # Apellido del propietario
+    organization = db.Column(db.String(100), nullable=False)  # Organización o empresa
+    position = db.Column(db.String(100), nullable=False)  # Cargo o posición
+    phone = db.Column(db.String(20), nullable=False)  # Número de teléfono
+    email = db.Column(db.String(120), nullable=False)  # Dirección de correo electrónico
+    website = db.Column(db.String(200), nullable=False)  # Sitio web
+    address = db.Column(db.String(200), nullable=False)  # Dirección física
     card_id = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     image_file = db.Column(db.String(100), nullable=True, default='default.jpg')
     template = db.Column(db.String(20), nullable=False, default='template1')
     
+    # Campos para configuración de diseño
+    design_bg_page = db.Column(db.String(7), nullable=True)
+    design_bg_container = db.Column(db.String(7), nullable=True)
+    design_primary = db.Column(db.String(7), nullable=True)
+    design_secondary = db.Column(db.String(7), nullable=True)
+    
     # Campos para configuración de colores en el QR
     qr_fg_color = db.Column(db.String(7), nullable=False, default='#000000')
     qr_bg_color = db.Column(db.String(7), nullable=False, default='#ffffff')
-
-    # Clave foránea hacia User
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    # Relación con User usando back_populates
+    
+    # Relación con el usuario propietario (permitiendo null para invitados)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     user = db.relationship('User', back_populates='pulzcards')
+    
+    # Indicar si es un usuario guest
+    is_guest = db.Column(db.Boolean, nullable=False, default=False, server_default='false')
+    
+    # Fecha de expiración para tarjetas guest (por ejemplo, 3 meses)
+    expiration_date = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return f"Pulzcard('{self.card_name}', '{self.email}')"

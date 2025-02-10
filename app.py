@@ -1,5 +1,5 @@
 # app.py
-# app.py
+
 # ============================================
 # Importaciones estándar de la biblioteca
 # ============================================
@@ -17,7 +17,7 @@ from datetime import datetime, timedelta, timezone
 
 from flask import (
     Flask, render_template, request, flash, redirect, url_for,
-    send_from_directory, send_file, jsonify, make_response, abort
+    send_from_directory, send_file, jsonify, make_response, current_app, abort
 )
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -25,7 +25,7 @@ from sqlalchemy import exists
 from sqlalchemy.orm import joinedload
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail, Message
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from flask_login import login_required, current_user, login_user, logout_user, LoginManager
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -511,16 +511,12 @@ def pulzcard_card(card_id):
         flash('Tarjeta no encontrada.', 'danger')
         return redirect(url_for('main.home'))
 
-    # Obtener el template desde los parámetros de la URL
-    selected_template = request.args.get('template')
-    valid_templates = ['template1', 'template2', 'template3']
-
-    # Validar el template seleccionado
-    if selected_template and selected_template in valid_templates:
-        template_name = f"pulzcard/{selected_template}.html"
-    else:
-        # Usar el template predeterminado de la Pulzcard o 'template1' si no está definido
-        template_name = f"pulzcard/{pulzcard.template if pulzcard.template in valid_templates else 'template1'}.html"
+    # 📌 Depuración: imprimir los valores de diseño antes de enviarlos a la plantilla
+    print(f"Valores de diseño para {card_id}:")
+    print(f"  design_bg_page: {pulzcard.design_bg_page}")
+    print(f"  design_bg_container: {pulzcard.design_bg_container}")
+    print(f"  design_primary: {pulzcard.design_primary}")
+    print(f"  design_secondary: {pulzcard.design_secondary}")
 
     contact_info = {
         "full_name": f"{pulzcard.first_name} {pulzcard.last_name}",
@@ -530,11 +526,17 @@ def pulzcard_card(card_id):
         "email": pulzcard.email,
         "website": pulzcard.website,
         "address": pulzcard.address,
-        "image_file": pulzcard.image_file
+        "image_file": pulzcard.image_file,
+        "design_bg_page": pulzcard.design_bg_page or "#2e2e2e",  # Valores por defecto
+        "design_bg_container": pulzcard.design_bg_container or "rgba(46, 46, 46, 0.5)",
+        "design_primary": pulzcard.design_primary or "#00a9ff",
+        "design_secondary": pulzcard.design_secondary or "#ff0000"
     }
 
-    return render_template(template_name, contact=contact_info, card_id=card_id)
+    valid_templates = ['template1', 'template2', 'template3']
+    template_name = f"pulzcard/{pulzcard.template if pulzcard.template in valid_templates else 'template1'}.html"
 
+    return render_template(template_name, contact=contact_info, card_id=card_id)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -794,6 +796,115 @@ def add_to_wallet(filename):
         mimetype='application/vnd.apple.pkpass',
         as_attachment=False  # <--- iOS intenta abrir directamente
     )
+
+@app.route('/pulzcard/update_design/<card_id>', methods=['POST'])
+def update_design(card_id):
+    # Log para verificar el ID recibido
+    print("Card ID recibido:", card_id)
+
+    # Captura los datos enviados
+    design_data = request.json
+    print("Datos recibidos:", design_data)  # Log temporal para verificar los datos enviados
+
+    # Encuentra la tarjeta correspondiente en la base de datos
+    try:
+        card = Pulzcard.query.filter_by(card_id=card_id).first()
+    except Exception as e:
+        print("Error al buscar la tarjeta:", e)
+        return jsonify({"success": False, "error": "Error querying database"}), 500
+
+    if not card:
+        # Si no se encuentra la tarjeta, envía un error
+        return jsonify({"success": False, "error": "Card not found"}), 404
+
+    # Actualiza los campos de diseño
+    card.design_bg_page = design_data.get("design_bg_page", card.design_bg_page)
+    card.design_bg_container = design_data.get("design_bg_container", card.design_bg_container)
+    card.design_primary = design_data.get("design_primary", card.design_primary)
+    card.design_secondary = design_data.get("design_secondary", card.design_secondary)
+
+    # Actualizar el template si se envió en la solicitud
+    if "template" in design_data:
+        card.template = design_data["template"]
+        print(f"Nuevo template asignado: {card.template}")  # Log para verificar
+
+    # Guarda los cambios en la base de datos
+    try:
+        db.session.commit()
+        print("Diseño y template guardados correctamente.")
+        return jsonify({"success": True})
+    except Exception as e:
+        print("Error al guardar los cambios:", e)
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# Ruta para crear Pulzcards en modo guest
+@app.route('/pulzcard_guest', methods=['GET', 'POST'])
+def pulzcard_guest():
+    form = PulzcardForm()
+    if form.validate_on_submit():
+        # Manejar la imagen...
+        if form.image_file.data:
+            image_file = form.image_file.data
+            filename = secure_filename(image_file.filename)
+            unique_filename = f"{uuid.uuid4().hex}_{filename}"
+            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            image_file.save(image_path)
+        else:
+            unique_filename = 'default.jpg'
+        
+        # Crear la pulzcard como guest
+        pulzcard = Pulzcard(
+            card_name=form.card_name.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            organization=form.organization.data,
+            position=form.position.data,
+            phone=form.phone.data,
+            email=form.email.data,
+            website=form.website.data,
+            address=form.address.data,
+            image_file=unique_filename,
+            template=form.template.data,
+            user_id=None,      # No hay usuario asignado
+            is_guest=True      # Marcar como guest
+        )
+        
+        # Asignar una fecha de expiración (por ejemplo, 90 días)
+        pulzcard.expiration_date = datetime.utcnow() + timedelta(days=90)
+        
+        db.session.add(pulzcard)
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('Error al crear la Pulzcard. Por favor, inténtalo de nuevo.', 'danger')
+            return redirect(url_for('pulzcard_guest'))
+        
+        # Crear la vCard (código similar al de tu ruta /pulzcard)
+        vcard = f"""BEGIN:VCARD
+VERSION:3.0
+FN:{pulzcard.first_name} {pulzcard.last_name}
+ORG:{pulzcard.organization}
+TITLE:{pulzcard.position}
+TEL;TYPE=WORK,VOICE:{pulzcard.phone}
+EMAIL:{pulzcard.email}
+URL:{pulzcard.website}
+ADR;TYPE=WORK:;;{pulzcard.address}
+END:VCARD"""
+        vcard_path = os.path.join(current_app.instance_path, 'vcards', f'{pulzcard.card_id}.vcf')
+        try:
+            with open(vcard_path, 'w') as f:
+                f.write(vcard)
+        except Exception as e:
+            db.session.rollback()
+            flash('Error al guardar la vCard.', 'danger')
+            return redirect(url_for('pulzcard_guest'))
+        
+        flash('Pulzcard creada exitosamente.', 'success')
+        return redirect(url_for('pulzcard_card', card_id=pulzcard.card_id))
+    
+    return render_template('pulzcard/index.html', form=form)
 
 # Ruta: Perfil de Usuario
 @app.route('/profile', methods=['GET', 'POST'])
