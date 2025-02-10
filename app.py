@@ -207,6 +207,9 @@ def redirect_back(default='profile'):
 def home():
     return render_template('index.html')
 
+@app.route('/gratis')
+def gratis():
+    return render_template('gratis.html')
 
 @app.route('/about')
 def about():

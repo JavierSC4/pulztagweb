@@ -1,0 +1,94 @@
+<!-- templates/gratis.html -->
+{% extends 'base.html' %}
+
+{% block head %}
+    {{ super() }}
+    <!-- Aquí puedes agregar CSS o meta adicional si es necesario -->
+    <style>
+        /* Ajustes específicos para la página gratis */
+        .gratis-hero {
+            position: relative;
+            background: url("{{ url_for('static', filename='images/bg_gratis.jpg') }}") no-repeat center center;
+            background-size: cover;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b3a3a;
+        }
+        .gratis-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.666);
+            z-index: 1;
+        }
+        .gratis-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 20px;
+            max-width: 600px;
+        }
+        .cta-gratis {
+            background-color: #ffd700;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+        .cta-gratis:hover {
+            background-color: #e6c200;
+        }
+    </style>
+{% endblock %}
+
+{% block navbar %}
+    {# Puedes mantener el navbar normal o sobrescribirlo si deseas un estilo diferente #}
+    {% include 'navbar.html' %}
+{% endblock %}
+
+{% block title %}
+    Pulztag Gratis - Tarjeta Inteligente
+{% endblock %}
+
+{% block content %}
+<!-- Sección Hero para la oferta Gratis -->
+<section class="gratis-hero">
+    <div class="gratis-overlay"></div>
+    <div class="gratis-content">
+        <h1>¡Obtén tu Tarjeta Inteligente Gratis!</h1>
+        <p>
+            Descubre cómo puedes gestionar tu información y conectar con tus clientes sin costo inicial.
+            Nuestra solución gratuita te permite crear tu Tarjeta Inteligente y empezar a disfrutar de las ventajas de la tecnología NFC.
+        </p>
+        <p>
+            Sin complicaciones, sin compromisos. ¡Pruébala ahora y comprueba cómo puede transformar tu negocio!
+        </p>
+        <!-- Botón de acción que redirige al mismo flujo que "continúa como invitado" -->
+        <a href="{{ url_for('pulzcard_guest') }}" class="btn cta-gratis" title="Crear Tarjeta Gratis">
+            ¡Comienza Gratis Ahora!
+        </a>
+    </div>
+</section>
+
+<!-- Aquí puedes agregar más secciones si deseas explicar características o beneficios -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2>¿Por qué elegir Pulztag?</h2>
+        <p class="lead">
+            Con nuestra plataforma, tienes a tu alcance una herramienta integral para gestionar la experiencia de tus clientes.
+            Obtén resultados medibles y mejora la comunicación sin invertir en costosas soluciones.
+        </p>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary btn-lg">
+            Más Información
+        </a>
+    </div>
+</section>
+{% endblock %}

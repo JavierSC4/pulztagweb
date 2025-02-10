@@ -34,6 +34,13 @@
                 <li class="nav-item">
                     <a class="nav-link{% if request.path == '/contact' %} active{% endif %}" href="/contact">Contacto</a>
                 </li>
+                <!-- Botón "Gratis" -->
+                <li class="nav-item">
+                    <a class="nav-link fw-bold" href="{{ url_for('gratis') }}"
+                       style="background-color: #ffd700; color: #333; border-radius: 5px; padding: 5px 10px;">
+                        Gratis
+                    </a>
+                </li>
             </ul>
 
             <!-- Menú de usuario -->
