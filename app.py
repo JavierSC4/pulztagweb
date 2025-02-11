@@ -536,10 +536,7 @@ def pulzcard_card(card_id):
         "design_secondary": pulzcard.design_secondary or "#ff0000"
     }
 
-    valid_templates = ['template1', 'template2', 'template3']
-    template_name = f"pulzcard/{pulzcard.template if pulzcard.template in valid_templates else 'template1'}.html"
-
-    return render_template(template_name, contact=contact_info, card_id=card_id)
+    return render_template('pulzcard/template_cards.html', contact=contact_info, card_id=card_id)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):

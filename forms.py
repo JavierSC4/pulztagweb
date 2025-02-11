@@ -71,6 +71,12 @@ class PulzcardForm(FlaskForm):
     image_file = FileField('Imagen de Perfil', validators=[FileAllowed(['jpg', 'png'])])
     template = SelectField('Plantilla', choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')], validators=[DataRequired()])
     submit = SubmitField('Crear Tarjeta')
+    template = SelectField(
+        'Plantilla',
+        choices=[('template1', 'Plantilla 1'), ('template2', 'Plantilla 2'), ('template3', 'Plantilla 3')],
+        validators=[DataRequired()]
+    )
+    submit = SubmitField('Crear Tarjeta')
 
 class EditPulzcardForm(FlaskForm):
     card_name = StringField('Nombre de la Tarjeta', validators=[DataRequired()])
